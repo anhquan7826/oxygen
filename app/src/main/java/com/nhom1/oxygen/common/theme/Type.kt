@@ -1,4 +1,4 @@
-package com.nhom1.oxygen.ui.theme
+package com.nhom1.oxygen.common.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
