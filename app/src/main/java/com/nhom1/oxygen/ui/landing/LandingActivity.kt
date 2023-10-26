@@ -41,6 +41,7 @@ import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.common.widgets.OButtonPrimary
 import com.nhom1.oxygen.common.widgets.OButtonSecondary
 import com.nhom1.oxygen.ui.home.HomeActivity
+import com.nhom1.oxygen.utils.ConfigUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -278,7 +279,7 @@ class LandingActivity : ComponentActivity() {
                 pagerState.animateScrollToPage(pagerState.currentPage + 1, 0F)
             }
         } else {
-            //        ConfigUtil.firstLaunch = false
+            ConfigUtil.firstLaunch = false
             startActivity(Intent(this@LandingActivity, HomeActivity::class.java))
             finish()
         }

@@ -9,4 +9,7 @@
     <string name="get_local_info_permission_description">Cho phép ứng dụng quyền truy cập vị trí để có thể cung cấp thông tin ô nhiễm không khí ở quanh bạn.</string>
     <string name="allow_notification">Cho phép thông báo</string>
     <string name="allow_notification_description">Nhận cảnh báo khi không khí xung quanh ô nhiễm cao và nhận gợi ý về sức khỏe.</string>
+    <string name="overview">Tổng quan</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="map">Bản đồ</string>
 </resources>
