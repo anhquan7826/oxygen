@@ -1,4 +1,4 @@
-package com.anhquan.unisync.extensions
+package com.nhom1.oxygen.utils.extensions
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable

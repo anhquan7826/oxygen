@@ -1,8 +1,8 @@
-package com.anhquan.unisync.utils
+package com.nhom1.oxygen.utils
 
 import android.util.Log
 
-private const val TAG = "Unisync@Android"
+private const val TAG = "OxygenApp"
 
 fun debugLog(message: Any?) {
     Log.d(TAG, message.toString())

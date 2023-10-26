@@ -1,4 +1,4 @@
-package com.anhquan.unisync.utils
+package com.nhom1.oxygen.utils
 
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
