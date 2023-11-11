@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+
 package com.nhom1.oxygen.ui.landing
 
 import android.Manifest
@@ -9,7 +11,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -37,31 +38,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import com.nhom1.oxygen.R
+import com.nhom1.oxygen.common.composables.OButtonPrimary
+import com.nhom1.oxygen.common.composables.OButtonSecondary
 import com.nhom1.oxygen.common.theme.OxygenTheme
-import com.nhom1.oxygen.common.widgets.OButtonPrimary
-import com.nhom1.oxygen.common.widgets.OButtonSecondary
+import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.ui.home.HomeActivity
+import com.nhom1.oxygen.ui.login.LoginActivity
 import com.nhom1.oxygen.utils.ConfigUtil
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LandingActivity : ComponentActivity() {
+    @Inject
+    lateinit var userRepository: UserRepository
+
     private lateinit var coroutineScope: CoroutineScope
 
-    @OptIn(ExperimentalFoundationApi::class)
     private lateinit var pagerState: PagerState
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         toNextPage()
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             coroutineScope = rememberCoroutineScope()
-            pagerState = rememberPagerState()
+            pagerState = rememberPagerState() { 3 }
             OxygenTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     LandingView()
@@ -70,13 +77,12 @@ class LandingActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun LandingView() {
         HorizontalPager(
-            pageCount = 3,
+            modifier = Modifier,
             state = pagerState,
-            userScrollEnabled = false
+            userScrollEnabled = false,
         ) {
             when (it) {
                 0 -> LandingIntroduction()
@@ -86,7 +92,6 @@ class LandingActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
     @Composable
     private fun LandingIntroduction() {
         Scaffold(
@@ -117,7 +122,6 @@ class LandingActivity : ComponentActivity() {
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
@@ -126,8 +130,11 @@ class LandingActivity : ComponentActivity() {
                     painterResource(id = R.drawable.fresh_air),
                     contentDescription = null,
                     modifier = Modifier
+                        .padding(
+                            top = 150.dp,
+                            bottom = 32.dp
+                        )
                         .width(128.dp)
-                        .padding(bottom = 32.dp)
                 )
                 Text(
                     text = stringResource(R.string.oxygen),
@@ -144,7 +151,6 @@ class LandingActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
     @Composable
     private fun LandingLocationPermission() {
         Scaffold(
@@ -179,7 +185,6 @@ class LandingActivity : ComponentActivity() {
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
@@ -188,8 +193,11 @@ class LandingActivity : ComponentActivity() {
                     painterResource(id = R.drawable.location),
                     contentDescription = null,
                     modifier = Modifier
+                        .padding(
+                            top = 150.dp,
+                            bottom = 32.dp
+                        )
                         .width(128.dp)
-                        .padding(bottom = 32.dp)
                 )
                 Text(
                     text = stringResource(R.string.get_local_info_permission),
@@ -206,7 +214,6 @@ class LandingActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
     @Composable
     private fun LandingNotificationPermission() {
         Scaffold(
@@ -245,7 +252,6 @@ class LandingActivity : ComponentActivity() {
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
@@ -254,8 +260,11 @@ class LandingActivity : ComponentActivity() {
                     painterResource(id = R.drawable.notification),
                     contentDescription = null,
                     modifier = Modifier
+                        .padding(
+                            top = 150.dp,
+                            bottom = 32.dp
+                        )
                         .width(128.dp)
-                        .padding(bottom = 32.dp)
                 )
                 Text(
                     text = stringResource(R.string.allow_notification),
@@ -272,7 +281,6 @@ class LandingActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     private fun toNextPage() {
         if (pagerState.currentPage < 2) {
             coroutineScope.launch {
@@ -280,7 +288,11 @@ class LandingActivity : ComponentActivity() {
             }
         } else {
             ConfigUtil.firstLaunch = false
-            startActivity(Intent(this@LandingActivity, HomeActivity::class.java))
+            if (!userRepository.isUserSignedIn()) {
+                startActivity(Intent(this@LandingActivity, LoginActivity::class.java))
+            } else {
+                startActivity(Intent(this@LandingActivity, HomeActivity::class.java))
+            }
             finish()
         }
     }

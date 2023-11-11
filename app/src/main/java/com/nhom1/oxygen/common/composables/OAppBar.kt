@@ -1,0 +1,83 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+
+package com.nhom1.oxygen.common.composables
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.nhom1.oxygen.R
+
+@Composable
+fun OAppBar(
+    title: String,
+    leading: Painter,
+    onLeadingPressed: (() -> Unit)? = null,
+    actions: List<Painter> = listOf(),
+    onActionPressed: List<() -> Unit> = listOf(),
+) {
+    TopAppBar(
+        windowInsets = WindowInsets(left = 16.dp, right = 16.dp),
+        navigationIcon = {
+            Icon(
+                leading,
+                null,
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        onLeadingPressed?.invoke()
+                    })
+        },
+        title = {
+            Text(
+                title,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        },
+        actions = {
+            for (i in actions.indices) {
+                Icon(
+                    actions[i],
+                    null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clickable {
+                            onActionPressed[i].invoke()
+                        })
+            }
+        },
+        modifier = Modifier.shadow(
+            elevation = 16.dp,
+            spotColor = Color(0xFF000000),
+            ambientColor = Color(0xFF000000)
+        )
+    )
+}
+
+@Preview
+@Composable
+fun OAppBarPreview() {
+    OAppBar(
+        title = "Title",
+        leading = painterResource(id = R.drawable.house),
+        actions = listOf(
+            painterResource(id = R.drawable.bell)
+        )
+    )
+}

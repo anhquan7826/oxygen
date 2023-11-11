@@ -12,7 +12,20 @@
           "package_name": "com.nhom1.oxygen"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "420419796226-kn9o47da5asogl21gtb0evrpt0evdhdm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nhom1.oxygen",
+            "certificate_hash": "ba154f321cd02e16a5625c3aa97446de5f4735a2"
+          }
+        },
+        {
+          "client_id": "420419796226-ruh6hr4v86okejj87pccrejp47duv8qk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBSve3IUYUzvu6hND2Wqk4h5HZIx7_TzHg"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "420419796226-ruh6hr4v86okejj87pccrejp47duv8qk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

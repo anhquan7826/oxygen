@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+
 package com.nhom1.oxygen.ui.home
 
 import android.annotation.SuppressLint
@@ -5,9 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -21,12 +21,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,26 +67,27 @@ class HomeActivity : ComponentActivity() {
     }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
     @Composable
     private fun HomeView() {
-        val pagerState = rememberPagerState()
-        var currentPage by rememberSaveable {
-            mutableStateOf(0)
-        }
+        val pagerState = rememberPagerState { items.size }
         Scaffold(
             bottomBar = {
                 NavigationBar(
                     containerColor = Color.White,
+                    modifier = Modifier.shadow(
+                        elevation = 16.dp,
+                        clip = true,
+                        spotColor = Color(0xFF000000),
+                        ambientColor = Color(0xFF000000)
+                    ),
                 ) {
                     for (item in items) {
                         NavigationBarItem(
                             alwaysShowLabel = true,
-                            selected = currentPage == item.key,
+                            selected = pagerState.currentPage == item.key,
                             onClick = {
                                 coroutineScope.launch {
-                                    currentPage = item.key
-                                    pagerState.animateScrollToPage(currentPage, 0F)
+                                    pagerState.animateScrollToPage(item.key, 0F)
                                 }
                             },
                             colors = NavigationBarItemDefaults.colors(
@@ -97,7 +95,7 @@ class HomeActivity : ComponentActivity() {
                             ),
                             icon = {
                                 Icon(
-                                    if (currentPage == item.key)
+                                    if (pagerState.currentPage == item.key)
                                         when (item.value) {
                                             "overview" -> painterResource(id = R.drawable.house)
                                             "search" -> painterResource(id = R.drawable.search_location)
@@ -133,18 +131,16 @@ class HomeActivity : ComponentActivity() {
                     }
                 }
             },
-            contentWindowInsets = WindowInsets.safeContent
         ) {
-            HorizontalPager (
-                pageCount = items.size,
-                state = pagerState,
-                userScrollEnabled = false,
+            HorizontalPager(
                 modifier = Modifier
                     .fillMaxSize()
-                    .safeDrawingPadding()
-            ) {
+                    .safeDrawingPadding(),
+                state = pagerState,
+                userScrollEnabled = false,
+            ) { currentPage ->
                 when (currentPage) {
-                    0 -> OverviewComposable()
+                    0 -> OverviewComposable(viewModel)
                     1 -> SearchComposable()
                     2 -> MapComposable()
                     3 -> UserComposable()

@@ -12,4 +12,22 @@
     <string name="overview">Tổng quan</string>
     <string name="search">Tìm kiếm</string>
     <string name="map">Bản đồ</string>
+    <string name="good">Tốt</string>
+    <string name="moderate">Trung bình</string>
+    <string name="bad">Kém</string>
+    <string name="unhealthy">Xấu</string>
+    <string name="very_unhealthy">Rất xấu</string>
+    <string name="hazardous">Nguy hại</string>
+    <string name="good_description">Không khí trong lành, không có khả năng gây hại.</string>
+    <string name="moderate_description">Không khí ổn, nhưng có thể ảnh hưởng đến những người nhạy cảm.</string>
+    <string name="bad_description">Không khí xấu, những người có sức khỏe yếu sẽ bị ảnh hưởng.</string>
+    <string name="unhealthy_description">Không khí tệ, gây ảnh hưởng nghiêm trọng, nhất là những người nhạy cảm.</string>
+    <string name="very_unhealth_description">Không khí rất tệ, mọi người sẽ dễ bị ảnh hưởng nặng.</string>
+    <string name="hazardous_description">Không khí độc hại, mọi người cần phòng tránh khẩn cấp.</string>
+    <string name="current_atmosphere">Chất lượng không khí hiện tại:</string>
+    <string name="login_to_oxygen">Đăng nhập vào Oxygen</string>
+    <string name="login_with_google">Đăng nhập bằng Google</string>
+    <string name="daily_suggestion">Gợi ý trong ngày</string>
+    <string name="see_more">Xem thêm</string>
+    <string name="temperature">Nhiệt độ</string>
 </resources>
