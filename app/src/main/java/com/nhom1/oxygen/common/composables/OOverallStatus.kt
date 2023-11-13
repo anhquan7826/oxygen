@@ -1,9 +1,11 @@
 package com.nhom1.oxygen.common.composables
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,15 +16,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
+import com.nhom1.oxygen.common.constants.aqiColors
+import com.nhom1.oxygen.utils.extensions.oShadow
 import java.lang.Integer.min
 
 @Composable
@@ -48,32 +52,20 @@ fun OOverallStatus(
         stringResource(R.string.very_unhealth_description),
         stringResource(R.string.hazardous_description)
     )
-    val colors = listOf(
-        Color(0xFF00E400),
-        Color(0xFFFFFF00),
-        Color(0xFFE06D2D),
-        Color(0xFFC51919),
-        Color(0xFF6C07D1),
-        Color(0xFF7E0023)
-    )
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = when {
-                (aqi in 0..50) -> colors[0]
-                (aqi in 51..100) -> colors[1]
-                (aqi in 101..150) -> colors[2]
-                (aqi in 201..300) -> colors[4]
-                (aqi in 151..200) -> colors[3]
-                else -> colors[5]
+                (aqi in 0..50) -> aqiColors[0]
+                (aqi in 51..100) -> aqiColors[1]
+                (aqi in 101..150) -> aqiColors[2]
+                (aqi in 201..300) -> aqiColors[4]
+                (aqi in 151..200) -> aqiColors[3]
+                else -> aqiColors[5]
             },
             contentColor = if ((aqi in 0..100)) Color.Black else Color.White
         ),
-        modifier = modifier.shadow(
-            elevation = 16.dp,
-            spotColor = Color(0xFF000000),
-            ambientColor = Color(0xFF000000)
-        )
+        modifier = modifier.oShadow()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -151,9 +143,87 @@ fun OOverallStatus(
 }
 
 @Composable
-fun PieChart(value: Double, dark: Boolean = true) {
+fun OOverallStatusCompact(
+    modifier: Modifier = Modifier,
+    aqi: Int,
+    fillMaxHeight: Boolean = false
+) {
+    val statuses = listOf(
+        stringResource(R.string.good),
+        stringResource(R.string.moderate),
+        stringResource(R.string.bad),
+        stringResource(R.string.unhealthy),
+        stringResource(R.string.very_unhealthy),
+        stringResource(R.string.hazardous)
+    )
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = when {
+                (aqi in 0..50) -> aqiColors[0]
+                (aqi in 51..100) -> aqiColors[1]
+                (aqi in 101..150) -> aqiColors[2]
+                (aqi in 201..300) -> aqiColors[4]
+                (aqi in 151..200) -> aqiColors[3]
+                else -> aqiColors[5]
+            },
+            contentColor = if ((aqi in 0..100)) Color.Black else Color.White
+        ),
+        modifier = modifier.oShadow()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = if (fillMaxHeight) Arrangement.SpaceBetween else Arrangement.Top,
+            modifier = Modifier.padding(16.dp).fillMaxHeight()
+        ) {
+            Text(
+                text = stringResource(R.string.current_atmosphere),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Box(
+                modifier = Modifier.padding(vertical = 16.dp)
+            ) {
+                PieChart(
+                    value = min(aqi, 500) / 500.0,
+                    dark = aqi in 0..100,
+                    size = 96.dp
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Text(
+                        text = aqi.toString(),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "AQI",
+                        fontSize = 13.sp
+                    )
+                }
+            }
+            Text(
+                text = when {
+                    (aqi in 0..50) -> statuses[0]
+                    (aqi in 51..100) -> statuses[1]
+                    (aqi in 101..150) -> statuses[2]
+                    (aqi in 201..300) -> statuses[4]
+                    (aqi in 151..200) -> statuses[3]
+                    else -> statuses[5]
+                },
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+@Composable
+fun PieChart(value: Double, dark: Boolean = true, size: Dp = 120.dp) {
     Canvas(
-        modifier = Modifier.size(120.dp, 120.dp)
+        modifier = Modifier.size(size)
     ) {
         drawCircle(
             color = if (dark) Color.Black.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.25f),
@@ -180,5 +250,13 @@ fun OOverallStatusPreview() {
         place = "Cầu Giấy, Hà Nội",
         country = "Việt Nam",
         aqi = 100
+    )
+}
+
+@Preview
+@Composable
+fun OOverallStatusCompactPreview() {
+    OOverallStatusCompact(
+        aqi = 200
     )
 }

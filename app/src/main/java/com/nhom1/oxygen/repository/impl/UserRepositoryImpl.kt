@@ -7,6 +7,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.nhom1.oxygen.data.model.user.OUser
+import com.nhom1.oxygen.data.model.user.OUserProfile
 import com.nhom1.oxygen.repository.UserRepository
 
 class UserRepositoryImpl(private val firebaseAuth: FirebaseAuth) : UserRepository {
@@ -29,6 +31,24 @@ class UserRepositoryImpl(private val firebaseAuth: FirebaseAuth) : UserRepositor
 
     override fun isSignedIn(): Boolean {
         return firebaseAuth.currentUser != null
+    }
+
+    override fun getUserData(): OUser {
+        return OUser(
+            id = -1,
+            diseases = listOf(),
+            email = "email@mail.com",
+            name = "Anh Quan",
+            profile = OUserProfile(
+                sex = true,
+                height = 175.0,
+                address = "",
+                dateOfBirth = "",
+                weight = 60.0
+            ),
+            uid = "",
+            avt = firebaseAuth.currentUser!!.photoUrl.toString()
+        )
     }
 
     override fun signOut() {

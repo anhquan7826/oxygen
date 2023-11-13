@@ -10,9 +10,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nhom1.oxygen.R
+import com.nhom1.oxygen.utils.extensions.oShadow
 
 @Composable
 fun OAppBar(
@@ -28,8 +29,12 @@ fun OAppBar(
     onLeadingPressed: (() -> Unit)? = null,
     actions: List<Painter> = listOf(),
     onActionPressed: List<() -> Unit> = listOf(),
+    withShadow: Boolean = true,
 ) {
     TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White
+        ),
         windowInsets = WindowInsets(left = 16.dp, right = 16.dp),
         navigationIcon = {
             Icon(
@@ -62,11 +67,7 @@ fun OAppBar(
                         })
             }
         },
-        modifier = Modifier.shadow(
-            elevation = 16.dp,
-            spotColor = Color(0xFF000000),
-            ambientColor = Color(0xFF000000)
-        )
+        modifier = if (withShadow) Modifier.oShadow() else Modifier
     )
 }
 

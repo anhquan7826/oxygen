@@ -30,4 +30,12 @@
     <string name="daily_suggestion">Gợi ý trong ngày</string>
     <string name="see_more">Xem thêm</string>
     <string name="temperature">Nhiệt độ</string>
+    <string name="search_hint">Tìm kiếm địa điểm</string>
+    <string name="profile">Hồ sơ</string>
+    <string name="news_suggestion">Dành cho bạn</string>
+    <string name="empty_search">Kết quả tìm kiếm sẽ xuất hiện ở đây.</string>
+    <string name="search_location_not_found">Không tìm thấy địa điểm</string>
+    <string name="suggestion">Gợi ý</string>
+    <string name="news">Tin tức</string>
+    <string name="take_care_of_your_health">Chăm sóc sức khỏe bản thân</string>
 </resources>

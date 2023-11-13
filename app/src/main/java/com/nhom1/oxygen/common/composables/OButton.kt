@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.nhom1.oxygen.utils.extensions.oShadow
 
 @Composable
 fun OButton(
@@ -34,11 +35,7 @@ fun OButton(
                 minWidth = minWidth ?: Dp.Unspecified,
                 maxWidth = maxWidth ?: Dp.Unspecified
             )
-            .shadow(
-                elevation = 16.dp,
-                spotColor = Color(0xFF000000),
-                ambientColor = Color(0xFF000000)
-            ),
+            .oShadow(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFF2F2F2),
             contentColor = Color.Black

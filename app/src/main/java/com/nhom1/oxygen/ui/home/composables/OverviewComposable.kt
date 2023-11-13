@@ -6,6 +6,7 @@ package com.nhom1.oxygen.ui.home.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
@@ -47,12 +44,14 @@ import com.nhom1.oxygen.common.theme.oxygenColor
 import com.nhom1.oxygen.data.model.weather.OAirQuality
 import com.nhom1.oxygen.data.model.weather.OForecast
 import com.nhom1.oxygen.data.model.weather.OWeatherCondition
-import com.nhom1.oxygen.ui.home.HomeViewModel
+import com.nhom1.oxygen.ui.home.OverviewViewModel
+import com.nhom1.oxygen.utils.extensions.oBorder
+import com.nhom1.oxygen.utils.extensions.oShadow
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.getTimeString
 
 @Composable
-fun OverviewComposable(viewModel: HomeViewModel) {
+fun OverviewComposable(viewModel: OverviewViewModel) {
     val state by viewModel.overviewState.collectAsState()
     Scaffold(
         topBar = {
@@ -67,12 +66,13 @@ fun OverviewComposable(viewModel: HomeViewModel) {
         contentWindowInsets = WindowInsets(
             left = 16.dp,
             right = 16.dp,
-            bottom = 80.dp
         ),
         containerColor = Color.White
     ) { padding ->
         if (false /* state.state == 0 */) {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()) {
                 CircularProgressIndicator(
                     color = oxygenColor,
                     modifier = Modifier.align(Alignment.Center)
@@ -108,6 +108,7 @@ fun OverviewComposable(viewModel: HomeViewModel) {
 fun SuggestBox(suggestion: String) {
     OCard(modifier = Modifier
         .padding(bottom = 16.dp)
+        .oShadow()
         .clickable { }) {
         Column {
             Row(
@@ -125,7 +126,7 @@ fun SuggestBox(suggestion: String) {
                     color = Color(0xFF7A7A7A)
                 )
                 Icon(
-                    Icons.Rounded.KeyboardArrowRight,
+                    painter = painterResource(id = R.drawable.chevron_right),
                     contentDescription = null
                 )
             }
@@ -139,7 +140,9 @@ fun SuggestBox(suggestion: String) {
 
 @Composable
 fun TempBox(modifier: Modifier = Modifier, value: Double, celsius: Boolean = true) {
-    OCard(modifier = modifier.padding(bottom = 16.dp)) {
+    OCard(modifier = modifier
+        .padding(bottom = 16.dp)
+        .oShadow()) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -168,7 +171,9 @@ fun TempBox(modifier: Modifier = Modifier, value: Double, celsius: Boolean = tru
 
 @Composable
 fun HumidityBox(modifier: Modifier = Modifier, value: Double) {
-    OCard(modifier = modifier.padding(bottom = 16.dp)) {
+    OCard(modifier = modifier
+        .padding(bottom = 16.dp)
+        .oShadow()) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -201,21 +206,22 @@ fun WeatherForecastToday(
     forecasts: List<OForecast>,
     celsius: Boolean = true
 ) {
-    LazyRow(
+    Row(
         modifier = modifier
             .padding(bottom = 16.dp)
+            .horizontalScroll(rememberScrollState())
     ) {
-        items(forecasts.size) { index ->
+        repeat(forecasts.size) { index ->
             val forecast = forecasts[index]
             OCard(
                 contentPadding = 4.dp,
-                withShadow = false,
                 modifier = Modifier
+                    .padding(end = if (forecast == forecasts.last()) 0.dp else 4.dp)
                     .size(
                         width = 100.dp,
                         height = 300.dp,
                     )
-                    .padding(end = if (forecast == forecasts.last()) 0.dp else 4.dp)
+                    .oBorder()
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -417,11 +423,3 @@ val forecasts = listOf(
         windMPH = 0.0
     )
 )
-
-@Preview
-@Composable
-fun WeatherForecastTodayPreview() {
-    WeatherForecastToday(
-        forecasts = forecasts
-    )
-}
