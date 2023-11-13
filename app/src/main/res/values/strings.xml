@@ -38,4 +38,11 @@
     <string name="suggestion">Gợi ý</string>
     <string name="news">Tin tức</string>
     <string name="take_care_of_your_health">Chăm sóc sức khỏe bản thân</string>
+    <string name="exposure_history">Lịch sử tiếp xúc</string>
+    <string name="personal_info">Thông tin cá nhân</string>
+    <string name="medical_history_form">Khai báo bệnh lý</string>
+    <string name="settings">Cài đặt</string>
+    <string name="sign_out">Đăng xuất</string>
+    <string name="weather_info">Thông tin thời tiết</string>
+    <string name="details">Chi tiết</string>
 </resources>

@@ -5,7 +5,6 @@
 package com.nhom1.oxygen.ui.home.composables
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
+import com.nhom1.oxygen.common.composables.OButtonPrimary
 import com.nhom1.oxygen.common.composables.OCard
 import com.nhom1.oxygen.common.composables.OOverallStatus
 import com.nhom1.oxygen.common.theme.oxygenColor
@@ -70,9 +70,11 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
         containerColor = Color.White
     ) { padding ->
         if (false /* state.state == 0 */) {
-            Box(modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            ) {
                 CircularProgressIndicator(
                     color = oxygenColor,
                     modifier = Modifier.align(Alignment.Center)
@@ -80,7 +82,8 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
             }
         } else {
             Column(
-                Modifier
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
@@ -93,12 +96,38 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
                     )
                 )
                 SuggestBox(suggestion = "Nên hạn chế hoạt động ngoài trời, đặc biệt vào buổi trưa. Sử dụng máy lọc không khí trong nhà và giữ cửa sổ kín để tránh khói và bụi. Nếu cần phải ra ngoài, đeo khẩu trang N95 để bảo vệ đường hô hấp.")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(
+                        top = 16.dp,
+                        bottom = 16.dp
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.information),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(32.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.weather_info),
+                        fontSize = 16.sp,
+                    )
+                }
                 Row {
                     TempBox(value = 23.0, modifier = Modifier.weight(1f))
                     Box(Modifier.width(16.dp))
                     HumidityBox(value = 60.0, modifier = Modifier.weight(1f))
                 }
                 WeatherForecastToday(forecasts = forecasts)
+                OButtonPrimary(
+                    text = stringResource(R.string.details),
+                    modifier = Modifier.padding(bottom = 32.dp)
+                ) {
+
+                }
             }
         }
     }
@@ -108,8 +137,11 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
 fun SuggestBox(suggestion: String) {
     OCard(modifier = Modifier
         .padding(bottom = 16.dp)
-        .oShadow()
-        .clickable { }) {
+        .oShadow(),
+        onClick = {
+
+        }
+    ) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -140,9 +172,11 @@ fun SuggestBox(suggestion: String) {
 
 @Composable
 fun TempBox(modifier: Modifier = Modifier, value: Double, celsius: Boolean = true) {
-    OCard(modifier = modifier
-        .padding(bottom = 16.dp)
-        .oShadow()) {
+    OCard(
+        modifier = modifier
+            .padding(bottom = 16.dp)
+            .oShadow()
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -171,9 +205,11 @@ fun TempBox(modifier: Modifier = Modifier, value: Double, celsius: Boolean = tru
 
 @Composable
 fun HumidityBox(modifier: Modifier = Modifier, value: Double) {
-    OCard(modifier = modifier
-        .padding(bottom = 16.dp)
-        .oShadow()) {
+    OCard(
+        modifier = modifier
+            .padding(bottom = 16.dp)
+            .oShadow()
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -164,7 +164,7 @@ class HomeActivity : ComponentActivity() {
                     1 -> SearchComposable(searchViewModel)
                     2 -> MapComposable()
                     3 -> SuggestionComposable(suggestionViewModel)
-                    4 -> UserComposable()
+                    4 -> UserComposable(userViewModel)
                 }
             }
         }
