@@ -1,9 +1,6 @@
-@file:OptIn(
-    ExperimentalMaterial3Api::class
-)
-
 package com.nhom1.oxygen.ui.home.composables
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,20 +35,24 @@ import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OButtonPrimary
 import com.nhom1.oxygen.common.composables.OCard
+import com.nhom1.oxygen.common.composables.OError
+import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.composables.OOverallStatus
-import com.nhom1.oxygen.common.theme.oxygenColor
-import com.nhom1.oxygen.data.model.weather.OAirQuality
-import com.nhom1.oxygen.data.model.weather.OForecast
-import com.nhom1.oxygen.data.model.weather.OWeatherCondition
+import com.nhom1.oxygen.data.model.weather.OWeather
+import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.OverviewViewModel
+import com.nhom1.oxygen.utils.constants.LoadState.ERROR
+import com.nhom1.oxygen.utils.constants.LoadState.LOADING
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.oShadow
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.getTimeString
+import com.nhom1.oxygen.utils.toJson
 
 @Composable
 fun OverviewComposable(viewModel: OverviewViewModel) {
     val state by viewModel.overviewState.collectAsState()
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             OAppBar(
@@ -60,7 +60,10 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
                 leading = painterResource(id = R.drawable.fresh_air_blue),
                 actions = listOf(
                     painterResource(id = R.drawable.bell)
-                )
+                ),
+                onActionPressed = listOf {
+                    // TODO: Open notification
+                }
             )
         },
         contentWindowInsets = WindowInsets(
@@ -69,64 +72,87 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
         ),
         containerColor = Color.White
     ) { padding ->
-        if (false /* state.state == 0 */) {
-            Box(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-            ) {
-                CircularProgressIndicator(
-                    color = oxygenColor,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+        when (state.state) {
+            LOADING -> {
+                Box(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                ) {
+                    OLoading(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
-        } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Box(modifier = Modifier.height(32.dp))
-                OOverallStatus(
-                    place = "alo", country = "alo", aqi = 500,
-                    modifier = Modifier.padding(
-                        bottom = 16.dp
-                    )
-                )
-                SuggestBox(suggestion = "Nên hạn chế hoạt động ngoài trời, đặc biệt vào buổi trưa. Sử dụng máy lọc không khí trong nhà và giữ cửa sổ kín để tránh khói và bụi. Nếu cần phải ra ngoài, đeo khẩu trang N95 để bảo vệ đường hô hấp.")
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(
-                        top = 16.dp,
-                        bottom = 16.dp
-                    )
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.information),
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .size(32.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.weather_info),
-                        fontSize = 16.sp,
-                    )
-                }
-                Row {
-                    TempBox(value = 23.0, modifier = Modifier.weight(1f))
-                    Box(Modifier.width(16.dp))
-                    HumidityBox(value = 60.0, modifier = Modifier.weight(1f))
-                }
-                WeatherForecastToday(forecasts = forecasts)
-                OButtonPrimary(
-                    text = stringResource(R.string.details),
-                    modifier = Modifier.padding(bottom = 32.dp)
-                ) {
 
+            ERROR -> {
+                Box(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                ) {
+                    OError(modifier = Modifier.align(Alignment.Center)) {
+                        viewModel.load()
+                    }
+                }
+            }
+
+            else -> {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Box(modifier = Modifier.height(32.dp))
+                    OOverallStatus(
+                        place = "${state.location!!.district}, ${state.location!!.city}",
+                        country = state.location!!.country,
+                        aqi = state.weatherCurrent!!.airQuality.aqi,
+                        modifier = Modifier.padding(
+                            bottom = 16.dp
+                        )
+                    )
+                    // TODO: Suggestion
+                    SuggestBox(suggestion = "Nên hạn chế hoạt động ngoài trời, đặc biệt vào buổi trưa. Sử dụng máy lọc không khí trong nhà và giữ cửa sổ kín để tránh khói và bụi. Nếu cần phải ra ngoài, đeo khẩu trang N95 để bảo vệ đường hô hấp.")
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(
+                            top = 16.dp,
+                            bottom = 16.dp
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.information),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .size(32.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.weather_info),
+                            fontSize = 16.sp,
+                        )
+                    }
+                    Row {
+                        TempBox(value = 23.0, modifier = Modifier.weight(1f))
+                        Box(Modifier.width(16.dp))
+                        HumidityBox(value = 60.0, modifier = Modifier.weight(1f))
+                    }
+                    WeatherForecastToday(forecasts = state.weather24h!!)
+                    OButtonPrimary(
+                        text = stringResource(R.string.details),
+                        modifier = Modifier.padding(bottom = 32.dp)
+                    ) {
+                        context.startActivity(
+                            Intent(context, DetailsActivity::class.java).putExtra(
+                                "location",
+                                toJson(state.location!!)
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -239,7 +265,7 @@ fun HumidityBox(modifier: Modifier = Modifier, value: Double) {
 @Composable
 fun WeatherForecastToday(
     modifier: Modifier = Modifier,
-    forecasts: List<OForecast>,
+    forecasts: List<OWeather>,
     celsius: Boolean = true
 ) {
     Row(
@@ -264,7 +290,7 @@ fun WeatherForecastToday(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = getTimeString(forecast.timeEpoch),
+                        text = getTimeString(forecast.time),
                         fontWeight = FontWeight.SemiBold,
                     )
                     Column(
@@ -277,10 +303,11 @@ fun WeatherForecastToday(
                             contentDescription = null,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
-                        Text(
-                            text = forecast.chanceOfRain.toPrettyString() + "%",
-                            fontSize = 12.sp
-                        )
+                        if (forecast.chanceOfRain != null)
+                            Text(
+                                text = "${forecast.chanceOfRain}%",
+                                fontSize = 12.sp
+                            )
                     }
                     Text(
                         text = forecast.tempC.toPrettyString() + if (celsius) "°C" else "°F",
@@ -291,171 +318,3 @@ fun WeatherForecastToday(
         }
     }
 }
-
-val forecasts = listOf(
-    OForecast(
-        timeEpoch = 1699686000L,
-        time = "",
-        airQuality = OAirQuality(
-            co = 0.0,
-            no2 = 0.0,
-            o3 = 0.0,
-            pm10 = 0.0,
-            pm25 = 0.0,
-            so2 = 0.0
-        ),
-        chanceOfRain = 0.0,
-        cloud = 0.0,
-        condition = OWeatherCondition(
-            text = "",
-            code = 0,
-            icon = ""
-        ),
-        feelsLikeC = 0.0,
-        feelsLikeF = 0.0,
-        humidity = 0.0,
-        isDay = 0,
-        precipitationIN = 0.0,
-        precipitationMM = 0.0,
-        pressureIN = 0.0,
-        pressureMB = 0.0,
-        tempC = 0.0,
-        tempF = 0.0,
-        windDegree = 0.0,
-        windDir = "",
-        windKPH = 0.0,
-        windMPH = 0.0
-    ),
-    OForecast(
-        timeEpoch = 1699689600,
-        time = "",
-        airQuality = OAirQuality(
-            co = 0.0,
-            no2 = 0.0,
-            o3 = 0.0,
-            pm10 = 0.0,
-            pm25 = 0.0,
-            so2 = 0.0
-        ),
-        chanceOfRain = 0.0,
-        cloud = 0.0,
-        condition = OWeatherCondition(
-            text = "",
-            code = 0,
-            icon = ""
-        ),
-        feelsLikeC = 0.0,
-        feelsLikeF = 0.0,
-        humidity = 0.0,
-        isDay = 0,
-        precipitationIN = 0.0,
-        precipitationMM = 0.0,
-        pressureIN = 0.0,
-        pressureMB = 0.0,
-        tempC = 0.0,
-        tempF = 0.0,
-        windDegree = 0.0,
-        windDir = "",
-        windKPH = 0.0,
-        windMPH = 0.0
-    ),
-    OForecast(
-        timeEpoch = 1699693200,
-        time = "",
-        airQuality = OAirQuality(
-            co = 0.0,
-            no2 = 0.0,
-            o3 = 0.0,
-            pm10 = 0.0,
-            pm25 = 0.0,
-            so2 = 0.0
-        ),
-        chanceOfRain = 0.0,
-        cloud = 0.0,
-        condition = OWeatherCondition(
-            text = "",
-            code = 0,
-            icon = ""
-        ),
-        feelsLikeC = 0.0,
-        feelsLikeF = 0.0,
-        humidity = 0.0,
-        isDay = 0,
-        precipitationIN = 0.0,
-        precipitationMM = 0.0,
-        pressureIN = 0.0,
-        pressureMB = 0.0,
-        tempC = 0.0,
-        tempF = 0.0,
-        windDegree = 0.0,
-        windDir = "",
-        windKPH = 0.0,
-        windMPH = 0.0
-    ),
-    OForecast(
-        timeEpoch = 1699696800,
-        time = "",
-        airQuality = OAirQuality(
-            co = 0.0,
-            no2 = 0.0,
-            o3 = 0.0,
-            pm10 = 0.0,
-            pm25 = 0.0,
-            so2 = 0.0
-        ),
-        chanceOfRain = 0.0,
-        cloud = 0.0,
-        condition = OWeatherCondition(
-            text = "",
-            code = 0,
-            icon = ""
-        ),
-        feelsLikeC = 0.0,
-        feelsLikeF = 0.0,
-        humidity = 0.0,
-        isDay = 0,
-        precipitationIN = 0.0,
-        precipitationMM = 0.0,
-        pressureIN = 0.0,
-        pressureMB = 0.0,
-        tempC = 0.0,
-        tempF = 0.0,
-        windDegree = 0.0,
-        windDir = "",
-        windKPH = 0.0,
-        windMPH = 0.0
-    ),
-    OForecast(
-        timeEpoch = 1699700400,
-        time = "",
-        airQuality = OAirQuality(
-            co = 0.0,
-            no2 = 0.0,
-            o3 = 0.0,
-            pm10 = 0.0,
-            pm25 = 0.0,
-            so2 = 0.0
-        ),
-        chanceOfRain = 0.0,
-        cloud = 0.0,
-        condition = OWeatherCondition(
-            text = "",
-            code = 0,
-            icon = ""
-        ),
-        feelsLikeC = 0.0,
-        feelsLikeF = 0.0,
-        humidity = 0.0,
-        isDay = 0,
-        precipitationIN = 0.0,
-        precipitationMM = 0.0,
-        pressureIN = 0.0,
-        pressureMB = 0.0,
-        tempC = 0.0,
-        tempF = 0.0,
-        windDegree = 0.0,
-        windDir = "",
-        windKPH = 0.0,
-        windMPH = 0.0
-    )
-)

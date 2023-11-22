@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
-import com.nhom1.oxygen.common.constants.aqiColors
+import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.common.theme.oxygenColor
 import com.nhom1.oxygen.utils.extensions.oShadow
 import kotlin.math.PI
@@ -84,14 +84,7 @@ fun OExposureChart(aqis: List<Int>) {
                                         )
                                     )
                                     .background(
-                                        color = when {
-                                            (aqis[i] in 0..50) -> aqiColors[0]
-                                            (aqis[i] in 51..100) -> aqiColors[1]
-                                            (aqis[i] in 101..150) -> aqiColors[2]
-                                            (aqis[i] in 201..300) -> aqiColors[4]
-                                            (aqis[i] in 151..200) -> aqiColors[3]
-                                            else -> aqiColors[5]
-                                        }
+                                        color = getAQIColor(aqis[i])
                                     )
                                     .clickable {
                                         selectedColumn = if (selectedColumn == i) -1 else i
@@ -111,14 +104,7 @@ fun OExposureChart(aqis: List<Int>) {
                                     )
                                 )
                                 .background(
-                                    color = when {
-                                        (aqis[i] in 0..50) -> aqiColors[0]
-                                        (aqis[i] in 51..100) -> aqiColors[1]
-                                        (aqis[i] in 101..150) -> aqiColors[2]
-                                        (aqis[i] in 201..300) -> aqiColors[4]
-                                        (aqis[i] in 151..200) -> aqiColors[3]
-                                        else -> aqiColors[5]
-                                    }
+                                    color = getAQIColor(aqis[i])
                                 )
                                 .clickable {
                                     selectedColumn = if (selectedColumn == i) -1 else i
@@ -156,12 +142,7 @@ fun OExposure(
                 drawArc(
                     color = when {
                         (aqi == -1) -> Color.Gray
-                        (aqi in 0..50) -> aqiColors[0]
-                        (aqi in 51..100) -> aqiColors[1]
-                        (aqi in 101..150) -> aqiColors[2]
-                        (aqi in 201..300) -> aqiColors[4]
-                        (aqi in 151..200) -> aqiColors[3]
-                        else -> aqiColors[5]
+                        else -> getAQIColor(aqi)
                     }.copy(alpha = 0.75f),
                     startAngle = 120f + (i * 12.5f),
                     sweepAngle = 12f,

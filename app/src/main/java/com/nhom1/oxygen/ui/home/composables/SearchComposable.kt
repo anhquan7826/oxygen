@@ -2,6 +2,7 @@
 
 package com.nhom1.oxygen.ui.home.composables
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,24 +27,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OTextField
+import com.nhom1.oxygen.common.constants.aqiColors
+import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.SearchViewModel
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.oClip
+import com.nhom1.oxygen.utils.toJson
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchComposable(viewModel: SearchViewModel) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             OAppBar(
@@ -71,12 +76,14 @@ fun SearchComposable(viewModel: SearchViewModel) {
                         contentDescription = null,
                     )
                 },
-                onValueChange = viewModel::getSearchResult
+                onValueChange = viewModel::onQueryChanged
             )
             when {
                 state.searchValue.isEmpty() && state.result.isEmpty() -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize()
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
                     ) {
                         Text(
                             stringResource(R.string.empty_search),
@@ -90,7 +97,9 @@ fun SearchComposable(viewModel: SearchViewModel) {
 
                 state.searchValue.isNotEmpty() && state.result.isEmpty() -> {
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxSize()
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
                     ) {
                         Text(
                             stringResource(R.string.search_location_not_found),
@@ -104,8 +113,21 @@ fun SearchComposable(viewModel: SearchViewModel) {
 
                 else -> {
                     LazyColumn {
-                        items(5) {
-                            SearchResult(100, "Hà Nội", "Hà Nội, Việt Nam")
+                        for (result in state.result) {
+                            item {
+                                SearchResult(
+                                    result.second.airQuality.aqi,
+                                    result.first.name ?: result.first.district,
+                                    "${result.first.city}, ${result.first.country}"
+                                ) {
+
+                                    context.startActivity(
+                                        Intent(context, DetailsActivity::class.java).putExtra(
+                                            "location", toJson(result.first)
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -115,22 +137,14 @@ fun SearchComposable(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun SearchResult(aqi: Int, result: String, location: String) {
-    val colors = listOf(
-        Color(0x4000E400),
-        Color(0x40FFFF00),
-        Color(0x40E06D2D),
-        Color(0x40C51919),
-        Color(0x406C07D1),
-        Color(0x407E0023)
-    )
+fun SearchResult(aqi: Int, result: String, location: String, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(bottom = 16.dp)
             .oClip()
             .clickable {
-
+                onClick.invoke()
             }
     ) {
         Box(
@@ -138,13 +152,13 @@ fun SearchResult(aqi: Int, result: String, location: String) {
                 .size(48.dp)
                 .background(
                     color = when {
-                        (aqi in 0..50) -> colors[0]
-                        (aqi in 51..100) -> colors[1]
-                        (aqi in 101..150) -> colors[2]
-                        (aqi in 201..300) -> colors[4]
-                        (aqi in 151..200) -> colors[3]
-                        else -> colors[5]
-                    },
+                        (aqi in 0..50) -> aqiColors[0]
+                        (aqi in 51..100) -> aqiColors[1]
+                        (aqi in 101..150) -> aqiColors[2]
+                        (aqi in 151..200) -> aqiColors[3]
+                        (aqi in 201..300) -> aqiColors[4]
+                        else -> aqiColors[5]
+                    }.copy(alpha = 0.25F),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .oBorder()
@@ -173,10 +187,4 @@ fun SearchResult(aqi: Int, result: String, location: String) {
             contentDescription = null
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SearchResultPreview() {
-    SearchResult(100, "Hà Nội", "Hà Nội, Việt Nam")
 }

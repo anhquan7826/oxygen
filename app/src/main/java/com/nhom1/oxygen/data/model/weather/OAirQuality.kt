@@ -9,4 +9,5 @@ data class OAirQuality(
     val so2: Double,
     @SerializedName("pm2_5") val pm25: Double,
     val pm10: Double,
+    val aqi: Int
 )

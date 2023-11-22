@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
-import com.nhom1.oxygen.common.constants.aqiColors
+import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.utils.extensions.oShadow
 import java.lang.Integer.min
 
@@ -55,14 +55,7 @@ fun OOverallStatus(
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = when {
-                (aqi in 0..50) -> aqiColors[0]
-                (aqi in 51..100) -> aqiColors[1]
-                (aqi in 101..150) -> aqiColors[2]
-                (aqi in 201..300) -> aqiColors[4]
-                (aqi in 151..200) -> aqiColors[3]
-                else -> aqiColors[5]
-            },
+            containerColor = getAQIColor(aqi),
             contentColor = if ((aqi in 0..100)) Color.Black else Color.White
         ),
         modifier = modifier.oShadow()
@@ -159,14 +152,7 @@ fun OOverallStatusCompact(
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = when {
-                (aqi in 0..50) -> aqiColors[0]
-                (aqi in 51..100) -> aqiColors[1]
-                (aqi in 101..150) -> aqiColors[2]
-                (aqi in 201..300) -> aqiColors[4]
-                (aqi in 151..200) -> aqiColors[3]
-                else -> aqiColors[5]
-            },
+            containerColor = getAQIColor(aqi),
             contentColor = if ((aqi in 0..100)) Color.Black else Color.White
         ),
         modifier = modifier.oShadow()

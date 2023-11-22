@@ -8,10 +8,14 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.nhom1.oxygen.data.model.user.OUser
-import com.nhom1.oxygen.data.model.user.OUserProfile
+import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.UserRepository
+import io.reactivex.rxjava3.core.Single
 
-class UserRepositoryImpl(private val firebaseAuth: FirebaseAuth) : UserRepository {
+class UserRepositoryImpl(
+    private val firebaseAuth: FirebaseAuth,
+    private val service: OxygenService
+) : UserRepository {
     override fun isUserSignedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
@@ -33,26 +37,11 @@ class UserRepositoryImpl(private val firebaseAuth: FirebaseAuth) : UserRepositor
         return firebaseAuth.currentUser != null
     }
 
-    override fun getUserData(): OUser {
-        return OUser(
-            id = -1,
-            diseases = listOf(),
-            email = "email@mail.com",
-            name = "Anh Quan",
-            profile = OUserProfile(
-                sex = true,
-                height = 175.0,
-                address = "",
-                dateOfBirth = "",
-                weight = 60.0
-            ),
-            uid = "",
-            avt = firebaseAuth.currentUser!!.photoUrl.toString()
-        )
+    override fun getUserData(): Single<OUser> {
+        return service.user.getInfo()
     }
 
     override fun signOut() {
         firebaseAuth.signOut()
     }
-
 }

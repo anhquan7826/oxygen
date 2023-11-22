@@ -1,5 +1,7 @@
 package com.nhom1.oxygen.utils
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
 import io.reactivex.rxjava3.core.Scheduler
@@ -10,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 fun runSingle(
     subscribeOn: Scheduler = Schedulers.io(),
-    observeOn: Scheduler = Schedulers.io(),
+    observeOn: Scheduler = AndroidSchedulers.mainThread(),
     onError: (e: Throwable) -> Unit = {
         errorLog(
             "runSingle: error: ${it.message}\n${
@@ -35,7 +37,7 @@ fun runSingle(
 fun runPeriodic(
     intervalInMillis: Long,
     subscribeOn: Scheduler = Schedulers.io(),
-    observeOn: Scheduler = Schedulers.io(),
+    observeOn: Scheduler = AndroidSchedulers.mainThread(),
     callback: () -> Unit
 ): Disposable {
     return Observable.interval(intervalInMillis, TimeUnit.MILLISECONDS).subscribeOn(subscribeOn)
@@ -44,7 +46,7 @@ fun runPeriodic(
 
 fun <T : Any> runTask(
     subscribeOn: Scheduler = Schedulers.io(),
-    observeOn: Scheduler = Schedulers.io(),
+    observeOn: Scheduler = AndroidSchedulers.mainThread(),
     task: (ObservableEmitter<T>) -> Unit,
     onResult: (T) -> Unit = {},
     onError: (Throwable) -> Unit = { errorLog("runTask: error:\n${it.stackTrace.joinToString("\n")}\n$it") },
@@ -65,7 +67,7 @@ fun <T : Any> runTask(
 
 fun <T : Any> Observable<T>.listen(
     subscribeOn: Scheduler = Schedulers.io(),
-    observeOn: Scheduler = Schedulers.io(),
+    observeOn: Scheduler = AndroidSchedulers.mainThread(),
     onError: (Throwable) -> Unit = { errorLog(it) },
     onNext: (T) -> Unit
 ): Disposable {
@@ -74,11 +76,20 @@ fun <T : Any> Observable<T>.listen(
 
 fun <T : Any> Single<T>.listen(
     subscribeOn: Scheduler = Schedulers.io(),
-    observeOn: Scheduler = Schedulers.io(),
+    observeOn: Scheduler = AndroidSchedulers.mainThread(),
     onError: (Throwable) -> Unit = { errorLog(it) },
     onResult: (T) -> Unit
 ): Disposable {
     return this.subscribeOn(subscribeOn).observeOn(observeOn).subscribe(onResult, onError)
+}
+
+fun Completable.listen(
+    subscribeOn: Scheduler = Schedulers.io(),
+    observeOn: Scheduler = AndroidSchedulers.mainThread(),
+    onError: (Throwable) -> Unit = { errorLog(it) },
+    onComplete: () -> Unit
+): Disposable {
+    return this.subscribeOn(subscribeOn).observeOn(observeOn).subscribe(onComplete, onError)
 }
 
 fun delay(timeMillis: Long = 500, callback: () -> Unit): Disposable {

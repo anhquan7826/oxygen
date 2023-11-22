@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.nhom1.oxygen.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import com.nhom1.oxygen.MainService
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.AutoSizeText
 import com.nhom1.oxygen.common.theme.OxygenTheme
@@ -57,11 +58,7 @@ class HomeActivity : ComponentActivity() {
     private lateinit var coroutineScope: CoroutineScope
 
     private val items = mapOf(
-        0 to "overview",
-        1 to "search",
-        2 to "map",
-        3 to "suggestion",
-        4 to "user"
+        0 to "overview", 1 to "search", 2 to "map", 3 to "suggestion", 4 to "user"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +79,11 @@ class HomeActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        startForegroundService(Intent(this, MainService::class.java))
+    }
+
     @Composable
     private fun HomeView() {
         val pagerState = rememberPagerState { items.size }
@@ -95,8 +97,7 @@ class HomeActivity : ComponentActivity() {
                     modifier = Modifier.oShadow(),
                 ) {
                     for (item in items) {
-                        NavigationBarItem(
-                            alwaysShowLabel = false,
+                        NavigationBarItem(alwaysShowLabel = false,
                             selected = currentPage == item.key,
                             onClick = {
                                 currentPage = item.key
@@ -109,24 +110,22 @@ class HomeActivity : ComponentActivity() {
                             ),
                             icon = {
                                 Icon(
-                                    if (currentPage == item.key)
-                                        when (item.value) {
-                                            "overview" -> painterResource(id = R.drawable.house)
-                                            "search" -> painterResource(id = R.drawable.search_location)
-                                            "map" -> painterResource(id = R.drawable.place_colored)
-                                            "suggestion" -> painterResource(id = R.drawable.news_colored)
-                                            "user" -> painterResource(id = R.drawable.user_colored)
-                                            else -> painterResource(id = 0)
-                                        }
-                                    else
-                                        when (item.value) {
-                                            "overview" -> painterResource(id = R.drawable.house_outlined)
-                                            "search" -> painterResource(id = R.drawable.search_location_monochrome)
-                                            "map" -> painterResource(id = R.drawable.place_outlined)
-                                            "suggestion" -> painterResource(id = R.drawable.news_outlined)
-                                            "user" -> painterResource(id = R.drawable.user_outlined)
-                                            else -> painterResource(id = 0)
-                                        },
+                                    if (currentPage == item.key) when (item.value) {
+                                        "overview" -> painterResource(id = R.drawable.house)
+                                        "search" -> painterResource(id = R.drawable.search_location)
+                                        "map" -> painterResource(id = R.drawable.place_colored)
+                                        "suggestion" -> painterResource(id = R.drawable.news_colored)
+                                        "user" -> painterResource(id = R.drawable.user_colored)
+                                        else -> painterResource(id = 0)
+                                    }
+                                    else when (item.value) {
+                                        "overview" -> painterResource(id = R.drawable.house_outlined)
+                                        "search" -> painterResource(id = R.drawable.search_location_monochrome)
+                                        "map" -> painterResource(id = R.drawable.place_outlined)
+                                        "suggestion" -> painterResource(id = R.drawable.news_outlined)
+                                        "user" -> painterResource(id = R.drawable.user_outlined)
+                                        else -> painterResource(id = 0)
+                                    },
                                     contentDescription = null,
                                     tint = Color.Unspecified,
                                     modifier = Modifier.width(24.dp)
@@ -145,12 +144,10 @@ class HomeActivity : ComponentActivity() {
                                     textAlign = TextAlign.Center,
                                     maxTextSize = 12.sp,
                                 )
-                            }
-                        )
+                            })
                     }
                 }
-            },
-            containerColor = Color.White
+            }, containerColor = Color.White
         ) {
             HorizontalPager(
                 modifier = Modifier

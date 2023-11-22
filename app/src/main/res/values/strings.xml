@@ -45,4 +45,19 @@
     <string name="sign_out">Đăng xuất</string>
     <string name="weather_info">Thông tin thời tiết</string>
     <string name="details">Chi tiết</string>
+    <string name="location">Vị trí:</string>
+    <string name="aqi_chart">Biểu đồ AQI</string>
+    <string name="atmospheric_index">Chỉ số không khí</string>
+    <string name="informations">Thông tin</string>
+    <string name="aqi_index_title">Chỉ số AQI</string>
+    <string name="aqi_index_info">AQI (Air Quality Index) là một chỉ số báo cáo chất lượng không khí hàng ngày. Đây được coi là một thước đo đơn giản hóa mức độ ô nhiễm không khí, cho biết không khí xung quanh ta là sạch hay ô nhiễm, ô nhiễm đến mức độ nào. Rủi ro đối với sức khỏe cộng đồng càng cao khi chỉ số AQI càng lớn. Chỉ số AQI tập trung vào sự ảnh hưởng tới sức khỏe người dân có thể gặp trong vòng vài giờ hoặc vài ngày sau khi hít thở không khí ô nhiễm.</string>
+    <string name="no2_index_title">Nồng độ NO2</string>
+    <string name="no2_index_info">Khí NO2 là hợp chất được cấu tạo từ nguyên tử nitơ và oxy tồn tại phổ biến trong đất và nước. Nó còn có tên gọi khác là Nitrit, khí Nitơ đioxit hay điôxít nitơ. Khí NO2 có màu nâu đỏ, có khả năng bao phủ lên các vùng đô thị và làm giảm tầm nhìn mắt thường con người. Khí NO2 có độc, gây ảnh hưởng đến sinh vật và cả môi trường xung quanh. \n\nVới nhiều mức nồng độ (ppm) của khí NO2 mà nó gây ra các ảnh hưởng tới cơ thể con người:\nNồng độ khí NO2 trong không khí đạt khoảng 50 – 100 ppm thì có thể gây viêm phổi.\nNếu mức nồng độ đạt 150 – 200 ppm sẽ gây phá hủy dây khí quản và gây ra tử vong nếu thời gian phơi kéo dài.\nNồng độ khí NO2 ở mức 500 ppm hay lớn hơn thì trong 2 – 10 ngày có thể gây tử vong.</string>
+    <string name="pm_index_title">Chỉ số bụi mịn PM10 và PM2.5</string>
+    <string name="pm_index_info">PM là viết tắt của Particulate Matter, có nghĩa là chất dạng hạt (rắn hoặc lỏng). Số 2.5 là chỉ kích thước các hạt có đường kính nhỏ hơn hoặc bằng 2,5 micromet (µm), tức là bằng 1 phần triệu mét. Tương tự, ký hiệu PM10 là chỉ những hạt có đường kính nhỏ hơn hoặc bằng 10 µm (nhưng lớn hơn kích thước PM2.5).\n\nBụi mịn PM.5 và PM10 xâm nhập vào cơ thể người thông qua hệ thống hô hấp khi con người hít thở, tùy vào kích thước của hạt bụi thì mức độ xâm nhập sẽ có sự khác nhau. Trong khi bụi mịn PM10 đi vào cơ thể qua đường dẫn khí và tích tụ lại trên phổi, thì bụi mịn PM2.5 lại nguy hiểm hơn vì chúng có thể luồn lách vào các túi phổi, tĩnh mạch phổi và xâm nhập vào hệ tuần hoàn máu của người bệnh.\n\nKhi nồng độ bụi mịn PM2.5 trong không khí ở ngoài trời tăng lên thì sẽ làm cho không khí bị mờ đi và tầm nhìn bị giảm trông giống như sương mù. Bụi mịn PM2.5 có thể dễ dàng xâm nhập vào cơ thể con người thông qua đường hô hấp và gây nên một số bệnh nguy hiểm như đột quỵ, tim mạch, ung thư....Người thường xuyên phải tiếp xúc với bụi mịn có thể gặp phải các vấn đề về sức khỏe như hắt hơi, sổ mũi, khó thở, khô mắt...khi tiếp xúc lâu dài thì sẽ làm gia tăng tỷ lệ giảm chức năng phổi, viêm phế quản mãn tính và tăng tỷ lệ tử vong do ung thư phổi và bệnh tim ở người bệnh.</string>
+    <string name="retry">Thử lại</string>
+    <string name="error">Lỗi!</string>
+    <string name="cannot_load_data">Không thể tải dữ liệu</string>
+    <string name="invalid_location_data">Dữ liệu vị trí không hợp lệ</string>
+    <string name="back">Quay lại</string>
 </resources>

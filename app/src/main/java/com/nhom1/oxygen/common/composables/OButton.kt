@@ -27,6 +27,8 @@ fun OButton(
     leading: Painter? = null,
     minWidth: Dp? = null,
     maxWidth: Dp? = null,
+    containerColor: Color = Color(0xFFF2F2F2),
+    contentColor: Color = Color.Black,
     onClick: () -> Unit
 ) {
     Button(
@@ -37,8 +39,8 @@ fun OButton(
             )
             .oShadow(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFF2F2F2),
-            contentColor = Color.Black
+            containerColor = containerColor,
+            contentColor = contentColor
         ),
         onClick = onClick,
         elevation = ButtonDefaults.buttonElevation(
