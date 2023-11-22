@@ -97,7 +97,8 @@ class HomeActivity : ComponentActivity() {
                     modifier = Modifier.oShadow(),
                 ) {
                     for (item in items) {
-                        NavigationBarItem(alwaysShowLabel = false,
+                        NavigationBarItem(
+                            alwaysShowLabel = false,
                             selected = currentPage == item.key,
                             onClick = {
                                 currentPage = item.key
@@ -144,7 +145,8 @@ class HomeActivity : ComponentActivity() {
                                     textAlign = TextAlign.Center,
                                     maxTextSize = 12.sp,
                                 )
-                            })
+                            }
+                        )
                     }
                 }
             }, containerColor = Color.White

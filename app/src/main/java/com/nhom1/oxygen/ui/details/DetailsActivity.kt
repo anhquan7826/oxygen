@@ -14,14 +14,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -29,8 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +44,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,9 +54,13 @@ import coil.compose.AsyncImage
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.AutoSizeText
 import com.nhom1.oxygen.common.composables.OAppBar
+import com.nhom1.oxygen.common.composables.OBarChart
+import com.nhom1.oxygen.common.composables.OBarChartData
 import com.nhom1.oxygen.common.composables.OCard
 import com.nhom1.oxygen.common.composables.OError
 import com.nhom1.oxygen.common.composables.OLoading
+import com.nhom1.oxygen.common.composables.OPageIndicator
+import com.nhom1.oxygen.common.composables.PieChart
 import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.location.OLocation
@@ -57,9 +68,13 @@ import com.nhom1.oxygen.data.model.weather.OAirQuality
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.fromJson
+import com.nhom1.oxygen.utils.getHour
 import com.nhom1.oxygen.utils.getTimeString
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import java.time.Instant
 
 @AndroidEntryPoint
 class DetailsActivity : ComponentActivity() {
@@ -175,6 +190,12 @@ class DetailsActivity : ComponentActivity() {
                             Text(
                                 text = location!!.country,
                                 fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 32.dp)
+                            )
+                            AQIChart(
+                                modifier = Modifier.padding(bottom = 32.dp),
+                                next24h = state.weather24h!!,
+                                next7d = state.weather7d!!
                             )
                             AtmosphericIndex(
                                 value = OAirQuality(
@@ -186,9 +207,14 @@ class DetailsActivity : ComponentActivity() {
                                     state.weatherCurrent!!.airQuality.pm10,
                                     state.weatherCurrent!!.airQuality.aqi
                                 ),
-                                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
+                                modifier = Modifier.padding(bottom = 32.dp)
                             )
-                            WeatherForecast()
+                            WeatherForecast(
+                                current = state.weatherCurrent!!,
+                                next24h = state.weather24h!!,
+                                next7d = state.weather7d!!,
+                                modifier = Modifier.padding(bottom = 32.dp)
+                            )
                         }
                     }
                 }
@@ -196,32 +222,124 @@ class DetailsActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun AQIChart(modifier: Modifier = Modifier) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
-        ) {
-            Text(
-                text = stringResource(R.string.aqi_chart)
-            )
-        }
-    }
-
-    @Composable
-    fun WeatherForecast(modifier: Modifier = Modifier) {
+    fun AQIChart(modifier: Modifier = Modifier, next24h: List<OWeather>, next7d: List<OWeather>) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
         ) {
             Text(
                 text = stringResource(R.string.aqi_chart),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            val pagerState = rememberPagerState { 2 }
+            val coroutineScope = rememberCoroutineScope()
+            OPageIndicator(
+                indicators = listOf(
+                    "Hôm nay",
+                    "Tuần tới"
+                ),
+                currentIndex = pagerState.currentPage,
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .width(300.dp)
+            ) {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(it, 0F)
+                }
+            }
+            HorizontalPager(state = pagerState) {
+                when (it) {
+                    0 -> {
+                        OBarChart(
+                            data = OBarChartData(
+                                barsData = next24h.map { weather ->
+                                    OBarChartData.OBarData(
+                                        label = "${getTimeString(weather.time, "HH")}h",
+                                        value = weather.airQuality.aqi.toDouble(),
+                                        color = getAQIColor(weather.airQuality.aqi).copy(
+                                            alpha = if (getHour(Instant.now().epochSecond) >= getHour(
+                                                    weather.time
+                                                )
+                                            ) 1f else 0.5f
+                                        ),
+                                    ) {
+
+                                    }
+                                },
+                                maxYValue = 500.0,
+                            )
+                        )
+                    }
+
+                    1 -> {
+                        OBarChart(
+                            data = OBarChartData(
+                                barsData = next7d.map { weather ->
+                                    OBarChartData.OBarData(
+                                        label = getTimeString(weather.time, "dd/MM"),
+                                        value = weather.airQuality.aqi.toDouble(),
+                                        color = getAQIColor(weather.airQuality.aqi),
+                                    ) {
+
+                                    }
+                                },
+                                maxYValue = 500.0,
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun WeatherForecast(
+        modifier: Modifier = Modifier,
+        current: OWeather,
+        next24h: List<OWeather>,
+        next7d: List<OWeather>
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+        ) {
+            Text(
+                text = stringResource(R.string.weather_forecast),
                 modifier = Modifier.padding(16.dp)
             )
-            HorizontalPager(
-                state = rememberPagerState { 3 }
+            val pagerState = rememberPagerState { 2 }
+            val coroutineScope = rememberCoroutineScope()
+            OPageIndicator(
+                indicators = listOf(
+                    "Hôm nay",
+                    "Tuần tới"
+                ),
+                currentIndex = pagerState.currentPage,
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .width(300.dp)
             ) {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(it, 0F)
+                }
+            }
+            HorizontalPager(
+                state = pagerState
+            ) {
+                when (it) {
+                    0 -> ForecastDay(
+                        time = getTimeString(
+                            Instant.now().epochSecond,
+                            "dd/MM/yyyy - HH:mm"
+                        ),
+                        now = current,
+                        next24h = next24h
+                    )
 
+                    1 -> ForecastWeek(forecasts = next7d)
+                }
             }
         }
     }
@@ -235,8 +353,48 @@ class DetailsActivity : ComponentActivity() {
             Text(
                 text = stringResource(R.string.atmospheric_index),
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
+            OCard(
+                backgroundColor = getAQIColor(value.aqi),
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .oShadow()
+            ) {
+                Row {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                    ) {
+                        Text(
+                            text = "AQI",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                    ) {
+                        PieChart(
+                            value = value.aqi / 500.0,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                        Text(
+                            text = value.aqi.toString(),
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+            }
             Row(
                 modifier = Modifier.padding(bottom = 8.dp)
             ) {
@@ -355,7 +513,7 @@ class DetailsActivity : ComponentActivity() {
                     modifier = Modifier.weight(1f)
                 ) {
                     AutoSizeText(
-                        value.toString(),
+                        value.toPrettyString(),
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         maxTextSize = 32.sp
@@ -383,39 +541,192 @@ class DetailsActivity : ComponentActivity() {
     @Composable
     fun ForecastDay(time: String, now: OWeather, next24h: List<OWeather>, celsius: Boolean = true) {
         OCard(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
+                .oShadow()
         ) {
             Column {
-                Row {
-                    Column {
-                        Text(text = time)
-                        Text(text = if (celsius) "${now.tempC}°C" else "${now.tempF}°F")
+                Row(
+                    modifier = Modifier
+                        .weight(3f)
+                        .padding(bottom = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(2f)
+                    ) {
+                        Text(
+                            text = time,
+                            fontWeight = FontWeight.Light
+                        )
+                        Box(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = if (celsius) "${now.tempC.toPrettyString()}°C" else "${now.tempF.toPrettyString()}°F",
+                                fontSize = 48.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
                     }
-                    AsyncImage(now.condition.icon, contentDescription = null)
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                    ) {
+                        AsyncImage(
+                            now.condition.icon,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(72.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
                 }
                 Row(
-                    modifier = Modifier.horizontalScroll(rememberScrollState())
+                    modifier = Modifier
+                        .weight(5f)
+                        .horizontalScroll(rememberScrollState())
                 ) {
                     for (forecast in next24h) {
                         OCard(
-                            modifier = Modifier.width(128.dp)
+                            backgroundColor = Color.White,
+                            contentPadding = 4.dp,
+                            modifier = Modifier
+                                .width(72.dp)
+                                .padding(end = if (forecast == next24h.last()) 0.dp else 4.dp)
+                                .fillMaxHeight()
                         ) {
-                            Column {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Text(
-                                    text = getTimeString(forecast.time)
+                                    text = getTimeString(forecast.time),
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier.weight(1f)
                                 )
-                                if (now.chanceOfRain != null) Text(
-                                    text = "${now.chanceOfRain}%"
+                                AsyncImage(
+                                    forecast.condition.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(38.dp)
                                 )
-                                Text(text = if (celsius) "${forecast.tempC}°C" else "${forecast.tempF}°F")
+                                if (forecast.chanceOfRain != null) Text(
+                                    text = "${forecast.chanceOfRain}%",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Light,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = if (celsius) "${forecast.tempC.toPrettyString()}°C" else "${forecast.tempF.toPrettyString()}°F",
+                                    modifier = Modifier.padding(top = 12.dp)
+                                )
                                 Box(
-                                    modifier = Modifier.background(
-                                        color = getAQIColor(forecast.airQuality.aqi)
-                                    )
+                                    modifier = Modifier
+                                        .weight(1f)
                                 ) {
-                                    Text(text = forecast.airQuality.aqi.toString())
+                                    Text(
+                                        text = forecast.airQuality.aqi.toString(),
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier
+                                            .align(Alignment.BottomCenter)
+                                            .padding(vertical = 2.dp)
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                color = getAQIColor(forecast.airQuality.aqi)
+                                            )
+                                    )
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun ForecastWeek(forecasts: List<OWeather>, celsius: Boolean = true) {
+        OCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
+                .oShadow()
+        ) {
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState())
+            ) {
+                for (forecast in forecasts) {
+                    OCard(
+                        backgroundColor = Color.White,
+                        modifier = Modifier
+                            .padding(end = if (forecast == forecasts.last()) 0.dp else 8.dp)
+                            .width(200.dp)
+                            .fillMaxHeight()
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = getTimeString(forecast.time, "dd/MM/yyyy"),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                                    .weight(1f)
+                                    .fillMaxSize()
+                            ) {
+                                AsyncImage(
+                                    forecast.condition.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(54.dp)
+                                )
+                            }
+                            Text(
+                                text = "Nhiệt độ",
+                                fontWeight = FontWeight.Light,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = if (celsius) "${forecast.tempC.toPrettyString()}°C" else "${forecast.tempF.toPrettyString()}°F",
+                                fontSize = 32.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            Text(
+                                text = "Tỉ lệ có mưa", fontWeight = FontWeight.Light,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = "${forecast.chanceOfRain}%",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            Text(
+                                text = stringResource(id = R.string.aqi_index_title),
+                                fontWeight = FontWeight.Light,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = forecast.airQuality.aqi.toString(),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(
+                                        color = getAQIColor(forecast.airQuality.aqi)
+                                    )
+                                    .padding(vertical = 2.dp, horizontal = 8.dp)
+                            )
                         }
                     }
                 }

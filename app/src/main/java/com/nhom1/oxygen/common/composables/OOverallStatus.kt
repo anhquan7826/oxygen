@@ -207,9 +207,9 @@ fun OOverallStatusCompact(
 }
 
 @Composable
-fun PieChart(value: Double, dark: Boolean = true, size: Dp = 120.dp) {
+fun PieChart(modifier: Modifier = Modifier, value: Double, dark: Boolean = true, size: Dp = 120.dp) {
     Canvas(
-        modifier = Modifier.size(size)
+        modifier = modifier.size(size)
     ) {
         drawCircle(
             color = if (dark) Color.Black.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.25f),

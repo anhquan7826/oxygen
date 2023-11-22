@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OButtonPrimary
@@ -298,8 +299,8 @@ fun WeatherForecastToday(
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.cloudy_rainy_day),
+                        AsyncImage(
+                            forecast.condition.icon,
                             contentDescription = null,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )

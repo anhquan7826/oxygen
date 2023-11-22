@@ -60,4 +60,5 @@
     <string name="cannot_load_data">Không thể tải dữ liệu</string>
     <string name="invalid_location_data">Dữ liệu vị trí không hợp lệ</string>
     <string name="back">Quay lại</string>
+    <string name="weather_forecast">Dự báo thời tiết</string>
 </resources>

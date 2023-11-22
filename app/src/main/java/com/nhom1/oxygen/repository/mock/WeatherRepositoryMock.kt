@@ -6,10 +6,11 @@ import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.data.model.weather.OWeatherCondition
 import com.nhom1.oxygen.repository.WeatherRepository
 import io.reactivex.rxjava3.core.Single
+import kotlin.random.Random
 
 class WeatherRepositoryMock : WeatherRepository {
     private fun sampleWeather(time: Int) = OWeather(
-        time = 1700302339L + time,
+        time = 1700586000L + time,
         tempC = 28.0,
         tempF = 65.0,
         humidity = 50.0,
@@ -17,13 +18,14 @@ class WeatherRepositoryMock : WeatherRepository {
         windMPH = 0.0,
         windKPH = 0.0,
         windDir = "NE",
+        chanceOfRain = 60,
         condition = OWeatherCondition(
             text = "Partly cloudy",
-            icon = "//cdn.weatherapi.com/weather/64x64/night/116.png",
+            icon = "https://cdn.weatherapi.com/weather/64x64/day/176.png",
             code = 1003
         ),
         airQuality = OAirQuality(
-            co = 547.4, no2 = 7.8, o3 = 95.8, so2 = 30.5, pm25 = 73.9, pm10 = 76.8, aqi = 59
+            co = 547.4, no2 = 7.8, o3 = 95.8, so2 = 30.5, pm25 = 73.9, pm10 = 76.8, aqi = Random.nextInt(501)
         )
     )
 
