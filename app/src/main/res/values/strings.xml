@@ -61,4 +61,6 @@
     <string name="invalid_location_data">Dữ liệu vị trí không hợp lệ</string>
     <string name="back">Quay lại</string>
     <string name="weather_forecast">Dự báo thời tiết</string>
+    <string name="today_exposure_chart">Biểu đồ tiếp xúc trong ngày</string>
+    <string name="moving_history">Lịch sử di chuyển</string>
 </resources>

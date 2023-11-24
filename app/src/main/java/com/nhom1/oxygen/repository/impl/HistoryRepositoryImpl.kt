@@ -1,11 +1,14 @@
 package com.nhom1.oxygen.repository.impl
 
 import android.content.Context
+import com.nhom1.oxygen.data.model.history.OHistory
+import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.HistoryRepository
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.listen
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 import java.time.Instant
 
 class HistoryRepositoryImpl(
@@ -20,9 +23,9 @@ class HistoryRepositoryImpl(
             val currentLon = sharedPreferences.getFloat(SPKeys.CURRENT_LON, 0F).toDouble()
             service.weather.getCurrent(currentLat, currentLon).listen { weather ->
                 service.history.addHistory(
-                    OxygenService.History.AddHistoryRequest(
-                        lat = currentLat,
-                        lon = currentLon,
+                    OHourlyHistory(
+                        latitude = currentLat,
+                        longitude = currentLon,
                         time = Instant.now().epochSecond,
                         aqi = weather.airQuality.aqi
                     )
@@ -30,6 +33,12 @@ class HistoryRepositoryImpl(
                     completableEmitter.onComplete()
                 }
             }
+        }
+    }
+
+    override fun get7dHistory(): Single<List<OHistory>> {
+        return service.history.get7dHistory().map {
+            it.sortedByDescending { e -> e.time }
         }
     }
 }

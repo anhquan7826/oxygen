@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -18,29 +19,60 @@ import com.nhom1.oxygen.common.theme.oxygenColor
 import com.nhom1.oxygen.utils.extensions.oShadow
 
 @Composable
-fun OTabRow(modifier: Modifier = Modifier, selectedTabIndex: Int, tabs: @Composable (() -> Unit)) {
-    TabRow(
-        modifier = modifier.oShadow(),
-        selectedTabIndex = selectedTabIndex,
-        containerColor = Color.White,
-        contentColor = Color.Black,
-        indicator = {
-            Box(
-                modifier = Modifier
-                    .tabIndicatorOffset(it[selectedTabIndex])
-                    .padding(horizontal = it[selectedTabIndex].width / 4)
-                    .height(3.dp)
-                    .background(
-                        color = oxygenColor,
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
+fun OTabRow(
+    modifier: Modifier = Modifier,
+    scrollable: Boolean = false,
+    selectedTabIndex: Int,
+    tabs: @Composable (() -> Unit)
+) {
+    if (scrollable) {
+        ScrollableTabRow(
+            modifier = modifier.oShadow(),
+            selectedTabIndex = selectedTabIndex,
+            containerColor = Color.White,
+            contentColor = Color.Black,
+            indicator = {
+                Box(
+                    modifier = Modifier
+                        .tabIndicatorOffset(it[selectedTabIndex])
+                        .padding(horizontal = it[selectedTabIndex].width / 4)
+                        .height(3.dp)
+                        .background(
+                            color = oxygenColor,
+                            shape = RoundedCornerShape(
+                                topStart = 4.dp,
+                                topEnd = 4.dp,
+                            )
                         )
-                    )
-            )
-        },
-        tabs = tabs
-    )
+                )
+            },
+            edgePadding = 0.dp,
+            tabs = tabs
+        )
+    } else {
+        TabRow(
+            modifier = modifier.oShadow(),
+            selectedTabIndex = selectedTabIndex,
+            containerColor = Color.White,
+            contentColor = Color.Black,
+            indicator = {
+                Box(
+                    modifier = Modifier
+                        .tabIndicatorOffset(it[selectedTabIndex])
+                        .padding(horizontal = it[selectedTabIndex].width / 4)
+                        .height(3.dp)
+                        .background(
+                            color = oxygenColor,
+                            shape = RoundedCornerShape(
+                                topStart = 4.dp,
+                                topEnd = 4.dp,
+                            )
+                        )
+                )
+            },
+            tabs = tabs
+        )
+    }
 }
 
 @Composable
@@ -48,7 +80,7 @@ fun OTab(title: String, selected: Boolean, onClick: () -> Unit) {
     Tab(selected = selected, onClick = onClick) {
         Text(
             title,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 32.dp)
         )
     }
 }
@@ -56,8 +88,11 @@ fun OTab(title: String, selected: Boolean, onClick: () -> Unit) {
 @Preview
 @Composable
 fun OTabsPreview() {
-    OTabRow(selectedTabIndex = 0) {
-        OTab(selected = true, onClick = { /*TODO*/ }, title = "Tab 1")
+    OTabRow(selectedTabIndex = 0, scrollable = true) {
+        OTab(selected = true, onClick = { /*TODO*/ }, title = "Tab sdfsdfsdfsdf1")
+        OTab(selected = false, onClick = { /*TODO*/ }, title = "Tab 2")
+        OTab(selected = false, onClick = { /*TODO*/ }, title = "Tab 2")
+        OTab(selected = false, onClick = { /*TODO*/ }, title = "Tab 2")
         OTab(selected = false, onClick = { /*TODO*/ }, title = "Tab 2")
     }
 }

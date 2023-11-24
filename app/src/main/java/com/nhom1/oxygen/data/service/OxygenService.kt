@@ -2,6 +2,7 @@ package com.nhom1.oxygen.data.service
 
 import com.nhom1.oxygen.data.model.article.OArticle
 import com.nhom1.oxygen.data.model.history.OHistory
+import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.model.user.OUserProfile
@@ -90,18 +91,10 @@ interface OxygenService {
 
     interface History {
         @GET(OxygenAPI.History.GET_HISTORY)
-        // TODO: wrong model
-        fun getHistory(): Single<List<List<OHistory>>>
-
-        data class AddHistoryRequest(
-            val lat: Double,
-            val lon: Double,
-            val aqi: Int,
-            val time: Long
-        )
+        fun get7dHistory(): Single<List<OHistory>>
 
         @POST(OxygenAPI.History.ADD_HISTORY)
-        fun addHistory(@Body requestBody: AddHistoryRequest): Completable
+        fun addHistory(@Body requestBody: OHourlyHistory): Completable
     }
 
     val history: History

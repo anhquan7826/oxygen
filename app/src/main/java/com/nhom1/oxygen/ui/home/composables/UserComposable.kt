@@ -1,5 +1,6 @@
 package com.nhom1.oxygen.ui.home.composables
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +32,7 @@ import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OError
 import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.composables.OOption
+import com.nhom1.oxygen.ui.history.HistoryActivity
 import com.nhom1.oxygen.ui.home.UserViewModel
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oShadow
@@ -37,6 +40,7 @@ import com.nhom1.oxygen.utils.extensions.oShadow
 @Composable
 fun UserComposable(viewModel: UserViewModel) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             OAppBar(
@@ -115,7 +119,7 @@ fun UserComposable(viewModel: UserViewModel) {
                         bottom = 16.dp
                     )
                 ) {
-                    // TODO: Go to history
+                    context.startActivity(Intent(context, HistoryActivity::class.java))
                 }
                 OOption(
                     leading = painterResource(id = R.drawable.resume_colored),
