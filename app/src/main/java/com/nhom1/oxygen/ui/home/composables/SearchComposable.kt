@@ -40,8 +40,8 @@ import com.nhom1.oxygen.common.composables.OTextField
 import com.nhom1.oxygen.common.constants.aqiColors
 import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.SearchViewModel
-import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.oClip
+import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.toJson
 
 @OptIn(ExperimentalLayoutApi::class)

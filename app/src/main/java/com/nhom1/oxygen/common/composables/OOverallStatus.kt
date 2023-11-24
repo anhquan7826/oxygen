@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.constants.getAQIColor
-import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.oBorder
 import java.lang.Integer.min
 
 @Composable
@@ -58,7 +58,7 @@ fun OOverallStatus(
             containerColor = getAQIColor(aqi),
             contentColor = if ((aqi in 0..100)) Color.Black else Color.White
         ),
-        modifier = modifier.oShadow()
+        modifier = modifier.oBorder()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -155,7 +155,7 @@ fun OOverallStatusCompact(
             containerColor = getAQIColor(aqi),
             contentColor = if ((aqi in 0..100)) Color.Black else Color.White
         ),
-        modifier = modifier.oShadow()
+        modifier = modifier.oBorder()
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

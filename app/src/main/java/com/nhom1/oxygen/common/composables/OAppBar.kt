@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.utils.extensions.oShadow
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OAppBar(
     title: String,

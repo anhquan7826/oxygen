@@ -63,4 +63,21 @@
     <string name="weather_forecast">Dự báo thời tiết</string>
     <string name="today_exposure_chart">Biểu đồ tiếp xúc trong ngày</string>
     <string name="moving_history">Lịch sử di chuyển</string>
+    <string name="warning">Cảnh báo</string>
+    <string name="logout_confirmation">Bạn có muốn đăng xuất không?</string>
+    <string name="cancel">Hủy</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="today_exposure">Mức độ tiếp xúc trong hôm nay</string>
+    <string name="male">Nam</string>
+    <string name="female">Nữ</string>
+    <string name="sex_not_set">Chưa đặt giới tính</string>
+    <string name="dob_not_set">Chưa đặt ngày sinh</string>
+    <string name="address">Địa chỉ</string>
+    <string name="not_set">Chưa thiết lập</string>
+    <string name="height">Chiều cao</string>
+    <string name="weight">Cân nặng</string>
+    <string name="bmi_index">Chỉ số BMI</string>
+    <string name="medical_history">Lịch sử bệnh</string>
+    <string name="medical_history_not_set">Chưa thiết lập lịch sử bệnh</string>
+    <string name="no_medical_history">Không có tiền sử bệnh</string>
 </resources>

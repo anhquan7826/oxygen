@@ -7,5 +7,7 @@ import io.reactivex.rxjava3.core.Single
 interface HistoryRepository {
     fun addLocationHistory(): Completable
 
+    fun getTodayHistory(): Single<OHistory>
+
     fun get7dHistory(): Single<List<OHistory>>
 }

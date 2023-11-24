@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
-import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.oBorder
 
 @Composable
 fun OOption(
@@ -33,7 +33,7 @@ fun OOption(
     OCard(
         modifier = modifier
             .fillMaxWidth()
-            .oShadow(),
+            .oBorder(),
         onClick = {
             onClick.invoke()
         }

@@ -21,3 +21,21 @@ fun getAQIColor(aqi: Int): Color {
         else -> aqiColors[5]
     }
 }
+
+val bmiColors = listOf(
+    Color(0xFF8AB4D8),
+    Color(0xFF7FC89B),
+    Color(0xFFFFD401),
+    Color(0xFFF19451),
+    Color(0xFFE75055)
+)
+
+fun getBMIColor(bmi: Double): Color {
+    return when {
+        bmi < 18.5 -> bmiColors[0]
+        bmi >= 18.5 && bmi < 25 -> bmiColors[1]
+        bmi >= 25 && bmi < 30 -> bmiColors[2]
+        bmi >= 30 && bmi < 35 -> bmiColors[3]
+        else -> bmiColors[4]
+    }
+}

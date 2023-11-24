@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.common.theme.oxygenColor
-import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.oBorder
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -53,7 +53,7 @@ fun OExposureChart(aqis: List<Int>) {
     }
     OCard(
         modifier = Modifier
-            .oShadow()
+            .oBorder()
             .fillMaxWidth()
             .height(300.dp)
     ) {
@@ -125,6 +125,7 @@ fun OExposureChart(aqis: List<Int>) {
 
 @Composable
 fun OExposure(
+    modifier: Modifier = Modifier,
     aqis: List<Int>,
     canvasSize: Dp = 256.dp,
     content: (@Composable BoxScope.() -> Unit)? = null
@@ -132,7 +133,7 @@ fun OExposure(
     Box(
     ) {
         Canvas(
-            modifier = Modifier
+            modifier = modifier
                 .align(Alignment.Center)
                 .size(canvasSize)
                 .padding(32.dp)

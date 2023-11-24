@@ -11,14 +11,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nhom1.oxygen.utils.extensions.oShadow
 
 @Composable
 fun OButton(
@@ -36,8 +34,7 @@ fun OButton(
             .sizeIn(
                 minWidth = minWidth ?: Dp.Unspecified,
                 maxWidth = maxWidth ?: Dp.Unspecified
-            )
-            .oShadow(),
+            ),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor
@@ -51,7 +48,7 @@ fun OButton(
             horizontal = 16.dp,
             vertical = 8.dp
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         if (leading != null)
             Icon(
@@ -79,11 +76,6 @@ fun OButtonPrimary(
         modifier = modifier
             .defaultMinSize(
                 minWidth = minWidth ?: Dp.Unspecified
-            )
-            .shadow(
-                elevation = 16.dp,
-                spotColor = Color(0xFF000000),
-                ambientColor = Color(0xFF000000)
             ),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF57A000),
@@ -91,7 +83,7 @@ fun OButtonPrimary(
         ),
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        elevation = ButtonDefaults.buttonElevation()
+        elevation = ButtonDefaults.buttonElevation(),
     ) {
         Text(text = text)
     }
@@ -108,11 +100,6 @@ fun OButtonSecondary(
         modifier = modifier
             .defaultMinSize(
                 minWidth = minWidth ?: Dp.Unspecified
-            )
-            .shadow(
-                elevation = 16.dp,
-                spotColor = Color(0xFF000000),
-                ambientColor = Color(0xFF000000)
             ),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFD4EBBB),
@@ -123,7 +110,7 @@ fun OButtonSecondary(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Text(text = text)
     }

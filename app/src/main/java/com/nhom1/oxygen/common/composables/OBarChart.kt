@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.common.theme.oxygenColor
-import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import kotlin.random.Random
 
@@ -63,7 +63,7 @@ fun OBarChart(
         modifier = modifier
             .fillMaxWidth()
             .height(300.dp)
-            .oShadow()
+            .oBorder()
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,

@@ -15,10 +15,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,18 +33,26 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
+import com.nhom1.oxygen.common.composables.ODialog
 import com.nhom1.oxygen.common.composables.OError
+import com.nhom1.oxygen.common.composables.OExposure
 import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.composables.OOption
 import com.nhom1.oxygen.ui.history.HistoryActivity
+import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.home.UserViewModel
+import com.nhom1.oxygen.ui.login.LoginActivity
+import com.nhom1.oxygen.ui.profile.ProfileActivity
 import com.nhom1.oxygen.utils.constants.LoadState
-import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.oBorder
 
 @Composable
 fun UserComposable(viewModel: UserViewModel) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    var openLogoutDialog by remember {
+        mutableStateOf(false)
+    }
     Scaffold(
         topBar = {
             OAppBar(
@@ -87,19 +99,10 @@ fun UserComposable(viewModel: UserViewModel) {
                     .padding(top = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                AsyncImage(
-                    model = state.userData!!.avt,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .oShadow()
-                        .size(128.dp),
-                )
                 Text(
                     text = "Xin chào",
                     fontSize = 16.sp,
                     modifier = Modifier.padding(
-                        top = 24.dp,
                         bottom = 8.dp,
                     )
                 )
@@ -111,6 +114,26 @@ fun UserComposable(viewModel: UserViewModel) {
                     modifier = Modifier.padding(
                         bottom = 32.dp
                     )
+                )
+                OExposure(
+                    aqis = state.history!!.history.map { h -> h.aqi },
+                ) {
+                    AsyncImage(
+                        state.userData!!.avt,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .clip(CircleShape)
+                            .oBorder()
+                            .size(150.dp),
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.today_exposure),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 32.dp)
                 )
                 OOption(
                     leading = painterResource(id = R.drawable.history_colored),
@@ -128,7 +151,7 @@ fun UserComposable(viewModel: UserViewModel) {
                         bottom = 16.dp
                     )
                 ) {
-                    // TODO: Go to user profile
+                    context.startActivity(Intent(context, ProfileActivity::class.java))
                 }
                 OOption(
                     leading = painterResource(id = R.drawable.medical_history_colored),
@@ -156,9 +179,24 @@ fun UserComposable(viewModel: UserViewModel) {
                         bottom = 16.dp
                     )
                 ) {
-                    // TODO: Go to logout
+                    openLogoutDialog = true
                 }
             }
         }
+    }
+
+    if (openLogoutDialog) {
+        ODialog(
+            title = stringResource(R.string.warning),
+            content = stringResource(R.string.logout_confirmation),
+            cancelText = stringResource(R.string.cancel),
+            confirmText = stringResource(R.string.logout),
+            onCancel = {
+                openLogoutDialog = false
+            }, onConfirm = {
+                viewModel.logout()
+                context.startActivity(Intent(context, LoginActivity::class.java))
+                (context as HomeActivity).finish()
+            })
     }
 }

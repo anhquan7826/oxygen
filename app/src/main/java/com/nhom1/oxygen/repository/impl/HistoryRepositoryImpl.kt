@@ -36,6 +36,13 @@ class HistoryRepositoryImpl(
         }
     }
 
+    override fun getTodayHistory(): Single<OHistory> {
+        // TODO: ...
+        return get7dHistory().map {
+            it.maxByOrNull { e -> e.time }!!
+        }
+    }
+
     override fun get7dHistory(): Single<List<OHistory>> {
         return service.history.get7dHistory().map {
             it.sortedByDescending { e -> e.time }

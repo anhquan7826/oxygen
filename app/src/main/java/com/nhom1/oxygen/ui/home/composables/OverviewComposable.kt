@@ -45,7 +45,6 @@ import com.nhom1.oxygen.ui.home.OverviewViewModel
 import com.nhom1.oxygen.utils.constants.LoadState.ERROR
 import com.nhom1.oxygen.utils.constants.LoadState.LOADING
 import com.nhom1.oxygen.utils.extensions.oBorder
-import com.nhom1.oxygen.utils.extensions.oShadow
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.getTimeString
 import com.nhom1.oxygen.utils.toJson
@@ -164,7 +163,7 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
 fun SuggestBox(suggestion: String) {
     OCard(modifier = Modifier
         .padding(bottom = 16.dp)
-        .oShadow(),
+        .oBorder(),
         onClick = {
 
         }
@@ -202,7 +201,7 @@ fun TempBox(modifier: Modifier = Modifier, value: Double, celsius: Boolean = tru
     OCard(
         modifier = modifier
             .padding(bottom = 16.dp)
-            .oShadow()
+            .oBorder()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -235,7 +234,7 @@ fun HumidityBox(modifier: Modifier = Modifier, value: Double) {
     OCard(
         modifier = modifier
             .padding(bottom = 16.dp)
-            .oShadow()
+            .oBorder()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically

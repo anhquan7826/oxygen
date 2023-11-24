@@ -6,6 +6,6 @@ data class OUser(
     val name: String,
     val avt: String,
     val uid: String,
-    val diseases: List<ODisease>,
-    val profile: OUserProfile
+    val diseases: List<ODisease>?,
+    val profile: OUserProfile? = null
 )

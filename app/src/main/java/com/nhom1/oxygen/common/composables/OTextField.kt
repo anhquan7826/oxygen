@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.oBorder
 
 @Composable
 fun OTextField(
@@ -36,7 +36,7 @@ fun OTextField(
     TextField(
         modifier = modifier
             .fillMaxWidth()
-            .oShadow(),
+            .oBorder(),
         value = value,
         onValueChange = {
             value = it

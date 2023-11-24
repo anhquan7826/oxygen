@@ -8,6 +8,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.auth
+import com.nhom1.oxygen.data.model.user.ODisease
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.model.user.OUserProfile
 import com.nhom1.oxygen.repository.UserRepository
@@ -40,8 +41,21 @@ class UserRepositoryMock : UserRepository {
             it.onSuccess(
                 OUser(
                     id = 1,
-                    avt = "https://photos.fife.usercontent.google.com/pw/ADCreHc-OLk_k8P5tJgpxWFQuwa34ppXHQlCOiLCiaY5RTjIT1ZfRu2uG6pzcA=w391-h220-no?authuser=0",
-                    diseases = listOf(),
+                    avt = "https://upload.wikimedia.org/wikipedia/commons/4/48/RedCat_8727.jpg",
+                    diseases = listOf(
+                        ODisease(
+                            id = 0,
+                            name = "Lậu"
+                        ),
+                        ODisease(
+                            id = 0,
+                            name = "Giang mai"
+                        ),
+                        ODisease(
+                            id = 0,
+                            name = "AIDS"
+                        )
+                    ),
                     email = "anhquan7826@gmail.com",
                     name = "Anh Quan",
                     profile = OUserProfile(

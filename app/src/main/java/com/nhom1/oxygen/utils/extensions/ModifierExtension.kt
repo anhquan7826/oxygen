@@ -9,14 +9,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.nhom1.oxygen.common.theme.oxygenColor
 
-fun Modifier.oShadow(): Modifier {
-    return this.shadow(
-        elevation = 16.dp,
-        spotColor = Color(0xFF000000),
-        ambientColor = Color(0xFF000000)
-    )
-}
-
 fun Modifier.oBorder(): Modifier {
     return this
         .clip(RoundedCornerShape(12.dp))
@@ -25,6 +17,14 @@ fun Modifier.oBorder(): Modifier {
             color = oxygenColor.copy(alpha = 0.25F),
             shape = RoundedCornerShape(12.dp)
         )
+}
+
+fun Modifier.oShadow(): Modifier {
+    return this.shadow(
+        elevation = 16.dp,
+        spotColor = Color(0xFF000000),
+        ambientColor = Color(0xFF000000)
+    )
 }
 
 fun Modifier.oClip(): Modifier {

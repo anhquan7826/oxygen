@@ -14,6 +14,12 @@ class HistoryRepositoryMock : HistoryRepository {
         }
     }
 
+    override fun getTodayHistory(): Single<OHistory> {
+        return get7dHistory().map {
+            it.maxByOrNull { e -> e.time }!!
+        }
+    }
+
     override fun get7dHistory(): Single<List<OHistory>> {
         return Single.create {
             it.onSuccess(List(7) { i ->

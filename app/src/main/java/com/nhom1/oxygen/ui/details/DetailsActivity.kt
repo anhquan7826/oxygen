@@ -67,7 +67,7 @@ import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.weather.OAirQuality
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.utils.constants.LoadState
-import com.nhom1.oxygen.utils.extensions.oShadow
+import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getHour
@@ -361,7 +361,7 @@ class DetailsActivity : ComponentActivity() {
                     .padding(bottom = 8.dp)
                     .fillMaxWidth()
                     .height(150.dp)
-                    .oShadow()
+                    .oBorder()
             ) {
                 Row {
                     Box(
@@ -476,7 +476,7 @@ class DetailsActivity : ComponentActivity() {
         )
 
         OCard(
-            modifier = modifier.oShadow()
+            modifier = modifier.oBorder()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -544,7 +544,7 @@ class DetailsActivity : ComponentActivity() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp)
-                .oShadow()
+                .oBorder()
         ) {
             Column {
                 Row(
@@ -654,7 +654,7 @@ class DetailsActivity : ComponentActivity() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp)
-                .oShadow()
+                .oBorder()
         ) {
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState())
