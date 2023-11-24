@@ -80,4 +80,5 @@
     <string name="medical_history">Lịch sử bệnh</string>
     <string name="medical_history_not_set">Chưa thiết lập lịch sử bệnh</string>
     <string name="no_medical_history">Không có tiền sử bệnh</string>
+    <string name="edit_profile">Chỉnh sửa thông tin</string>
 </resources>

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -57,11 +59,17 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ProfileActivity : ComponentActivity() {
     private lateinit var viewModel: ProfileViewModel
+    private lateinit var editLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        editLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            viewModel.load()
+        }
         setContent {
             OxygenTheme {
                 Surface(
@@ -79,7 +87,7 @@ class ProfileActivity : ComponentActivity() {
         Scaffold(
             topBar = {
                 OAppBar(
-                    title = "Thông tin cá nhân",
+                    title = stringResource(id = R.string.personal_info),
                     leading = painterResource(id = R.drawable.arrow_back),
                     onLeadingPressed = {
                         finish()
@@ -88,7 +96,8 @@ class ProfileActivity : ComponentActivity() {
                         painterResource(id = R.drawable.edit_colored)
                     ),
                     onActionPressed = listOf {
-                        startActivity(Intent(this, EditProfileActivity::class.java))
+                        editLauncher.launch(Intent(this, EditProfileActivity::class.java))
+//                        startActivity(Intent(this, EditProfileActivity::class.java))
                     }
                 )
             },

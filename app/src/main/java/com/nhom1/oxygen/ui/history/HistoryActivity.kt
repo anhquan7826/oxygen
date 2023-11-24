@@ -98,7 +98,7 @@ class HistoryActivity : ComponentActivity() {
             modifier = Modifier.statusBarsPadding()
         ) { padding ->
             Box(
-                modifier = Modifier.padding(padding)
+                modifier = Modifier.fillMaxSize().padding(padding)
             ) {
                 when (state.state) {
                     LoadState.LOADING -> {

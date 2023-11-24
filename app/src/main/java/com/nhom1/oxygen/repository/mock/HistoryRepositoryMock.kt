@@ -5,6 +5,7 @@ import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.repository.HistoryRepository
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 class HistoryRepositoryMock : HistoryRepository {
@@ -35,6 +36,6 @@ class HistoryRepositoryMock : HistoryRepository {
                     }
                 )
             }.sortedByDescending { e -> e.time })
-        }
+        }.delay(1000, TimeUnit.MILLISECONDS)
     }
 }

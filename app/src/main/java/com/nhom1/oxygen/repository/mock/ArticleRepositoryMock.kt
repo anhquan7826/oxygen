@@ -3,6 +3,7 @@ package com.nhom1.oxygen.repository.mock
 import com.nhom1.oxygen.data.model.article.OArticle
 import com.nhom1.oxygen.repository.ArticleRepository
 import io.reactivex.rxjava3.core.Single
+import java.util.concurrent.TimeUnit
 
 class ArticleRepositoryMock : ArticleRepository {
     override fun getArticle(): Single<List<OArticle>> {
@@ -27,7 +28,7 @@ class ArticleRepositoryMock : ArticleRepository {
                     url = "https://tuoitre.vn/suong-mu-day-dac-tren-nhieu-tuyen-duong-trung-tam-ha-noi-20230403090038359.htm"
                 ),
             ))
-        }
+        }.delay(1000, TimeUnit.MILLISECONDS)
     }
 
     override fun findArticle(query: String): Single<List<OArticle>> {
@@ -54,6 +55,6 @@ class ArticleRepositoryMock : ArticleRepository {
                     ),
                 )
             )
-        }
+        }.delay(1000, TimeUnit.MILLISECONDS)
     }
 }

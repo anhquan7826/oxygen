@@ -43,6 +43,7 @@ import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.home.UserViewModel
 import com.nhom1.oxygen.ui.login.LoginActivity
 import com.nhom1.oxygen.ui.profile.ProfileActivity
+import com.nhom1.oxygen.ui.settings.SettingsActivity
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oBorder
 
@@ -169,7 +170,7 @@ fun UserComposable(viewModel: UserViewModel) {
                         bottom = 16.dp
                     )
                 ) {
-                    // TODO: Go to settings
+                    context.startActivity(Intent(context, SettingsActivity::class.java))
                 }
                 OOption(
                     leading = painterResource(id = R.drawable.logout_colored),

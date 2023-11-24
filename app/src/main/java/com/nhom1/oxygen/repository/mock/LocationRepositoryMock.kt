@@ -3,6 +3,7 @@ package com.nhom1.oxygen.repository.mock
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.repository.LocationRepository
 import io.reactivex.rxjava3.core.Single
+import java.util.concurrent.TimeUnit
 
 class LocationRepositoryMock : LocationRepository {
     override fun getCurrentLocation(): Single<OLocation> {
@@ -20,7 +21,7 @@ class LocationRepositoryMock : LocationRepository {
                     suburb = "Thạch Hòa"
                 )
             )
-        }
+        }.delay(1000, TimeUnit.MILLISECONDS)
     }
 
     override fun findLocation(query: String): Single<List<OLocation>> {
@@ -73,6 +74,6 @@ class LocationRepositoryMock : LocationRepository {
                     ),
                 )
             )
-        }
+        }.delay(1000, TimeUnit.MILLISECONDS)
     }
 }

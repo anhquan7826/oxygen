@@ -1,4 +1,4 @@
-package com.nhom1.oxygen.ui.profile.edit
+package com.nhom1.oxygen.ui.settings
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,54 +18,40 @@ import androidx.lifecycle.ViewModelProvider
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.theme.OxygenTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-class EditProfileActivity : ComponentActivity() {
-    private lateinit var viewModel: EditProfileViewModel
+class SettingsActivity : ComponentActivity() {
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        viewModel = ViewModelProvider(this)[EditProfileViewModel::class.java]
+        viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
         setContent {
             OxygenTheme {
                 Surface(
                     color = Color.White
                 ) {
-                    EditProfileView()
+                    SettingsView()
                 }
             }
         }
     }
 
     @Composable
-    fun EditProfileView() {
+    fun SettingsView() {
         Scaffold(
             topBar = {
                 OAppBar(
-                    title = stringResource(R.string.edit_profile),
-                    leading = painterResource(id = R.drawable.cancel_colored),
+                    title = stringResource(R.string.settings),
+                    leading = painterResource(id = R.drawable.arrow_back),
                     onLeadingPressed = {
-                        // TODO: On cancel
-                    },
-                    actions = listOf(
-                        painterResource(id = R.drawable.save_colored)
-                    ),
-                    onActionPressed = listOf {
-                        // TODO: on save
                         finish()
-                    }
-                )
+                    })
             },
             containerColor = Color.White,
             modifier = Modifier.statusBarsPadding()
         ) {
-            Column(
-                modifier = Modifier.padding(it)
-            ) {
-
-            }
+            Column(modifier = Modifier.padding(it)) {}
         }
     }
 }

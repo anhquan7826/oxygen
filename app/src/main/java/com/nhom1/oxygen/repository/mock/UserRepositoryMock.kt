@@ -13,6 +13,7 @@ import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.model.user.OUserProfile
 import com.nhom1.oxygen.repository.UserRepository
 import io.reactivex.rxjava3.core.Single
+import java.util.concurrent.TimeUnit
 
 class UserRepositoryMock : UserRepository {
     override fun isUserSignedIn(): Boolean {
@@ -72,7 +73,7 @@ class UserRepositoryMock : UserRepository {
                     uid = "1"
                 )
             )
-        }
+        }.delay(1000, TimeUnit.MILLISECONDS)
     }
 
     override fun signOut() {
