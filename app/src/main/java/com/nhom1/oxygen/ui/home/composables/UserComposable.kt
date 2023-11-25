@@ -45,7 +45,6 @@ import com.nhom1.oxygen.ui.login.LoginActivity
 import com.nhom1.oxygen.ui.profile.ProfileActivity
 import com.nhom1.oxygen.ui.settings.SettingsActivity
 import com.nhom1.oxygen.utils.constants.LoadState
-import com.nhom1.oxygen.utils.extensions.oBorder
 
 @Composable
 fun UserComposable(viewModel: UserViewModel) {
@@ -126,7 +125,6 @@ fun UserComposable(viewModel: UserViewModel) {
                         modifier = Modifier
                             .align(Alignment.Center)
                             .clip(CircleShape)
-                            .oBorder()
                             .size(150.dp),
                     )
                 }

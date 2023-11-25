@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 
 package com.nhom1.oxygen.ui.home
 
@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -24,8 +25,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -90,6 +93,7 @@ class HomeActivity : ComponentActivity() {
         var currentPage by remember {
             mutableIntStateOf(0)
         }
+        val keyboardController = LocalSoftwareKeyboardController.current
         Scaffold(
             bottomBar = {
                 NavigationBar(
@@ -101,6 +105,7 @@ class HomeActivity : ComponentActivity() {
                             alwaysShowLabel = false,
                             selected = currentPage == item.key,
                             onClick = {
+                                keyboardController?.hide()
                                 currentPage = item.key
                                 coroutineScope.launch {
                                     pagerState.animateScrollToPage(currentPage, 0F)
@@ -149,7 +154,9 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
                 }
-            }, containerColor = Color.White
+            },
+            containerColor = Color.White,
+            modifier = Modifier.imePadding(),
         ) {
             HorizontalPager(
                 modifier = Modifier

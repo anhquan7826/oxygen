@@ -72,6 +72,72 @@ class LocationRepositoryMock : LocationRepository {
                         street = "Đường Làng Văn hóa",
                         suburb = "Thạch Hòa"
                     ),
+                    OLocation(
+                        name = "Vietnam National University – Hoa Lac Campus",
+                        city = "Hà Nội",
+                        country = "Vietnam",
+                        countryCode = "vn",
+                        district = "Thach That District",
+                        latitude = 21.0039985,
+                        longitude = 105.50181441601865,
+                        street = "Đường Làng Văn hóa",
+                        suburb = "Thạch Hòa"
+                    ),
+                    OLocation(
+                        name = "Vietnam National University – Hoa Lac Campus",
+                        city = "Hà Nội",
+                        country = "Vietnam",
+                        countryCode = "vn",
+                        district = "Thach That District",
+                        latitude = 21.0039985,
+                        longitude = 105.50181441601865,
+                        street = "Đường Làng Văn hóa",
+                        suburb = "Thạch Hòa"
+                    ),
+                    OLocation(
+                        name = "Vietnam National University – Hoa Lac Campus",
+                        city = "Hà Nội",
+                        country = "Vietnam",
+                        countryCode = "vn",
+                        district = "Thach That District",
+                        latitude = 21.0039985,
+                        longitude = 105.50181441601865,
+                        street = "Đường Làng Văn hóa",
+                        suburb = "Thạch Hòa"
+                    ),
+                    OLocation(
+                        name = "Vietnam National University – Hoa Lac Campus",
+                        city = "Hà Nội",
+                        country = "Vietnam",
+                        countryCode = "vn",
+                        district = "Thach That District",
+                        latitude = 21.0039985,
+                        longitude = 105.50181441601865,
+                        street = "Đường Làng Văn hóa",
+                        suburb = "Thạch Hòa"
+                    ),
+                    OLocation(
+                        name = "Vietnam National University – Hoa Lac Campus",
+                        city = "Hà Nội",
+                        country = "Vietnam",
+                        countryCode = "vn",
+                        district = "Thach That District",
+                        latitude = 21.0039985,
+                        longitude = 105.50181441601865,
+                        street = "Đường Làng Văn hóa",
+                        suburb = "Thạch Hòa"
+                    ),
+                    OLocation(
+                        name = "Vietnam National University – Hoa Lac Campus",
+                        city = "Hà Nội",
+                        country = "Vietnam",
+                        countryCode = "vn",
+                        district = "Thach That District",
+                        latitude = 21.0039985,
+                        longitude = 105.50181441601865,
+                        street = "Đường Làng Văn hóa",
+                        suburb = "Thạch Hòa"
+                    ),
                 )
             )
         }.delay(1000, TimeUnit.MILLISECONDS)

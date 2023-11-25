@@ -11,7 +11,6 @@ import com.nhom1.oxygen.common.theme.oxygenColor
 
 fun Modifier.oBorder(): Modifier {
     return this
-        .clip(RoundedCornerShape(12.dp))
         .border(
             width = 1.dp,
             color = oxygenColor.copy(alpha = 0.25F),

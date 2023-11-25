@@ -40,8 +40,8 @@ import com.nhom1.oxygen.common.composables.OTextField
 import com.nhom1.oxygen.common.constants.aqiColors
 import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.SearchViewModel
-import com.nhom1.oxygen.utils.extensions.oClip
 import com.nhom1.oxygen.utils.extensions.oBorder
+import com.nhom1.oxygen.utils.extensions.oClip
 import com.nhom1.oxygen.utils.toJson
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -60,7 +60,7 @@ fun SearchComposable(viewModel: SearchViewModel) {
             left = 16.dp,
             right = 16.dp,
         ),
-        containerColor = Color.White
+        containerColor = Color.White,
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             OTextField(
@@ -76,7 +76,8 @@ fun SearchComposable(viewModel: SearchViewModel) {
                         contentDescription = null,
                     )
                 },
-                onValueChange = viewModel::onQueryChanged
+                onValueChange = viewModel::onQueryChanged,
+
             )
             when {
                 state.searchValue.isEmpty() && state.result.isEmpty() -> {
