@@ -161,7 +161,7 @@ fun UserComposable(viewModel: UserViewModel) {
                         bottom = 16.dp
                     )
                 ) {
-                    // TODO: Go to history
+                    // TODO: Go to medical history
                 }
                 OOption(
                     leading = painterResource(id = R.drawable.settings_colored),

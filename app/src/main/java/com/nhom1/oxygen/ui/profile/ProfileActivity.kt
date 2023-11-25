@@ -54,6 +54,7 @@ import com.nhom1.oxygen.ui.profile.edit.EditProfileActivity
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
+import com.nhom1.oxygen.utils.toJson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -68,7 +69,8 @@ class ProfileActivity : ComponentActivity() {
         editLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
-            viewModel.load()
+            val edited = it.data?.getBooleanExtra("edited", false) ?: false
+            if (edited) viewModel.load()
         }
         setContent {
             OxygenTheme {
@@ -96,8 +98,12 @@ class ProfileActivity : ComponentActivity() {
                         painterResource(id = R.drawable.edit_colored)
                     ),
                     onActionPressed = listOf {
-                        editLauncher.launch(Intent(this, EditProfileActivity::class.java))
-//                        startActivity(Intent(this, EditProfileActivity::class.java))
+                        if (state.state == LoadState.LOADED) editLauncher.launch(
+                            Intent(
+                                this,
+                                EditProfileActivity::class.java
+                            ).putExtra("userData", toJson(state.userData!!))
+                        )
                     }
                 )
             },

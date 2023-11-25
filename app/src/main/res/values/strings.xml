@@ -65,7 +65,7 @@
     <string name="moving_history">Lịch sử di chuyển</string>
     <string name="warning">Cảnh báo</string>
     <string name="logout_confirmation">Bạn có muốn đăng xuất không?</string>
-    <string name="cancel">Hủy</string>
+    <string name="cancel">Hủy bỏ</string>
     <string name="logout">Đăng xuất</string>
     <string name="today_exposure">Mức độ tiếp xúc trong hôm nay</string>
     <string name="male">Nam</string>
@@ -81,4 +81,11 @@
     <string name="medical_history_not_set">Chưa thiết lập lịch sử bệnh</string>
     <string name="no_medical_history">Không có tiền sử bệnh</string>
     <string name="edit_profile">Chỉnh sửa thông tin</string>
+    <string name="cancel_edit_content">Bạn có chắc chắn muốn hủy chỉnh sửa không? Những nội dung đã điền sẽ không được lưu!</string>
+    <string name="full_name">Họ tên</string>
+    <string name="sex">Giới tính</string>
+    <string name="country">Quốc gia</string>
+    <string name="province_city">Tỉnh, thành phố</string>
+    <string name="district">Quận, huyện, thị xã</string>
+    <string name="ward">Phường, xã</string>
 </resources>

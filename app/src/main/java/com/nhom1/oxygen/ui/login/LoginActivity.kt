@@ -25,7 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -134,11 +133,6 @@ class LoginActivity : ComponentActivity() {
                         .padding(top = 64.dp)
                         .size(64.dp)
                         .clip(CircleShape)
-                        .shadow(
-                            elevation = 16.dp,
-                            spotColor = Color(0xFF000000),
-                            ambientColor = Color(0xFF000000)
-                        )
                 )
                 Text(
                     text = "Chào mừng ${loginState.username!!}",

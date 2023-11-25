@@ -23,6 +23,7 @@ import com.nhom1.oxygen.utils.extensions.oBorder
 @Composable
 fun OTextField(
     modifier: Modifier = Modifier,
+    initialValue: String = "",
     placeholder: @Composable (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
@@ -31,7 +32,7 @@ fun OTextField(
     onValueChange: (String) -> Unit
 ) {
     var value by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(initialValue)
     }
     TextField(
         modifier = modifier
@@ -49,12 +50,12 @@ fun OTextField(
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         maxLines = 1,
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color(0xFFF2F2F2),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFF2F2F2),
+            unfocusedContainerColor = Color(0xFFF2F2F2),
             focusedIndicatorColor = Color.Unspecified,
             unfocusedIndicatorColor = Color.Unspecified,
-
-            )
+        )
     )
 }
 
