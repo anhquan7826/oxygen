@@ -88,7 +88,7 @@ class HistoryActivity : ComponentActivity() {
                 OAppBar(
                     title = stringResource(id = R.string.exposure_history),
                     leading = painterResource(id = R.drawable.arrow_back),
-                    withShadow = false,
+                    withShadow = state.history?.isEmpty() ?: true,
                     onLeadingPressed = {
                         finish()
                     }
@@ -98,7 +98,9 @@ class HistoryActivity : ComponentActivity() {
             modifier = Modifier.statusBarsPadding()
         ) { padding ->
             Box(
-                modifier = Modifier.fillMaxSize().padding(padding)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
             ) {
                 when (state.state) {
                     LoadState.LOADING -> {
@@ -117,43 +119,55 @@ class HistoryActivity : ComponentActivity() {
                     }
 
                     else -> {
-                        val pagerState = rememberPagerState { state.history!!.size }
-                        val coroutineScope = rememberCoroutineScope()
-                        Column(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            OTabRow(
-                                selectedTabIndex = pagerState.currentPage,
-                                scrollable = true,
+                        if (state.history!!.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize()
                             ) {
-                                state.history!!.mapIndexed { index, history ->
-                                    OTab(
-                                        title = getTimeString(history.time, "dd/MM/yyyy"),
-                                        selected = index == pagerState.currentPage
-                                    ) {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(index, 0F)
+                                Text(
+                                    text = stringResource(R.string.no_history),
+                                    color = Color.Gray,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        } else {
+                            val pagerState = rememberPagerState { state.history!!.size }
+                            val coroutineScope = rememberCoroutineScope()
+                            Column(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                OTabRow(
+                                    selectedTabIndex = pagerState.currentPage,
+                                    scrollable = true,
+                                ) {
+                                    state.history!!.mapIndexed { index, history ->
+                                        OTab(
+                                            title = getTimeString(history.time, "dd/MM/yyyy"),
+                                            selected = index == pagerState.currentPage
+                                        ) {
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(index, 0F)
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            HorizontalPager(state = pagerState) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(
-                                            rememberScrollState()
+                                HorizontalPager(state = pagerState) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .verticalScroll(
+                                                rememberScrollState()
+                                            )
+                                            .padding(horizontal = 16.dp)
+                                    ) {
+                                        ExposureChart(
+                                            history = state.history!![it].history,
+                                            modifier = Modifier.padding(top = 32.dp, bottom = 32.dp)
                                         )
-                                        .padding(horizontal = 16.dp)
-                                ) {
-                                    ExposureChart(
-                                        history = state.history!![it].history,
-                                        modifier = Modifier.padding(top = 32.dp, bottom = 32.dp)
-                                    )
-                                    MovingHistory(
-                                        modifier = Modifier.padding(bottom = 32.dp),
-                                        history = state.history!![it].history
-                                    )
+                                        MovingHistory(
+                                            modifier = Modifier.padding(bottom = 32.dp),
+                                            history = state.history!![it].history
+                                        )
+                                    }
                                 }
                             }
                         }

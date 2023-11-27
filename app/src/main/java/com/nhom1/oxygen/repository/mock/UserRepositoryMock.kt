@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit
 
 class UserRepositoryMock : UserRepository {
     private var userDataMock = OUser(
-        id = 1,
         avatar = "https://upload.wikimedia.org/wikipedia/commons/4/48/RedCat_8727.jpg",
         diseases = listOf(
             ODisease(
@@ -41,7 +40,6 @@ class UserRepositoryMock : UserRepository {
         email = "anhquan7826@gmail.com",
         name = "Anh Quan",
         profile = null,
-        uid = "1"
     )
 
     override fun getSignInIntent(context: Context): Intent {
@@ -99,7 +97,7 @@ class UserRepositoryMock : UserRepository {
         }
     }
 
-    override fun setUserDiseases(diseases: List<String>): Completable {
+    override fun setUserDiseases(weight: Double, height: Double, diseases: List<String>): Completable {
         return Completable.create { it.onComplete() }.delay(1, TimeUnit.SECONDS)
     }
 

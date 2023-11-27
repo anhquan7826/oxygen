@@ -140,7 +140,7 @@ class DeclareMedicalHistoryViewModel @Inject constructor(
                 saved = false
             )
         }
-        userRepository.setUserDiseases(_state.value.diseases).listen(
+        userRepository.setUserDiseases(currentWeight, currentHeight / 100, _state.value.diseases).listen(
             onError = { exception ->
                 _saveState.update {
                     SaveMedicalHistoryState(

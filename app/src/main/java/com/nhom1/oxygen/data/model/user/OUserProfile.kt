@@ -24,7 +24,7 @@ data class OUserProfile(
     val bmi: Double?
         get() {
             return try {
-                weight!! / (height!! / 100).pow(2.0)
+                weight!! / height!!.pow(2.0)
             } catch (_: Exception) {
                 null
             }

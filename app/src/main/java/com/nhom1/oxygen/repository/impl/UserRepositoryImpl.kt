@@ -77,10 +77,16 @@ class UserRepositoryImpl(
 
     override fun setUserAvatar(avatar: Uri, contentResolver: ContentResolver): Completable {
         return Completable.create { emitter ->
-            contentResolver.openFileDescriptor(avatar, "r").use { descriptor ->
-                descriptor?.fileDescriptor?.toRequestBody("multipart/form-data".toMediaTypeOrNull())?.let { requestBody ->
-                    val multipart = MultipartBody.Part.createFormData("image", "avatar", requestBody)
-                    service.user.setAvatar(avatar = multipart).listen(
+            contentResolver.openInputStream(avatar).use { inputStream ->
+                if (inputStream != null) {
+                    val part = MultipartBody.Part.createFormData(
+                        "file", "avatar", inputStream.readBytes()
+                            .toRequestBody(
+                                "image/*".toMediaTypeOrNull(),
+                                0
+                            )
+                    )
+                    service.user.setAvatar(part).listen(
                         onError = { emitter.onError(it) }
                     ) {
                         emitter.onComplete()
@@ -90,10 +96,14 @@ class UserRepositoryImpl(
         }
     }
 
-    override fun setUserDiseases(diseases: List<String>): Completable {
+    override fun setUserDiseases(
+        weight: Double,
+        height: Double,
+        diseases: List<String>
+    ): Completable {
         return service.user.setDiseases(
             OxygenService.User.SetDiseasesRequest(
-                diseases
+                weight, height, diseases
             )
         )
     }

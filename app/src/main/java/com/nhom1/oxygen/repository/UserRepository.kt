@@ -24,7 +24,7 @@ interface UserRepository {
 
     fun setUserAvatar(avatar: Uri, contentResolver: ContentResolver): Completable
 
-    fun setUserDiseases(diseases: List<String>): Completable
+    fun setUserDiseases(weight: Double, height: Double, diseases: List<String>): Completable
 
     fun signOut()
 }

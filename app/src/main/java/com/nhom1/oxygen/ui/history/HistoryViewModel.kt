@@ -3,7 +3,6 @@ package com.nhom1.oxygen.ui.history
 import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.history.OHistory
 import com.nhom1.oxygen.repository.HistoryRepository
-import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.listen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +14,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val historyRepository: HistoryRepository,
-    private val userRepository: UserRepository
 ) : ViewModel() {
     data class HistoryState(
         val state: LoadState = LoadState.LOADING,

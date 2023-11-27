@@ -37,6 +37,8 @@ interface OxygenService {
         ): Completable
 
         data class SetDiseasesRequest(
+            val weight: Double,
+            val height: Double,
             val diseases: List<String>
         )
 
@@ -56,7 +58,7 @@ interface OxygenService {
 
         @Multipart
         @POST(OxygenAPI.User.SET_AVATAR)
-        fun setAvatar(@Part("file") avatar: MultipartBody.Part): Completable
+        fun setAvatar(@Part avatar: MultipartBody.Part): Completable
     }
 
     val user: User

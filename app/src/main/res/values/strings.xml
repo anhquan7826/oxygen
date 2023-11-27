@@ -103,4 +103,5 @@
     <string name="receive_notification">Nhận thông báo</string>
     <string name="humidity">Độ ẩm</string>
     <string name="recent_search">Tìm kiếm gần đây</string>
+    <string name="no_history">Không có lịch sử!</string>
 </resources>

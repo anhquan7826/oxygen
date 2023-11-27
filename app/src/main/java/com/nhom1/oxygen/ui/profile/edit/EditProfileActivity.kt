@@ -66,7 +66,6 @@ import com.nhom1.oxygen.common.composables.OTextField
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.ui.medical.DeclareMedicalHistoryActivity
-import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getTimeString
@@ -343,7 +342,6 @@ class EditProfileActivity : ComponentActivity() {
     @Composable
     fun AddressField(modifier: Modifier = Modifier, viewModel: EditProfileViewModel) {
         val state by viewModel.divisionState.collectAsState()
-        debugLog(state)
         Column(
             modifier = modifier
         ) {

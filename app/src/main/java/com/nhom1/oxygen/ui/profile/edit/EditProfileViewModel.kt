@@ -7,12 +7,13 @@ import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.model.user.OUserProfile
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.UserRepository
+import com.nhom1.oxygen.utils.debugLog
+import com.nhom1.oxygen.utils.errorLog
 import com.nhom1.oxygen.utils.listen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,7 +45,7 @@ class EditProfileViewModel @Inject constructor(
     private val _divisionState = MutableStateFlow(EditProfileState())
     val divisionState = _divisionState.asStateFlow()
 
-    private lateinit var currentAvt: Uri
+    private var currentAvt: Uri? = null
     private var currentName = ""
     private var currentDob: Long? = null
     private var currentSex: Boolean? = null
@@ -56,7 +57,6 @@ class EditProfileViewModel @Inject constructor(
     fun load(initialUserData: OUser) {
         this.initialUserData = initialUserData
 
-        currentAvt = Uri.parse(initialUserData.avatar)
         currentName = initialUserData.name
         currentDob = initialUserData.profile?.dateOfBirth
         currentSex = initialUserData.profile?.sex
@@ -84,6 +84,7 @@ class EditProfileViewModel @Inject constructor(
 
     fun setAvt(uri: Uri) {
         currentAvt = uri
+        debugLog(uri)
     }
 
     fun setName(name: String) {
@@ -144,7 +145,7 @@ class EditProfileViewModel @Inject constructor(
 
     fun hasModified(): Boolean {
         return when {
-            currentAvt.toString() != initialUserData.avatar -> true
+            currentAvt != null -> true
             currentName != initialUserData.name -> true
             currentDob != initialUserData.profile?.dateOfBirth -> true
             currentSex != initialUserData.profile?.sex -> true
@@ -184,16 +185,30 @@ class EditProfileViewModel @Inject constructor(
                 }
             }
         ) {
-            if (currentAvt.toString() != initialUserData.avatar) {
-                context.contentResolver.openFileDescriptor(currentAvt, "r").use {
-                    it?.fileDescriptor?.toRequestBody()
+            if (currentAvt != null) {
+                userRepository.setUserAvatar(currentAvt!!, context.contentResolver).listen(
+                    onError = { exception ->
+                        errorLog(exception)
+                        _saveState.update {
+                            SaveProfileState(
+                                saved = null,
+                                error = exception.message
+                            )
+                        }
+                    }
+                ) {
+                    _saveState.update {
+                        SaveProfileState(
+                            saved = true
+                        )
+                    }
                 }
-                userRepository.setUserAvatar(currentAvt, context.contentResolver)
-            }
-            _saveState.update {
-                SaveProfileState(
-                    saved = true
-                )
+            } else {
+                _saveState.update {
+                    SaveProfileState(
+                        saved = true
+                    )
+                }
             }
         }
     }
