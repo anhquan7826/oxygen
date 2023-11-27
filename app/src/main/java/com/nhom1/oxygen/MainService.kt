@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.IBinder
 import android.os.Looper
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -137,8 +138,17 @@ class MainService : Service() {
         if (userRepository.isSignedIn()) {
             val hour = getHour(now())
             if (prevHour < hour) {
-                historyRepository.addLocationHistory()
-                prevHour = hour
+                historyRepository.addLocationHistory().listen(
+                    onError = {
+                        Toast.makeText(
+                            this,
+                            "Cannot upload history. ${it.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                ) {
+                    prevHour = hour
+                }
             }
         }
     }
