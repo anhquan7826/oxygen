@@ -2,6 +2,7 @@ package com.nhom1.oxygen.ui.login
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,20 +25,24 @@ class LoginViewModel @Inject constructor(
         return userRepository.getSignInIntent(context)
     }
 
-    fun onSignInResult(result: ActivityResult) {
+    fun onSignInResult(context: Context, result: ActivityResult) {
         try {
             _loginState.update {
                 LoginState(1)
             }
             val account = GoogleSignIn.getSignedInAccountFromIntent(result.data).result
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            userRepository.signInWithCredential(credential) {authResult ->
-                _loginState.update {
-                    LoginState(
-                        state = 2,
-                        username = authResult.user!!.displayName,
-                        profilePicture = authResult.user!!.photoUrl
-                    )
+            userRepository.signInWithCredential(context, credential) { signInResult ->
+                if (signInResult != null) {
+                    _loginState.update {
+                        LoginState(
+                            state = 2,
+                            username = signInResult.name,
+                            profilePicture = Uri.parse(signInResult.avatar)
+                        )
+                    }
+                } else {
+                    _loginState.update { LoginState(0) }
                 }
             }
         } catch (_: Exception) {

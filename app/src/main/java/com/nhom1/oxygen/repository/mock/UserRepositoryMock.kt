@@ -6,16 +6,40 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.auth
 import com.nhom1.oxygen.data.model.user.ODisease
 import com.nhom1.oxygen.data.model.user.OUser
-import com.nhom1.oxygen.data.model.user.OUserProfile
+import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.UserRepository
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class UserRepositoryMock : UserRepository {
+    private var userDataMock = OUser(
+        id = 1,
+        avt = "https://upload.wikimedia.org/wikipedia/commons/4/48/RedCat_8727.jpg",
+        diseases = listOf(
+            ODisease(
+                id = 0,
+                name = "Lậu"
+            ),
+            ODisease(
+                id = 0,
+                name = "Giang mai"
+            ),
+            ODisease(
+                id = 0,
+                name = "AIDS"
+            )
+        ),
+        email = "anhquan7826@gmail.com",
+        name = "Anh Quan",
+        profile = null,
+        uid = "1"
+    )
+
     override fun isUserSignedIn(): Boolean {
         return Firebase.auth.currentUser != null
     }
@@ -29,8 +53,20 @@ class UserRepositoryMock : UserRepository {
         return googleSignInClient.signInIntent
     }
 
-    override fun signInWithCredential(credential: AuthCredential, onResult: (AuthResult) -> Unit) {
-        Firebase.auth.signInWithCredential(credential).addOnSuccessListener(onResult::invoke)
+    override fun signInWithCredential(
+        context: Context,
+        credential: AuthCredential,
+        onResult: (OxygenService.User.OnSignInResult?) -> Unit
+    ) {
+        Firebase.auth.signInWithCredential(credential).addOnSuccessListener {
+            onResult.invoke(
+                OxygenService.User.OnSignInResult(
+                    name = it.user!!.displayName!!,
+                    email = it.user!!.email!!,
+                    avatar = it.user!!.photoUrl.toString()
+                )
+            )
+        }
     }
 
     override fun isSignedIn(): Boolean {
@@ -40,40 +76,20 @@ class UserRepositoryMock : UserRepository {
     override fun getUserData(): Single<OUser> {
         return Single.create {
             it.onSuccess(
-                OUser(
-                    id = 1,
-                    avt = "https://upload.wikimedia.org/wikipedia/commons/4/48/RedCat_8727.jpg",
-                    diseases = listOf(
-                        ODisease(
-                            id = 0,
-                            name = "Lậu"
-                        ),
-                        ODisease(
-                            id = 0,
-                            name = "Giang mai"
-                        ),
-                        ODisease(
-                            id = 0,
-                            name = "AIDS"
-                        )
-                    ),
-                    email = "anhquan7826@gmail.com",
-                    name = "Anh Quan",
-                    profile = OUserProfile(
-                        address = "lmao",
-                        country = "vietnam",
-                        dateOfBirth = "01-12-2002",
-                        district = "alo",
-                        height = 175.0,
-                        province = "alo",
-                        sex = true,
-                        ward = "alo",
-                        weight = 60.0,
-                    ),
-                    uid = "1"
-                )
+                userDataMock
             )
         }.delay(1000, TimeUnit.MILLISECONDS)
+    }
+
+    override fun setUserData(newUserData: OUser): Completable {
+        return Completable.create {
+            userDataMock = newUserData
+            it.onComplete()
+        }.delay(1000, TimeUnit.MILLISECONDS)
+    }
+
+    override fun setUserAvatar(avatar: File): Completable {
+        return Completable.create { it.onComplete() }.delay(500, TimeUnit.MILLISECONDS)
     }
 
     override fun signOut() {

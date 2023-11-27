@@ -57,10 +57,12 @@ class OverviewViewModel @Inject constructor(
                 )
             }.listen(
                 onError = { exception ->
-                    OverviewState(
-                        state = LoadState.ERROR,
-                        error = exception.message
-                    )
+                    _overviewState.update {
+                        OverviewState(
+                            state = LoadState.ERROR,
+                            error = exception.message
+                        )
+                    }
                 }
             ) { result ->
                 _overviewState.update {

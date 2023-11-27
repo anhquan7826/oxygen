@@ -61,8 +61,9 @@ class LoginActivity : ComponentActivity() {
         signInLauncher =
             registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult(),
-                viewModel::onSignInResult
-            )
+            ) {
+                viewModel.onSignInResult(this, it)
+            }
 
         setContent {
             OxygenTheme {

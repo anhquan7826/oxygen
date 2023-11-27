@@ -1,10 +1,12 @@
 package com.nhom1.oxygen.ui.profile.edit
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -25,14 +27,18 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,15 +54,19 @@ import androidx.lifecycle.ViewModelProvider
 import coil.compose.AsyncImage
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
+import com.nhom1.oxygen.common.composables.OCard
 import com.nhom1.oxygen.common.composables.OChips
+import com.nhom1.oxygen.common.composables.ODatePickerDialog
 import com.nhom1.oxygen.common.composables.ODialog
 import com.nhom1.oxygen.common.composables.ODropdownMenu
 import com.nhom1.oxygen.common.composables.OOption
 import com.nhom1.oxygen.common.composables.OTextField
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.user.OUser
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.fromJson
+import com.nhom1.oxygen.utils.getTimeString
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -64,16 +74,12 @@ class EditProfileActivity : ComponentActivity() {
     private lateinit var userData: OUser
     private lateinit var viewModel: EditProfileViewModel
 
-    private lateinit var imagePickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         viewModel = ViewModelProvider(this)[EditProfileViewModel::class.java]
         userData = fromJson(intent.extras!!.getString("userData")!!, OUser::class.java)!!
-        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {
-            // TODO: set avt
-        }
+        viewModel.load(userData)
         setContent {
             OxygenTheme {
                 Surface(
@@ -90,31 +96,64 @@ class EditProfileActivity : ComponentActivity() {
         var showCancelDialog by remember {
             mutableStateOf(false)
         }
+        val saveState by viewModel.saveState.collectAsState()
+        LaunchedEffect(saveState) {
+            if (saveState.saveState == null && saveState.error != null) {
+                Toast.makeText(
+                    this@EditProfileActivity,
+                    resources.getText(R.string.cannot_save).toString() + " (${saveState.error})",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else if (saveState.saveState == true) {
+                setResult(
+                    RESULT_OK,
+                    Intent().putExtra("edited", true)
+                )
+                finish()
+            }
+        }
         Scaffold(
             topBar = {
-                OAppBar(
-                    title = stringResource(R.string.edit_profile),
+                OAppBar(title = stringResource(R.string.edit_profile),
                     leading = painterResource(id = R.drawable.cancel_colored),
                     onLeadingPressed = {
-                        showCancelDialog = true
+                        if (viewModel.hasModified()) {
+                            showCancelDialog = true
+                        } else {
+                            setResult(RESULT_OK, Intent().putExtra("edited", false))
+                            finish()
+                        }
                     },
                     actions = listOf(
                         painterResource(id = R.drawable.save_colored)
                     ),
                     onActionPressed = listOf {
-                        setResult(RESULT_OK, Intent().putExtra("edited", true))
-                        finish()
+                        if (viewModel.canSave()) {
+                            viewModel.saveUserData()
+                        } else {
+                            Toast.makeText(
+                                this,
+                                resources.getText(R.string.please_fill_all_forms),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    trailing = {
+                        if (saveState.saveState == false) {
+                            CircularProgressIndicator()
+                        }
                     }
                 )
             },
             containerColor = Color.White,
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets.add(
                 WindowInsets(
-                    left = 16.dp,
-                    right = 16.dp
+                    left = 16.dp, right = 16.dp
                 )
             ),
-            modifier = Modifier.statusBarsPadding().imePadding()
+            modifier = Modifier
+                .statusBarsPadding()
+                .imePadding()
         ) {
             Column(
                 modifier = Modifier
@@ -126,16 +165,21 @@ class EditProfileActivity : ComponentActivity() {
                 AvatarPicker(
                     modifier = Modifier
                         .padding(bottom = 32.dp)
-                        .align(Alignment.CenterHorizontally)
+                        .align(Alignment.CenterHorizontally),
+                    initialImage = Uri.parse(userData.avt),
+                    viewModel = viewModel
                 )
                 NameField(
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp), viewModel = viewModel
+                )
+                DoBField(
+                    modifier = Modifier.padding(bottom = 16.dp), viewModel = viewModel
                 )
                 SexField(
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp), viewModel = viewModel
                 )
                 AddressField(
-                    modifier = Modifier.padding(bottom = 32.dp)
+                    modifier = Modifier.padding(bottom = 32.dp), viewModel = viewModel
                 )
                 OOption(
                     leading = painterResource(id = R.drawable.medical_history_colored),
@@ -149,15 +193,14 @@ class EditProfileActivity : ComponentActivity() {
             }
         }
         if (showCancelDialog) {
-            ODialog(
-                title = stringResource(id = R.string.warning),
+            ODialog(title = stringResource(id = R.string.warning),
                 content = stringResource(R.string.cancel_edit_content),
                 cancelText = stringResource(id = R.string.back),
                 confirmText = stringResource(id = R.string.cancel),
                 onCancel = {
                     showCancelDialog = false
-                }, onConfirm = {
-                    // TODO: cancel
+                },
+                onConfirm = {
                     setResult(RESULT_OK, Intent().putExtra("edited", false))
                     finish()
                 })
@@ -165,20 +208,31 @@ class EditProfileActivity : ComponentActivity() {
     }
 
     @Composable
-    fun AvatarPicker(modifier: Modifier = Modifier) {
-        Box(
-            modifier = modifier
-                .clip(CircleShape)
-                .size(128.dp)
-                .oBorder()
-                .clickable {
-                    imagePickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                }
+    fun AvatarPicker(
+        modifier: Modifier = Modifier,
+        initialImage: Uri,
+        viewModel: EditProfileViewModel
+    ) {
+        var image by rememberSaveable {
+            mutableStateOf(initialImage)
+        }
+        val picker = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia()
         ) {
+            if (it != null) {
+                image = it
+                viewModel.setAvt(it)
+            }
+        }
+        Box(modifier = modifier
+            .clip(CircleShape)
+            .size(128.dp)
+            .oBorder()
+            .clickable {
+                picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }) {
             AsyncImage(
-                userData.avt,
+                image,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -204,73 +258,86 @@ class EditProfileActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NameField(modifier: Modifier = Modifier) {
+    fun NameField(modifier: Modifier = Modifier, viewModel: EditProfileViewModel) {
+        var isError by rememberSaveable {
+            mutableStateOf(false)
+        }
         Field(
-            modifier = modifier,
-            label = stringResource(R.string.full_name)
+            modifier = modifier, label = stringResource(R.string.full_name)
         ) {
             OTextField(
-                initialValue = userData.name
+                initialValue = userData.name,
+                isError = isError,
+                errorText = stringResource(R.string.name_cant_be_empty)
             ) {
-                // TODO: On name changes
+                viewModel.setName(it)
+                isError = it.isEmpty()
             }
         }
     }
 
     @Composable
-    fun SexField(modifier: Modifier = Modifier) {
+    fun DoBField(modifier: Modifier = Modifier, viewModel: EditProfileViewModel) {
+        var dob by rememberSaveable {
+            mutableStateOf(userData.profile?.dateOfBirth)
+        }
+        var showDatePicker by remember {
+            mutableStateOf(false)
+        }
+        Field(label = stringResource(R.string.date_of_birth)) {
+            OCard(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        showDatePicker = true
+                    }
+            ) {
+                Text(
+                    text = dob?.let { getTimeString(it, "dd/MM/yyyy") } ?: ""
+                )
+            }
+        }
+        if (showDatePicker) {
+            ODatePickerDialog(
+                onDismiss = { showDatePicker = false },
+                onDatePicked = {
+                    showDatePicker = false
+                    dob = it
+                    viewModel.setDateOfBirth(it)
+                }
+            )
+        }
+    }
+
+    @Composable
+    fun SexField(modifier: Modifier = Modifier, viewModel: EditProfileViewModel) {
         Field(modifier = modifier, label = stringResource(R.string.sex)) {
             OChips(
                 entries = mapOf(
                     true to stringResource(id = R.string.male),
                     false to stringResource(id = R.string.female)
-                ),
-                initialValue = userData.profile?.sex
+                ), initialValue = userData.profile?.sex
             ) {
-                // TODO: On sex changes
+                viewModel.setSex(it)
             }
         }
     }
 
     @Composable
-    fun AddressField(modifier: Modifier = Modifier) {
+    fun AddressField(modifier: Modifier = Modifier, viewModel: EditProfileViewModel) {
+        val state by viewModel.divisionState.collectAsState()
+        debugLog(state)
         Column(
             modifier = modifier
         ) {
-            Row(
+            Field(
+                label = stringResource(R.string.province_city),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                Field(
-                    label = stringResource(R.string.country),
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .weight(1f)
+                ODropdownMenu(
+                    entries = state.provinces, placeholder = userData.profile?.province
                 ) {
-                    ODropdownMenu(
-                        entries = mapOf(
-                            0 to "Menu 0",
-                            1 to "Menu 1",
-                            2 to "Menu 2"
-                        )
-                    ) {
-
-                    }
-                }
-                Field(
-                    label = stringResource(R.string.province_city),
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .weight(1f)
-                ) {
-                    ODropdownMenu(
-                        entries = mapOf(
-                            0 to "Menu 0",
-                            1 to "Menu 1",
-                            2 to "Menu 2"
-                        )
-                    ) {
-
-                    }
+                    viewModel.setProvince(it)
                 }
             }
             Row(
@@ -283,13 +350,9 @@ class EditProfileActivity : ComponentActivity() {
                         .weight(1f)
                 ) {
                     ODropdownMenu(
-                        entries = mapOf(
-                            0 to "Menu 0",
-                            1 to "Menu 1",
-                            2 to "Menu 2"
-                        )
+                        entries = state.districts, placeholder = userData.profile?.district
                     ) {
-
+                        viewModel.setDistrict(it)
                     }
                 }
                 Field(
@@ -299,21 +362,23 @@ class EditProfileActivity : ComponentActivity() {
                         .weight(1f)
                 ) {
                     ODropdownMenu(
-                        entries = mapOf(
-                            0 to "Menu 0",
-                            1 to "Menu 1",
-                            2 to "Menu 2"
-                        )
+                        entries = state.wards, placeholder = userData.profile?.ward
                     ) {
-
+                        viewModel.setWard(it)
                     }
                 }
             }
             Field(label = stringResource(id = R.string.address)) {
+                var isError by rememberSaveable {
+                    mutableStateOf(false)
+                }
                 OTextField(
-                    initialValue = userData.profile?.address ?: ""
+                    initialValue = userData.profile?.address ?: "",
+                    errorText = "Địa chỉ không được để trống!",
+                    isError = isError
                 ) {
-
+                    viewModel.setAddress(it)
+                    isError = it.isEmpty()
                 }
             }
         }

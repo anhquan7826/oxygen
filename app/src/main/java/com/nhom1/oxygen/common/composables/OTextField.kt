@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -18,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nhom1.oxygen.utils.extensions.oBorder
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun OTextField(
@@ -27,6 +28,8 @@ fun OTextField(
     placeholder: @Composable (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    errorText: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     onValueChange: (String) -> Unit
@@ -35,26 +38,33 @@ fun OTextField(
         mutableStateOf(initialValue)
     }
     TextField(
-        modifier = modifier
-            .fillMaxWidth()
-            .oBorder(),
+        modifier = modifier.fillMaxWidth(),
         value = value,
         onValueChange = {
             value = it
             onValueChange.invoke(it)
         },
+        isError = isError,
         shape = RoundedCornerShape(12.dp),
         placeholder = placeholder,
         leadingIcon = leading,
         trailingIcon = trailing,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
+        supportingText = {
+            if (isError && errorText != null) {
+                Text(text = errorText, fontSize = 10.sp)
+            }
+        },
         maxLines = 1,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color(0xFFF2F2F2),
             unfocusedContainerColor = Color(0xFFF2F2F2),
             focusedIndicatorColor = Color.Unspecified,
             unfocusedIndicatorColor = Color.Unspecified,
+            errorIndicatorColor = Color.Unspecified,
+            focusedSupportingTextColor = Color.Red,
+            unfocusedSupportingTextColor = Color.Red,
         )
     )
 }

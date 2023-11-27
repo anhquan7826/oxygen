@@ -91,7 +91,10 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
                         .padding(padding)
                         .fillMaxSize()
                 ) {
-                    OError(modifier = Modifier.align(Alignment.Center)) {
+                    OError(
+                        error = state.error,
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
                         viewModel.load()
                     }
                 }
@@ -107,7 +110,7 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
                 ) {
                     Box(modifier = Modifier.height(32.dp))
                     OOverallStatus(
-                        place = "${state.location!!.district}, ${state.location!!.city}",
+                        place = "${state.location!!.district}, ${state.location!!.province}",
                         country = state.location!!.country,
                         aqi = state.weatherCurrent!!.airQuality.aqi,
                         modifier = Modifier.padding(

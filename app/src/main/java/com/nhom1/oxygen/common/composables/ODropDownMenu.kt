@@ -30,6 +30,7 @@ fun <T : Any> ODropdownMenu(
     modifier: Modifier = Modifier,
     entries: Map<T, String>,
     defaultSelected: T? = null,
+    placeholder: String? = null,
     onSelected: (T) -> Unit
 ) {
     var expanded by remember {
@@ -50,7 +51,7 @@ fun <T : Any> ODropdownMenu(
                 .fillMaxWidth()
                 .menuAnchor()
                 .oBorder(),
-            value = entries[selected] ?: "",
+            value = entries[selected] ?: placeholder ?: "",
             onValueChange = {},
             readOnly = true,
             shape = RoundedCornerShape(12.dp),
@@ -69,7 +70,7 @@ fun <T : Any> ODropdownMenu(
             )
         )
         ExposedDropdownMenu(
-            expanded = expanded,
+            expanded = entries.isNotEmpty() && expanded,
             onDismissRequest = { expanded = false }
         ) {
             for (entry in entries) {

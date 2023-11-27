@@ -183,7 +183,7 @@ class DetailsActivity : ComponentActivity() {
                                 text = stringResource(R.string.location)
                             )
                             Text(
-                                text = "${location!!.suburb}, ${location!!.district}, ${location!!.city}",
+                                text = "${location!!.ward}, ${location!!.district}, ${location!!.province}",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold
                             )

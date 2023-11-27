@@ -2,9 +2,13 @@
 
 package com.nhom1.oxygen.common.composables
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +31,7 @@ import com.nhom1.oxygen.utils.extensions.oShadow
 fun OAppBar(
     title: String,
     leading: Painter,
+    trailing: (@Composable () -> Unit)? = null,
     onLeadingPressed: (() -> Unit)? = null,
     actions: List<Painter> = listOf(),
     onActionPressed: List<() -> Unit> = listOf(),
@@ -53,11 +58,21 @@ fun OAppBar(
             }
         },
         title = {
-            Text(
-                title,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 16.dp)
-            )
+            Row {
+                Text(
+                    title,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 16.dp)
+                )
+                Box(
+                    modifier = Modifier.height(28.dp)
+                ) {
+                    trailing?.invoke()
+                }
+            }
         },
         actions = {
             for (i in actions.indices) {
@@ -87,6 +102,9 @@ fun OAppBarPreview() {
         leading = painterResource(id = R.drawable.house),
         actions = listOf(
             painterResource(id = R.drawable.bell)
-        )
+        ),
+        trailing = {
+            CircularProgressIndicator()
+        }
     )
 }

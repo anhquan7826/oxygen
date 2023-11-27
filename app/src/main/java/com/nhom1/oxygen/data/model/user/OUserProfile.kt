@@ -4,8 +4,7 @@ import kotlin.math.pow
 
 data class OUserProfile(
     val sex: Boolean? = null,
-    val dateOfBirth: String? = null,
-    val country: String? = null,
+    val dateOfBirth: Long? = null,
     val province: String? = null,
     val district: String? = null,
     val ward: String? = null,
@@ -16,7 +15,7 @@ data class OUserProfile(
     val fullAddress: String?
         get() {
             return try {
-                "${address!!}, ${ward!!}, ${district!!}, ${province!!}, ${country!!}"
+                "${address!!}, ${ward!!}, ${district!!}, ${province!!}"
             } catch (_: Exception) {
                 null
             }

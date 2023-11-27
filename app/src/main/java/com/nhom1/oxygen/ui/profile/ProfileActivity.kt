@@ -54,6 +54,7 @@ import com.nhom1.oxygen.ui.profile.edit.EditProfileActivity
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
+import com.nhom1.oxygen.utils.getTimeString
 import com.nhom1.oxygen.utils.toJson
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -70,7 +71,9 @@ class ProfileActivity : ComponentActivity() {
             ActivityResultContracts.StartActivityForResult()
         ) {
             val edited = it.data?.getBooleanExtra("edited", false) ?: false
-            if (edited) viewModel.load()
+            if (edited) {
+                viewModel.load()
+            }
         }
         setContent {
             OxygenTheme {
@@ -166,7 +169,12 @@ class ProfileActivity : ComponentActivity() {
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
                                 Text(
-                                    text = state.userData!!.profile?.dateOfBirth
+                                    text = state.userData!!.profile?.dateOfBirth?.let { dob ->
+                                        getTimeString(
+                                            dob,
+                                            "dd/MM/yyyy"
+                                        )
+                                    }
                                         ?: stringResource(R.string.dob_not_set)
                                 )
                             }

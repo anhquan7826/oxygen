@@ -2,14 +2,12 @@ package com.nhom1.oxygen.ui.home
 
 import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.location.OLocation
-import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.listen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
-import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,7 +21,7 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     data class SearchState(
         val searchValue: String,
-        val result: List<Pair<OLocation, OWeather>>
+        val result: List<OLocation>
     )
 
     private val _state = MutableStateFlow(SearchState("", listOf()))
@@ -39,19 +37,18 @@ class SearchViewModel @Inject constructor(
                 }
             } else {
                 locationRepository.findLocation(query).listen { locations ->
-                    Single.zip(
-                        locations.map { location ->
-                            weatherRepository.getCurrentWeatherInfo(location)
-                        }
-                    ) {
-                        it.map { e -> e as OWeather }
-                    }.listen { weathers ->
+                    if (locations.isEmpty()) {
                         _state.update {
                             SearchState(
                                 searchValue = query,
-                                result = List(locations.size) { index ->
-                                    Pair(locations[index], weathers[index])
-                                }
+                                result = listOf()
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            SearchState(
+                                searchValue = query,
+                                result = locations
                             )
                         }
                     }

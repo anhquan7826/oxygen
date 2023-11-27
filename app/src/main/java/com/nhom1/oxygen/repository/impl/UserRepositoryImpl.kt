@@ -5,12 +5,18 @@ import android.content.Intent
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.nhom1.oxygen.common.constants.SPKeys
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.UserRepository
+import com.nhom1.oxygen.utils.listen
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 class UserRepositoryImpl(
     private val firebaseAuth: FirebaseAuth,
@@ -29,8 +35,30 @@ class UserRepositoryImpl(
         return googleSignInClient.signInIntent
     }
 
-    override fun signInWithCredential(credential: AuthCredential, onResult: (AuthResult) -> Unit) {
-        firebaseAuth.signInWithCredential(credential).addOnSuccessListener(onResult::invoke)
+    override fun signInWithCredential(
+        context: Context,
+        credential: AuthCredential,
+        onResult: (OxygenService.User.OnSignInResult?) -> Unit
+    ) {
+        firebaseAuth.signInWithCredential(credential).addOnSuccessListener {
+            if (it.user == null) {
+                onResult.invoke(null)
+            } else {
+                it.user!!.getIdToken(true).addOnSuccessListener { tokenResult ->
+                    context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+                        .edit().putString(
+                            SPKeys.token, tokenResult.token
+                        ).apply()
+                    service.user.onSignIn().listen(
+                        onError = {
+                            onResult.invoke(null)
+                        }
+                    ) { result ->
+                        onResult.invoke(result)
+                    }
+                }
+            }
+        }
     }
 
     override fun isSignedIn(): Boolean {
@@ -39,6 +67,21 @@ class UserRepositoryImpl(
 
     override fun getUserData(): Single<OUser> {
         return service.user.getInfo()
+    }
+
+    override fun setUserData(newUserData: OUser): Completable {
+        return service.user.setInfo(
+            OxygenService.User.SetInfoRequest(
+                name = newUserData.name,
+                profile = newUserData.profile!!
+            )
+        )
+    }
+
+    override fun setUserAvatar(avatar: File): Completable {
+        val requestBody = avatar.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val multipart = MultipartBody.Part.createFormData("image", avatar.name, requestBody)
+        return service.user.setAvatar(avatar = multipart)
     }
 
     override fun signOut() {

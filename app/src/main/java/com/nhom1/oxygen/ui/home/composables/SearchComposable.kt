@@ -3,7 +3,6 @@
 package com.nhom1.oxygen.ui.home.composables
 
 import android.content.Intent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,10 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OTextField
-import com.nhom1.oxygen.common.constants.aqiColors
 import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.SearchViewModel
-import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.oClip
 import com.nhom1.oxygen.utils.toJson
 
@@ -117,14 +112,13 @@ fun SearchComposable(viewModel: SearchViewModel) {
                         for (result in state.result) {
                             item {
                                 SearchResult(
-                                    result.second.airQuality.aqi,
-                                    result.first.name ?: result.first.district,
-                                    "${result.first.city}, ${result.first.country}"
+                                    0,
+                                    result.name ?: result.district,
+                                    "${result.province}, ${result.country}"
                                 ) {
-
                                     context.startActivity(
                                         Intent(context, DetailsActivity::class.java).putExtra(
-                                            "location", toJson(result.first)
+                                            "location", toJson(result)
                                         )
                                     )
                                 }
@@ -148,29 +142,29 @@ fun SearchResult(aqi: Int, result: String, location: String, onClick: () -> Unit
                 onClick.invoke()
             }
     ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .background(
-                    color = when {
-                        (aqi in 0..50) -> aqiColors[0]
-                        (aqi in 51..100) -> aqiColors[1]
-                        (aqi in 101..150) -> aqiColors[2]
-                        (aqi in 151..200) -> aqiColors[3]
-                        (aqi in 201..300) -> aqiColors[4]
-                        else -> aqiColors[5]
-                    }.copy(alpha = 0.25F),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .oBorder()
-        ) {
-            Text(
-                text = aqi.toString(),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
+//        Box(
+//            modifier = Modifier
+//                .size(48.dp)
+//                .background(
+//                    color = when {
+//                        (aqi in 0..50) -> aqiColors[0]
+//                        (aqi in 51..100) -> aqiColors[1]
+//                        (aqi in 101..150) -> aqiColors[2]
+//                        (aqi in 151..200) -> aqiColors[3]
+//                        (aqi in 201..300) -> aqiColors[4]
+//                        else -> aqiColors[5]
+//                    }.copy(alpha = 0.25F),
+//                    shape = RoundedCornerShape(12.dp)
+//                )
+//                .oBorder()
+//        ) {
+//            Text(
+//                text = aqi.toString(),
+//                fontSize = 16.sp,
+//                fontWeight = FontWeight.Bold,
+//                modifier = Modifier.align(Alignment.Center)
+//            )
+//        }
         Text(
             text = result,
             fontSize = 16.sp,

@@ -10,6 +10,8 @@ import com.nhom1.oxygen.utils.listen
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class HistoryRepositoryImpl(
     private val context: Context,
@@ -17,6 +19,7 @@ class HistoryRepositoryImpl(
 ) : HistoryRepository {
     private val sharedPreferences =
         context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+
     override fun addLocationHistory(): Completable {
         return Completable.create { completableEmitter ->
             val currentLat = sharedPreferences.getFloat(SPKeys.CURRENT_LAT, 0F).toDouble()
@@ -37,14 +40,16 @@ class HistoryRepositoryImpl(
     }
 
     override fun getTodayHistory(): Single<OHistory> {
-        // TODO: ...
-        return get7dHistory().map {
-            it.maxByOrNull { e -> e.time }!!
+        return service.history.getHistoryToday().map {
+            OHistory(
+                time = LocalDateTime.now().toEpochSecond(ZoneOffset.of("GMT+7")),
+                history = it
+            )
         }
     }
 
     override fun get7dHistory(): Single<List<OHistory>> {
-        return service.history.get7dHistory().map {
+        return service.history.getHistory7d().map {
             it.sortedByDescending { e -> e.time }
         }
     }

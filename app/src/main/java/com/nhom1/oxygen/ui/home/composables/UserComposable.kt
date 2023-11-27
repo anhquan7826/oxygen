@@ -70,8 +70,8 @@ fun UserComposable(viewModel: UserViewModel) {
             LoadState.LOADING -> {
                 Box(
                     modifier = Modifier
-                        .padding(it)
                         .fillMaxSize()
+                        .padding(it)
                 ) {
                     OLoading(
                         modifier = Modifier.align(Alignment.Center)
@@ -82,10 +82,13 @@ fun UserComposable(viewModel: UserViewModel) {
             LoadState.ERROR -> {
                 Box(
                     modifier = Modifier
-                        .padding(it)
                         .fillMaxSize()
+                        .padding(it)
                 ) {
-                    OError(error = state.error) {
+                    OError(
+                        error = state.error,
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
                         viewModel.load()
                     }
                 }

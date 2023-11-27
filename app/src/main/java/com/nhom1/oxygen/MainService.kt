@@ -18,13 +18,14 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
 import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.utils.constants.SPKeys
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.errorLog
 
 class MainService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var locationManager: LocationManager
 
-    private val minTimeInterval = 300000L
+    private val minTimeInterval = 60000L
     private val minDistance = 10F
 
 
@@ -41,6 +42,7 @@ class MainService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(1, buildPersistentNotification())
+        getCurrentLocation()
         trackLocation()
         return START_STICKY
     }
@@ -99,7 +101,11 @@ class MainService : Service() {
     }
 
     private fun onLocationUpdate(location: Location) {
-        sharedPreferences.edit().putFloat(SPKeys.CURRENT_LAT, location.latitude.toFloat())
-            .putFloat(SPKeys.CURRENT_LON, location.longitude.toFloat()).apply()
+        debugLog("Location updated: ${location.latitude}, ${location.longitude}")
+        sharedPreferences
+            .edit()
+            .putFloat(SPKeys.CURRENT_LAT, location.latitude.toFloat())
+            .putFloat(SPKeys.CURRENT_LON, location.longitude.toFloat())
+            .apply()
     }
 }

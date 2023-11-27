@@ -1,6 +1,9 @@
 package com.nhom1.oxygen.data.service
 
 import com.nhom1.oxygen.data.model.article.OArticle
+import com.nhom1.oxygen.data.model.divisions.ODistrict
+import com.nhom1.oxygen.data.model.divisions.OProvince
+import com.nhom1.oxygen.data.model.divisions.OWard
 import com.nhom1.oxygen.data.model.history.OHistory
 import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.data.model.location.OLocation
@@ -9,10 +12,13 @@ import com.nhom1.oxygen.data.model.user.OUserProfile
 import com.nhom1.oxygen.data.model.weather.OWeather
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
+import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 interface OxygenService {
@@ -38,6 +44,19 @@ interface OxygenService {
         fun setDiseases(
             @Body requestBody: SetDiseasesRequest
         ): Completable
+
+        data class OnSignInResult(
+            val name: String,
+            val email: String,
+            val avatar: String
+        )
+
+        @POST(OxygenAPI.User.ON_SIGN_IN)
+        fun onSignIn(): Single<OnSignInResult>
+
+        @Multipart
+        @POST(OxygenAPI.User.SET_AVATAR)
+        fun setAvatar(@Part("file") avatar: MultipartBody.Part): Completable
     }
 
     val user: User
@@ -90,12 +109,28 @@ interface OxygenService {
     val geocoding: Geocoding
 
     interface History {
-        @GET(OxygenAPI.History.GET_HISTORY)
-        fun get7dHistory(): Single<List<OHistory>>
+        @GET(OxygenAPI.History.GET_HISTORY_TODAY)
+        fun getHistoryToday(): Single<List<OHourlyHistory>>
+
+        @GET(OxygenAPI.History.GET_HISTORY_7D)
+        fun getHistory7d(): Single<List<OHistory>>
 
         @POST(OxygenAPI.History.ADD_HISTORY)
         fun addHistory(@Body requestBody: OHourlyHistory): Completable
     }
 
     val history: History
+
+    interface Division {
+        @GET(OxygenAPI.Division.GET_PROVINCES)
+        fun getProvinces(): Single<List<OProvince>>
+
+        @GET(OxygenAPI.Division.GET_DISTRICTS)
+        fun getDistricts(@Query("codename") provinceId: String): Single<List<ODistrict>>
+
+        @GET(OxygenAPI.Division.GET_WARDS)
+        fun getWards(@Query("codename") districtId: String): Single<List<OWard>>
+    }
+
+    val division: Division
 }

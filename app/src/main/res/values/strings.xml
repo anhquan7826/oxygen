@@ -88,4 +88,10 @@
     <string name="province_city">Tỉnh, thành phố</string>
     <string name="district">Quận, huyện, thị xã</string>
     <string name="ward">Phường, xã</string>
+    <string name="name_cant_be_empty">Tên không được để trống!</string>
+    <string name="select">Chọn</string>
+    <string name="date_of_birth">Ngày sinh</string>
+    <string name="ok">OK</string>
+    <string name="please_fill_all_forms">Vui lòng điền tất cả các trường!</string>
+    <string name="cannot_save">Không thể lưu!</string>
 </resources>
