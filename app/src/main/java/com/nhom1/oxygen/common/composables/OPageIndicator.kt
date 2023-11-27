@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nhom1.oxygen.common.constants.OxygenColors
 
 @Composable
 fun OPageIndicator(
@@ -44,7 +45,7 @@ fun OPageIndicator(
                         )
                     )
                     .background(
-                        color = if (index == currentIndex) Color(0xFF57A000) else Color(0xFFD5E7BF)
+                        color = if (index == currentIndex) OxygenColors.mainColor else OxygenColors.secondaryColor
                     )
                     .clickable {
                         onClick.invoke(index)

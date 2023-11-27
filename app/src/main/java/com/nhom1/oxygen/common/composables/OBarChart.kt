@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nhom1.oxygen.common.theme.oxygenColor
+import com.nhom1.oxygen.common.constants.OxygenColors
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import kotlin.random.Random
@@ -115,7 +115,7 @@ fun OBarChart(
                             )
                         )
                         drawLine(
-                            color = oxygenColor,
+                            color = OxygenColors.mainColor,
                             start = Offset(0F, size.height / 2),
                             end = Offset(
                                 size.width / 2 - textLayout.size.width / 2 - 4,
@@ -130,7 +130,7 @@ fun OBarChart(
                             )
                         )
                         drawLine(
-                            color = oxygenColor,
+                            color = OxygenColors.mainColor,
                             start = Offset(
                                 size.width / 2 + textLayout.size.width / 2 + 4,
                                 size.height / 2
@@ -153,7 +153,7 @@ fun OBarChartPreview() {
                 OBarChartData.OBarData(
                     label = it.toString(),
                     value = Random.nextInt(10).toDouble(),
-                    color = oxygenColor,
+                    color = OxygenColors.mainColor,
                 ) {
 
                 }

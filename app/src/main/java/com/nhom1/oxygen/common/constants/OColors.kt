@@ -2,6 +2,12 @@ package com.nhom1.oxygen.common.constants
 
 import androidx.compose.ui.graphics.Color
 
+object OxygenColors {
+    val mainColor = Color(0xFF57A000)
+    val secondaryColor = Color(0xFFD5E7BF)
+    val containerColor = Color(0xFFF2F2F2)
+}
+
 val aqiColors = listOf(
     Color(0xFF00E400),
     Color(0xFFFFFF00),

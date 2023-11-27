@@ -3,15 +3,15 @@ package com.nhom1.oxygen.repository.impl
 import android.content.Context
 import com.nhom1.oxygen.data.model.history.OHistory
 import com.nhom1.oxygen.data.model.history.OHourlyHistory
+import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.HistoryRepository
 import com.nhom1.oxygen.utils.constants.SPKeys
+import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.listen
+import com.nhom1.oxygen.utils.now
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 
 class HistoryRepositoryImpl(
     private val context: Context,
@@ -22,14 +22,13 @@ class HistoryRepositoryImpl(
 
     override fun addLocationHistory(): Completable {
         return Completable.create { completableEmitter ->
-            val currentLat = sharedPreferences.getFloat(SPKeys.CURRENT_LAT, 0F).toDouble()
-            val currentLon = sharedPreferences.getFloat(SPKeys.CURRENT_LON, 0F).toDouble()
-            service.weather.getCurrent(currentLat, currentLon).listen { weather ->
+            val location = fromJson<OLocation>(sharedPreferences.getString(SPKeys.CURRENT_LOCATION, "")!!, OLocation::class.java)!!
+            service.weather.getCurrent(location.latitude, location.longitude).listen { weather ->
                 service.history.addHistory(
                     OHourlyHistory(
-                        latitude = currentLat,
-                        longitude = currentLon,
-                        time = Instant.now().epochSecond,
+                        latitude = location.latitude,
+                        longitude = location.longitude,
+                        time = now(),
                         aqi = weather.airQuality.aqi
                     )
                 ).listen {
@@ -42,7 +41,7 @@ class HistoryRepositoryImpl(
     override fun getTodayHistory(): Single<OHistory> {
         return service.history.getHistoryToday().map {
             OHistory(
-                time = LocalDateTime.now().toEpochSecond(ZoneOffset.of("GMT+7")),
+                time = now(),
                 history = it
             )
         }

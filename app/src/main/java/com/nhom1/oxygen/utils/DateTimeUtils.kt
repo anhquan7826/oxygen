@@ -14,3 +14,7 @@ fun getHour(epoch: Long): Int {
     val instant = Instant.ofEpochSecond(epoch)
     return instant.atZone(ZoneId.of("GMT+7")).hour
 }
+
+fun now(): Long {
+    return Instant.now().atZone(ZoneId.of("GMT+7")).toEpochSecond()
+}

@@ -9,6 +9,8 @@ import io.reactivex.rxjava3.core.Single
 interface LocationRepository {
     fun getCurrentLocation(): Single<OLocation>
 
+    fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation>
+
     fun findLocation(query: String): Single<List<OLocation>>
 
     fun getProvinces(): Single<List<OProvince>>

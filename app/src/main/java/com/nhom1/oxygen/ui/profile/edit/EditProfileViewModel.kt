@@ -28,7 +28,10 @@ class EditProfileViewModel @Inject constructor(
     )
 
     data class SaveProfileState(
-        val saveState: Boolean? = null,
+        /**
+         * idle: null, saving: false, saved: true
+         */
+        val saved: Boolean? = null,
         val error: String? = null
     )
 
@@ -168,7 +171,7 @@ class EditProfileViewModel @Inject constructor(
     fun saveUserData() {
         _saveState.update {
             SaveProfileState(
-                saveState = false
+                saved = false
             )
         }
         userRepository.setUserData(newUserData()).listen(
@@ -185,7 +188,7 @@ class EditProfileViewModel @Inject constructor(
             }
             _saveState.update {
                 SaveProfileState(
-                    saveState = true
+                    saved = true
                 )
             }
         }

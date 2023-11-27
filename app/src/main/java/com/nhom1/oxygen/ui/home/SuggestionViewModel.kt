@@ -39,16 +39,7 @@ class SuggestionViewModel @Inject constructor(
         _state.update {
             SuggestionState()
         }
-        locationRepository.getCurrentLocation().listen(
-            onError = { exception ->
-                _state.update {
-                    SuggestionState(
-                        state = LoadState.ERROR,
-                        error = exception.message
-                    )
-                }
-            }
-        ) { location ->
+        locationRepository.getCurrentLocation().listen { location ->
             Single.zip(
                 weatherRepository.getCurrentWeatherInfo(location),
                 articleRepository.getArticle()
@@ -71,5 +62,6 @@ class SuggestionViewModel @Inject constructor(
                 _state.update { result }
             }
         }
+
     }
 }

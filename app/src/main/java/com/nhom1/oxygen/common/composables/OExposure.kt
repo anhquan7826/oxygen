@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
+import com.nhom1.oxygen.common.constants.OxygenColors
 import com.nhom1.oxygen.common.constants.getAQIColor
-import com.nhom1.oxygen.common.theme.oxygenColor
 import com.nhom1.oxygen.utils.extensions.oBorder
 import kotlin.math.PI
 import kotlin.math.abs
@@ -162,7 +162,7 @@ fun OExposure(
         ) {
             for (i in 0..24) {
                 drawArc(
-                    color = oxygenColor,
+                    color = OxygenColors.mainColor,
                     startAngle = 119.5f + (i * 12.5f),
                     sweepAngle = if (i % 3 == 0) 1f else 0.5f,
                     useCenter = false,
@@ -183,7 +183,7 @@ fun OExposure(
                 val textLayout = textMeasurer.measure(
                     text = i.toString(),
                     style = TextStyle(
-                        color = oxygenColor,
+                        color = OxygenColors.mainColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Light
                     )

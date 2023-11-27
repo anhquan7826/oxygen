@@ -1,5 +1,6 @@
 package com.nhom1.oxygen.repository.impl
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.nhom1.oxygen.data.model.divisions.ODistrict
 import com.nhom1.oxygen.data.model.divisions.OProvince
@@ -8,6 +9,7 @@ import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.utils.constants.SPKeys
+import com.nhom1.oxygen.utils.fromJson
 import io.reactivex.rxjava3.core.Single
 
 class LocationRepositoryImpl(
@@ -17,13 +19,20 @@ class LocationRepositoryImpl(
     private val sharedPreferences =
         context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
+    @SuppressLint("MissingPermission")
     override fun getCurrentLocation(): Single<OLocation> {
-        val currentLat = sharedPreferences.getFloat(SPKeys.CURRENT_LAT, 0F).toDouble()
-        val currentLon = sharedPreferences.getFloat(SPKeys.CURRENT_LON, 0F).toDouble()
-        return service.geocoding.getLocation(
-            latitude = currentLat,
-            longitude = currentLon
-        )
+        return Single.create { emitter ->
+            emitter.onSuccess(
+                fromJson(
+                    sharedPreferences.getString(SPKeys.CURRENT_LOCATION, "")!!,
+                    OLocation::class.java
+                )!!
+            )
+        }
+    }
+
+    override fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation> {
+        return service.geocoding.getLocation(latitude, longitude)
     }
 
     override fun findLocation(query: String): Single<List<OLocation>> {

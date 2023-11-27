@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nhom1.oxygen.common.constants.OxygenColors
 
 @Composable
 fun OTextField(
@@ -32,6 +33,7 @@ fun OTextField(
     errorText: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    maxLines: Int = 1,
     onValueChange: (String) -> Unit
 ) {
     var value by rememberSaveable {
@@ -56,10 +58,10 @@ fun OTextField(
                 Text(text = errorText, fontSize = 10.sp)
             }
         },
-        maxLines = 1,
+        maxLines = maxLines,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFF2F2F2),
-            unfocusedContainerColor = Color(0xFFF2F2F2),
+            focusedContainerColor = OxygenColors.containerColor,
+            unfocusedContainerColor = OxygenColors.containerColor,
             focusedIndicatorColor = Color.Unspecified,
             unfocusedIndicatorColor = Color.Unspecified,
             errorIndicatorColor = Color.Unspecified,

@@ -40,10 +40,6 @@ class UserRepositoryMock : UserRepository {
         uid = "1"
     )
 
-    override fun isUserSignedIn(): Boolean {
-        return Firebase.auth.currentUser != null
-    }
-
     override fun getSignInIntent(context: Context): Intent {
         val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("420419796226-ruh6hr4v86okejj87pccrejp47duv8qk.apps.googleusercontent.com")
@@ -90,6 +86,10 @@ class UserRepositoryMock : UserRepository {
 
     override fun setUserAvatar(avatar: File): Completable {
         return Completable.create { it.onComplete() }.delay(500, TimeUnit.MILLISECONDS)
+    }
+
+    override fun setUserDiseases(diseases: List<String>): Completable {
+        return Completable.create { it.onComplete() }.delay(1, TimeUnit.SECONDS)
     }
 
     override fun signOut() {

@@ -26,8 +26,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Surface
@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
@@ -59,20 +60,29 @@ import com.nhom1.oxygen.common.composables.OChips
 import com.nhom1.oxygen.common.composables.ODatePickerDialog
 import com.nhom1.oxygen.common.composables.ODialog
 import com.nhom1.oxygen.common.composables.ODropdownMenu
+import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.composables.OOption
 import com.nhom1.oxygen.common.composables.OTextField
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.user.OUser
+import com.nhom1.oxygen.ui.medical.DeclareMedicalHistoryActivity
 import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getTimeString
+import com.nhom1.oxygen.utils.toJson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class EditProfileActivity : ComponentActivity() {
     private lateinit var userData: OUser
     private lateinit var viewModel: EditProfileViewModel
+
+    private var edited = false
+    private val declareMedicalHistoryLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            edited = it.data?.getBooleanExtra("edited", false) ?: false
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,13 +108,13 @@ class EditProfileActivity : ComponentActivity() {
         }
         val saveState by viewModel.saveState.collectAsState()
         LaunchedEffect(saveState) {
-            if (saveState.saveState == null && saveState.error != null) {
+            if (saveState.saved == null && saveState.error != null) {
                 Toast.makeText(
                     this@EditProfileActivity,
                     resources.getText(R.string.cannot_save).toString() + " (${saveState.error})",
                     Toast.LENGTH_SHORT
                 ).show()
-            } else if (saveState.saveState == true) {
+            } else if (saveState.saved == true) {
                 setResult(
                     RESULT_OK,
                     Intent().putExtra("edited", true)
@@ -120,7 +130,7 @@ class EditProfileActivity : ComponentActivity() {
                         if (viewModel.hasModified()) {
                             showCancelDialog = true
                         } else {
-                            setResult(RESULT_OK, Intent().putExtra("edited", false))
+                            setResult(RESULT_OK, Intent().putExtra("edited", edited))
                             finish()
                         }
                     },
@@ -139,8 +149,8 @@ class EditProfileActivity : ComponentActivity() {
                         }
                     },
                     trailing = {
-                        if (saveState.saveState == false) {
-                            CircularProgressIndicator()
+                        if (saveState.saved == false) {
+                            OLoading()
                         }
                     }
                 )
@@ -188,7 +198,12 @@ class EditProfileActivity : ComponentActivity() {
                         bottom = 16.dp
                     )
                 ) {
-                    // TODO: Go to medical history
+                    declareMedicalHistoryLauncher.launch(
+                        Intent(
+                            this@EditProfileActivity,
+                            DeclareMedicalHistoryActivity::class.java
+                        ).putExtra("userData", toJson(userData))
+                    )
                 }
             }
         }
@@ -201,7 +216,7 @@ class EditProfileActivity : ComponentActivity() {
                     showCancelDialog = false
                 },
                 onConfirm = {
-                    setResult(RESULT_OK, Intent().putExtra("edited", false))
+                    setResult(RESULT_OK, Intent().putExtra("edited", edited))
                     finish()
                 })
         }
@@ -268,7 +283,10 @@ class EditProfileActivity : ComponentActivity() {
             OTextField(
                 initialValue = userData.name,
                 isError = isError,
-                errorText = stringResource(R.string.name_cant_be_empty)
+                errorText = stringResource(R.string.name_cant_be_empty),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                ),
             ) {
                 viewModel.setName(it)
                 isError = it.isEmpty()
@@ -286,11 +304,10 @@ class EditProfileActivity : ComponentActivity() {
         }
         Field(label = stringResource(R.string.date_of_birth)) {
             OCard(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        showDatePicker = true
-                    }
+                modifier = modifier.fillMaxWidth(),
+                onClick = {
+                    showDatePicker = true
+                }
             ) {
                 Text(
                     text = dob?.let { getTimeString(it, "dd/MM/yyyy") } ?: ""
@@ -374,8 +391,11 @@ class EditProfileActivity : ComponentActivity() {
                 }
                 OTextField(
                     initialValue = userData.profile?.address ?: "",
-                    errorText = "Địa chỉ không được để trống!",
-                    isError = isError
+                    errorText = stringResource(R.string.address_cannot_be_empty),
+                    isError = isError,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
                 ) {
                     viewModel.setAddress(it)
                     isError = it.isEmpty()

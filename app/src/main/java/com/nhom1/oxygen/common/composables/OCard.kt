@@ -13,11 +13,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.nhom1.oxygen.common.constants.OxygenColors
 
 @Composable
 fun OCard(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Color(0xFFF2F2F2),
+    backgroundColor: Color = OxygenColors.containerColor,
     contentPadding: Dp = 16.dp,
     onClick: (() -> Unit)? = null,
     content: @Composable (BoxScope.() -> Unit),

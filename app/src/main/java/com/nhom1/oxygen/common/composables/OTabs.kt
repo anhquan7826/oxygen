@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nhom1.oxygen.common.theme.oxygenColor
+import com.nhom1.oxygen.common.constants.OxygenColors
 import com.nhom1.oxygen.utils.extensions.oShadow
 
 @Composable
@@ -38,7 +38,7 @@ fun OTabRow(
                         .padding(horizontal = it[selectedTabIndex].width / 4)
                         .height(3.dp)
                         .background(
-                            color = oxygenColor,
+                            color = OxygenColors.mainColor,
                             shape = RoundedCornerShape(
                                 topStart = 4.dp,
                                 topEnd = 4.dp,
@@ -62,7 +62,7 @@ fun OTabRow(
                         .padding(horizontal = it[selectedTabIndex].width / 4)
                         .height(3.dp)
                         .background(
-                            color = oxygenColor,
+                            color = OxygenColors.mainColor,
                             shape = RoundedCornerShape(
                                 topStart = 4.dp,
                                 topEnd = 4.dp,

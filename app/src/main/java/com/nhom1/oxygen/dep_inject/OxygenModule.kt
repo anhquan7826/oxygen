@@ -1,21 +1,23 @@
 package com.nhom1.oxygen.dep_inject
 
 import android.content.Context
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.nhom1.oxygen.data.service.OxygenAPI
 import com.nhom1.oxygen.data.service.OxygenInterceptor
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.ArticleRepository
 import com.nhom1.oxygen.repository.HistoryRepository
 import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.repository.PathologyRepository
+import com.nhom1.oxygen.repository.SettingRepository
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.repository.WeatherRepository
-import com.nhom1.oxygen.repository.impl.ArticleRepositoryImpl
-import com.nhom1.oxygen.repository.impl.HistoryRepositoryImpl
-import com.nhom1.oxygen.repository.impl.LocationRepositoryImpl
-import com.nhom1.oxygen.repository.impl.UserRepositoryImpl
-import com.nhom1.oxygen.repository.impl.WeatherRepositoryImpl
+import com.nhom1.oxygen.repository.impl.SettingRepositoryImpl
+import com.nhom1.oxygen.repository.mock.ArticleRepositoryMock
+import com.nhom1.oxygen.repository.mock.HistoryRepositoryMock
+import com.nhom1.oxygen.repository.mock.LocationRepositoryMock
+import com.nhom1.oxygen.repository.mock.PathologyRepositoryMock
+import com.nhom1.oxygen.repository.mock.UserRepositoryMock
+import com.nhom1.oxygen.repository.mock.WeatherRepositoryMock
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -79,19 +81,19 @@ internal object OxygenModule {
 
     @Provides
     @Singleton
-    fun provideAirQualityRepository(service: OxygenService): WeatherRepository {
-        return WeatherRepositoryImpl(service)
-//        return WeatherRepositoryMock()
+    fun provideWeatherRepository(service: OxygenService): WeatherRepository {
+//        return WeatherRepositoryImpl(service)
+        return WeatherRepositoryMock()
     }
 
     @Provides
     @Singleton
     fun provideUserRepository(service: OxygenService): UserRepository {
-        return UserRepositoryImpl(
-            firebaseAuth = Firebase.auth,
-            service = service
-        )
-//        return UserRepositoryMock()
+//        return UserRepositoryImpl(
+//            firebaseAuth = Firebase.auth,
+//            service = service
+//        )
+        return UserRepositoryMock()
     }
 
     @Provides
@@ -100,15 +102,15 @@ internal object OxygenModule {
         @ApplicationContext context: Context,
         service: OxygenService,
     ): LocationRepository {
-        return LocationRepositoryImpl(context, service)
-//        return LocationRepositoryMock()
+//        return LocationRepositoryImpl(context, service)
+        return LocationRepositoryMock()
     }
 
     @Provides
     @Singleton
     fun provideArticleRepository(service: OxygenService): ArticleRepository {
-        return ArticleRepositoryImpl(service)
-//        return ArticleRepositoryMock()
+//        return ArticleRepositoryImpl(service)
+        return ArticleRepositoryMock()
     }
 
     @Provides
@@ -117,7 +119,19 @@ internal object OxygenModule {
         @ApplicationContext context: Context,
         service: OxygenService
     ): HistoryRepository {
-        return HistoryRepositoryImpl(context, service)
-//        return HistoryRepositoryMock()
+//        return HistoryRepositoryImpl(context, service)
+        return HistoryRepositoryMock()
+    }
+
+    @Provides
+    @Singleton
+    fun providePathologyRepository(): PathologyRepository {
+        return PathologyRepositoryMock()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingRepository(@ApplicationContext context: Context): SettingRepository {
+        return SettingRepositoryImpl(context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE))
     }
 }

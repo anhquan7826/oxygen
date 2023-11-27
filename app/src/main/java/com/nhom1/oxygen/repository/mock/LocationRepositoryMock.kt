@@ -24,6 +24,24 @@ class LocationRepositoryMock : LocationRepository {
                     ward = "Thạch Hòa"
                 )
             )
+        }
+    }
+
+    override fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation> {
+        return Single.create {
+            it.onSuccess(
+                OLocation(
+                    name = "Vietnam National University – Hoa Lac Campus",
+                    province = "Hà Nội",
+                    country = "Vietnam",
+                    countryCode = "vn",
+                    district = "Thach That District",
+                    latitude = 21.0039985,
+                    longitude = 105.50181441601865,
+                    street = "Đường Làng Văn hóa",
+                    ward = "Thạch Hòa"
+                )
+            )
         }.delay(1000, TimeUnit.MILLISECONDS)
     }
 

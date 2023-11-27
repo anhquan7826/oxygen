@@ -28,12 +28,26 @@ class DetailsViewModel @Inject constructor(
     private val _state = MutableStateFlow(DetailState())
     val state = _state.asStateFlow()
 
-    fun load(location: OLocation) {
+    fun load(
+        location: OLocation,
+        weatherCurrent: OWeather? = null,
+        weather24h: List<OWeather>? = null,
+        weather7d: List<OWeather>? = null
+    ) {
         _state.update { DetailState() }
         Single.zip(
-            weatherRepository.getCurrentWeatherInfo(location),
-            weatherRepository.getWeatherInfoIn24h(location),
-            weatherRepository.getWeatherInfoIn7d(location)
+            if (weatherCurrent != null)
+                Single.create { it.onSuccess(weatherCurrent) }
+            else
+                weatherRepository.getCurrentWeatherInfo(location),
+            if (weather24h != null)
+                Single.create { it.onSuccess(weather24h) }
+            else
+                weatherRepository.getWeatherInfoIn24h(location),
+            if (weather7d != null)
+                Single.create { it.onSuccess(weather7d) }
+            else
+                weatherRepository.getWeatherInfoIn7d(location)
         ) { current, next24h, next7d ->
             DetailState(
                 state = LoadState.LOADED,

@@ -94,4 +94,9 @@
     <string name="ok">OK</string>
     <string name="please_fill_all_forms">Vui lòng điền tất cả các trường!</string>
     <string name="cannot_save">Không thể lưu!</string>
+    <string name="analyze_pathology">Phân tích bệnh lý</string>
+    <string name="analyzing">Đang phân tích</string>
+    <string name="detected_diseases">Các bệnh phát hiện được</string>
+    <string name="unidentified">Chưa xác định</string>
+    <string name="address_cannot_be_empty">Địa chỉ không được để trống!</string>
 </resources>

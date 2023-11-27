@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
-import com.nhom1.oxygen.common.theme.oxygenColor
+import com.nhom1.oxygen.common.constants.OxygenColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -44,8 +44,8 @@ fun <T : Any> OChips(modifier: Modifier = Modifier, entries: Map<T, String>, ini
                     }
                 },
                 colors = FilterChipDefaults.filterChipColors(
-                    containerColor = Color(0xFFD5E7BF),
-                    selectedContainerColor = oxygenColor,
+                    containerColor = OxygenColors.secondaryColor,
+                    selectedContainerColor = OxygenColors.mainColor,
                     selectedLabelColor = Color.White,
                     selectedLeadingIconColor = Color.White,
                     labelColor = Color.Black,

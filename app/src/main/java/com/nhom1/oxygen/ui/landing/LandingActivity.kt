@@ -37,9 +37,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import com.nhom1.oxygen.MainService
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OButtonPrimary
-import com.nhom1.oxygen.common.composables.OButtonSecondary
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.ui.home.HomeActivity
@@ -60,7 +60,7 @@ class LandingActivity : ComponentActivity() {
     private lateinit var pagerState: PagerState
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-        toNextPage()
+        if (it) toNextPage()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -174,12 +174,6 @@ class LandingActivity : ComponentActivity() {
                     ) {
                         permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
-                    OButtonSecondary(
-                        text = stringResource(R.string.skip),
-                        minWidth = 128.dp
-                    ) {
-                        toNextPage()
-                    }
                 }
             }
         ) {
@@ -241,12 +235,6 @@ class LandingActivity : ComponentActivity() {
                             toNextPage()
                         }
                     }
-                    OButtonSecondary(
-                        text = stringResource(R.string.skip),
-                        minWidth = 128.dp
-                    ) {
-                        toNextPage()
-                    }
                 }
             }
         ) {
@@ -288,7 +276,8 @@ class LandingActivity : ComponentActivity() {
             }
         } else {
             ConfigUtil.firstLaunch = false
-            if (!userRepository.isUserSignedIn()) {
+            MainService.startService(this)
+            if (!userRepository.isSignedIn()) {
                 startActivity(Intent(this@LandingActivity, LoginActivity::class.java))
             } else {
                 startActivity(Intent(this@LandingActivity, HomeActivity::class.java))

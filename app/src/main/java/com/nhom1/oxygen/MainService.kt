@@ -10,23 +10,53 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationManager
-import android.os.Build
 import android.os.IBinder
+import android.os.Looper
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.nhom1.oxygen.repository.HistoryRepository
+import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.utils.constants.SPKeys
-import com.nhom1.oxygen.utils.debugLog
-import com.nhom1.oxygen.utils.errorLog
+import com.nhom1.oxygen.utils.getHour
+import com.nhom1.oxygen.utils.infoLog
+import com.nhom1.oxygen.utils.listen
+import com.nhom1.oxygen.utils.now
+import com.nhom1.oxygen.utils.toJson
+import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDateTime
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainService : Service() {
+    companion object {
+        fun startService(context: Context) {
+            context.stopService(Intent(context, MainService::class.java))
+            context.startForegroundService(Intent(context, MainService::class.java))
+        }
+    }
+
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var locationManager: LocationManager
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    private val minTimeInterval = 60000L
-    private val minDistance = 10F
+    @Inject
+    lateinit var locationRepository: LocationRepository
+
+    @Inject
+    lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var historyRepository: HistoryRepository
+
+    private val minTimeInterval = 300000L
 
 
     override fun onCreate() {
@@ -35,14 +65,15 @@ class MainService : Service() {
             applicationContext.packageName, Context.MODE_PRIVATE
         )
         locationManager = applicationContext.getSystemService(LocationManager::class.java)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         configureNotificationChannel()
     }
 
     override fun onBind(intent: Intent): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        infoLog("${this::class.simpleName}: Started.")
         startForeground(1, buildPersistentNotification())
-        getCurrentLocation()
         trackLocation()
         return START_STICKY
     }
@@ -67,45 +98,48 @@ class MainService : Service() {
             ).build()
     }
 
-    private fun getCurrentLocation() {
-        val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(this)
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationProvider.lastLocation.addOnSuccessListener {
-                onLocationUpdate(it)
-            }.addOnFailureListener {
-                errorLog("${this::class.simpleName}: Cannot get current location.")
-            }
-        }
-    }
-
     private fun trackLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                locationManager.requestLocationUpdates(
-                    LocationManager.FUSED_PROVIDER, minTimeInterval, minDistance
-                ) {
-                    onLocationUpdate(it)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) return
+        infoLog("${this::class.simpleName}: Tracking user's location: ${LocalDateTime.now()}.")
+        fusedLocationProviderClient.requestLocationUpdates(
+            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, minTimeInterval).build(),
+            object : LocationCallback() {
+                override fun onLocationResult(result: LocationResult) {
+                    result.lastLocation?.let {
+                        onLocationUpdate(it.latitude, it.longitude)
+                    }
                 }
-            } else {
-                locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, minTimeInterval, minDistance
-                ) {
-                    onLocationUpdate(it)
-                }
-            }
-        }
+            },
+            Looper.getMainLooper()
+        )
     }
 
-    private fun onLocationUpdate(location: Location) {
-        debugLog("Location updated: ${location.latitude}, ${location.longitude}")
-        sharedPreferences
-            .edit()
-            .putFloat(SPKeys.CURRENT_LAT, location.latitude.toFloat())
-            .putFloat(SPKeys.CURRENT_LON, location.longitude.toFloat())
-            .apply()
+    private fun onLocationUpdate(latitude: Double, longitude: Double) {
+        infoLog("${this::class.simpleName}: User's location updated: $latitude, $longitude: ${LocalDateTime.now()}")
+        locationRepository.getLocationFromCoordinate(latitude, longitude).listen {
+            sharedPreferences
+                .edit()
+                .putString(SPKeys.CURRENT_LOCATION, toJson(it))
+                .apply()
+        }
+        addHistory()
+    }
+
+    private var prevHour = -1
+    private fun addHistory() {
+        if (userRepository.isSignedIn()) {
+            val hour = getHour(now())
+            if (prevHour < hour) {
+                historyRepository.addLocationHistory()
+                prevHour = hour
+            }
+        }
     }
 }

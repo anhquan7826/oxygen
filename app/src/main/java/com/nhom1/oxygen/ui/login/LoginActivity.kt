@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,8 +36,8 @@ import androidx.lifecycle.ViewModelProvider
 import coil.compose.AsyncImage
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OButton
+import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.theme.OxygenTheme
-import com.nhom1.oxygen.common.theme.oxygenColor
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -119,8 +118,7 @@ class LoginActivity : ComponentActivity() {
                 }
             }
             if (loginState.state == 1) {
-                CircularProgressIndicator(
-                    color = oxygenColor,
+                OLoading(
                     modifier = Modifier
                         .padding(top = 64.dp)
                         .size(64.dp)

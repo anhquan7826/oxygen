@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nhom1.oxygen.R
+import com.nhom1.oxygen.common.constants.OxygenColors
 import com.nhom1.oxygen.utils.extensions.oBorder
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,8 +64,8 @@ fun <T : Any> ODropdownMenu(
             },
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF2F2F2),
-                unfocusedContainerColor = Color(0xFFF2F2F2),
+                focusedContainerColor = OxygenColors.containerColor,
+                unfocusedContainerColor = OxygenColors.containerColor,
                 focusedIndicatorColor = Color.Unspecified,
                 unfocusedIndicatorColor = Color.Unspecified,
             )

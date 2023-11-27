@@ -150,10 +150,16 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
                         modifier = Modifier.padding(bottom = 32.dp)
                     ) {
                         context.startActivity(
-                            Intent(context, DetailsActivity::class.java).putExtra(
-                                "location",
-                                toJson(state.location!!)
-                            )
+                            Intent(context, DetailsActivity::class.java)
+                                .putExtra(
+                                    "location",
+                                    toJson(state.location!!)
+                                )
+                                .putExtra("weatherCurrent", toJson(state.weatherCurrent!!))
+                                .putExtra(
+                                    "weather24h",
+                                    state.weather24h!!.map { e -> toJson(e) }.toTypedArray()
+                                )
                         )
                     }
                 }

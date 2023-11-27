@@ -2,7 +2,7 @@ package com.nhom1.oxygen.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.nhom1.oxygen.common.constants.SPKeys
+import com.nhom1.oxygen.utils.constants.SPKeys
 
 object ConfigUtil {
     private lateinit var sharedPreferences: SharedPreferences
@@ -12,8 +12,8 @@ object ConfigUtil {
     }
 
     var firstLaunch: Boolean
-        get() = sharedPreferences.getBoolean(SPKeys.firstLaunch, true)
+        get() = sharedPreferences.getBoolean(SPKeys.FIRST_LAUNCH, true)
         set(value) {
-            sharedPreferences.edit().putBoolean(SPKeys.firstLaunch, value).apply()
+            sharedPreferences.edit().putBoolean(SPKeys.FIRST_LAUNCH, value).apply()
         }
 }

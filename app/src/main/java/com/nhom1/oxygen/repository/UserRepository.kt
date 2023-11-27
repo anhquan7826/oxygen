@@ -10,7 +10,6 @@ import io.reactivex.rxjava3.core.Single
 import java.io.File
 
 interface UserRepository {
-    fun isUserSignedIn(): Boolean
 
     fun getSignInIntent(context: Context): Intent
 
@@ -23,6 +22,8 @@ interface UserRepository {
     fun setUserData(newUserData: OUser): Completable
 
     fun setUserAvatar(avatar: File): Completable
+
+    fun setUserDiseases(diseases: List<String>): Completable
 
     fun signOut()
 }

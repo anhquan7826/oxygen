@@ -42,9 +42,11 @@ import com.nhom1.oxygen.ui.history.HistoryActivity
 import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.home.UserViewModel
 import com.nhom1.oxygen.ui.login.LoginActivity
+import com.nhom1.oxygen.ui.medical.DeclareMedicalHistoryActivity
 import com.nhom1.oxygen.ui.profile.ProfileActivity
 import com.nhom1.oxygen.ui.settings.SettingsActivity
 import com.nhom1.oxygen.utils.constants.LoadState
+import com.nhom1.oxygen.utils.toJson
 
 @Composable
 fun UserComposable(viewModel: UserViewModel) {
@@ -162,7 +164,12 @@ fun UserComposable(viewModel: UserViewModel) {
                         bottom = 16.dp
                     )
                 ) {
-                    // TODO: Go to medical history
+                    context.startActivity(
+                        Intent(
+                            context,
+                            DeclareMedicalHistoryActivity::class.java
+                        ).putExtra("userData", toJson(state.userData!!))
+                    )
                 }
                 OOption(
                     leading = painterResource(id = R.drawable.settings_colored),

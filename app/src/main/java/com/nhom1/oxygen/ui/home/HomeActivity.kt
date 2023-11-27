@@ -2,7 +2,6 @@
 
 package com.nhom1.oxygen.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,11 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
-import com.nhom1.oxygen.MainService
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.AutoSizeText
 import com.nhom1.oxygen.common.theme.OxygenTheme
-import com.nhom1.oxygen.ui.home.composables.MapComposable
 import com.nhom1.oxygen.ui.home.composables.OverviewComposable
 import com.nhom1.oxygen.ui.home.composables.SearchComposable
 import com.nhom1.oxygen.ui.home.composables.SuggestionComposable
@@ -61,7 +58,7 @@ class HomeActivity : ComponentActivity() {
     private lateinit var coroutineScope: CoroutineScope
 
     private val items = mapOf(
-        0 to "overview", 1 to "search", 2 to "map", 3 to "suggestion", 4 to "user"
+        0 to "overview", 1 to "search", 2 to "suggestion", 3 to "user"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,11 +77,6 @@ class HomeActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        startForegroundService(Intent(this, MainService::class.java))
     }
 
     @Composable
@@ -119,7 +111,6 @@ class HomeActivity : ComponentActivity() {
                                     if (currentPage == item.key) when (item.value) {
                                         "overview" -> painterResource(id = R.drawable.house)
                                         "search" -> painterResource(id = R.drawable.search_location)
-                                        "map" -> painterResource(id = R.drawable.place_colored)
                                         "suggestion" -> painterResource(id = R.drawable.news_colored)
                                         "user" -> painterResource(id = R.drawable.user_colored)
                                         else -> painterResource(id = 0)
@@ -127,7 +118,6 @@ class HomeActivity : ComponentActivity() {
                                     else when (item.value) {
                                         "overview" -> painterResource(id = R.drawable.house_outlined)
                                         "search" -> painterResource(id = R.drawable.search_location_monochrome)
-                                        "map" -> painterResource(id = R.drawable.place_outlined)
                                         "suggestion" -> painterResource(id = R.drawable.news_outlined)
                                         "user" -> painterResource(id = R.drawable.user_outlined)
                                         else -> painterResource(id = 0)
@@ -142,7 +132,6 @@ class HomeActivity : ComponentActivity() {
                                     text = when (item.value) {
                                         "overview" -> stringResource(R.string.overview)
                                         "search" -> stringResource(R.string.search)
-                                        "map" -> stringResource(R.string.map)
                                         "suggestion" -> stringResource(R.string.news_suggestion)
                                         "user" -> stringResource(R.string.profile)
                                         else -> ""
@@ -168,9 +157,8 @@ class HomeActivity : ComponentActivity() {
                 when (currentPage) {
                     0 -> OverviewComposable(overviewViewModel)
                     1 -> SearchComposable(searchViewModel)
-                    2 -> MapComposable()
-                    3 -> SuggestionComposable(suggestionViewModel)
-                    4 -> UserComposable(userViewModel)
+                    2 -> SuggestionComposable(suggestionViewModel)
+                    3 -> UserComposable(userViewModel)
                 }
             }
         }

@@ -22,10 +22,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
+        MainService.startService(this)
         val isFirstTimeLaunch = ConfigUtil.firstLaunch
         if (isFirstTimeLaunch) {
             startActivity(Intent(this, LandingActivity::class.java))
-        } else if (!userRepository.isUserSignedIn()) {
+        } else if (!userRepository.isSignedIn()) {
             startActivity(Intent(this, LoginActivity::class.java))
         } else {
             startActivity(Intent(this, HomeActivity::class.java))

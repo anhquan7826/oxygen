@@ -72,22 +72,45 @@ import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getHour
 import com.nhom1.oxygen.utils.getTimeString
+import com.nhom1.oxygen.utils.now
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.time.Instant
 
 @AndroidEntryPoint
 class DetailsActivity : ComponentActivity() {
     private lateinit var viewModel: DetailsViewModel
     private var location: OLocation? = null
+    private var weatherCurrent: OWeather? = null
+    private var weather24h: List<OWeather>? = null
+    private var weather7d: List<OWeather>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         viewModel = ViewModelProvider(this)[DetailsViewModel::class.java]
-        if (intent.extras != null && intent.extras!!.containsKey("location")) {
-            location =
-                fromJson(intent.extras!!.getString("location").toString(), OLocation::class.java)
+        if (intent.extras != null) {
+            if (intent.extras!!.containsKey("location")) {
+                location = fromJson(
+                    intent.extras!!.getString("location").toString(),
+                    OLocation::class.java
+                )
+            }
+            if (intent.extras!!.containsKey("weatherCurrent")) {
+                weatherCurrent = fromJson(
+                    intent.extras!!.getString("weatherCurrent").toString(),
+                    OWeather::class.java
+                )
+            }
+            if (intent.extras!!.containsKey("weather24h")) {
+                weather7d = intent.extras!!.getStringArray("weather24h")?.map { e ->
+                    fromJson(e.toString(), OWeather::class.java)!!
+                }
+            }
+            if (intent.extras!!.containsKey("weather7d")) {
+                weather7d = intent.extras!!.getStringArray("weather7d")?.map { e ->
+                    fromJson(e.toString(), OWeather::class.java)!!
+                }
+            }
         }
         setContent {
             OxygenTheme {
@@ -102,7 +125,7 @@ class DetailsActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (location != null) viewModel.load(location!!)
+        if (location != null) viewModel.load(location!!, weatherCurrent, weather24h, weather7d)
     }
 
     @Composable
@@ -259,7 +282,7 @@ class DetailsActivity : ComponentActivity() {
                                         label = "${getTimeString(weather.time, "HH")}h",
                                         value = weather.airQuality.aqi.toDouble(),
                                         color = getAQIColor(weather.airQuality.aqi).copy(
-                                            alpha = if (getHour(Instant.now().epochSecond) >= getHour(
+                                            alpha = if (getHour(now()) >= getHour(
                                                     weather.time
                                                 )
                                             ) 1f else 0.5f
@@ -331,7 +354,7 @@ class DetailsActivity : ComponentActivity() {
                 when (it) {
                     0 -> ForecastDay(
                         time = getTimeString(
-                            Instant.now().epochSecond,
+                            now(),
                             "dd/MM/yyyy - HH:mm"
                         ),
                         now = current,

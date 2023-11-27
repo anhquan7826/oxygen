@@ -12,11 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.nhom1.oxygen.R
-import java.time.Instant
+import com.nhom1.oxygen.utils.now
 
 @Composable
 fun ODatePickerDialog(
-    initialDate: Long = Instant.now().epochSecond,
+    initialDate: Long = now(),
     onDismiss: () -> Unit,
     onDatePicked: (Long) -> Unit
 ) {
@@ -40,7 +40,7 @@ fun ODatePickerDialog(
         DatePicker(
             state = state,
             dateValidator = {
-                it < Instant.now().epochSecond * 1000
+                it < now() * 1000
             },
         )
     }

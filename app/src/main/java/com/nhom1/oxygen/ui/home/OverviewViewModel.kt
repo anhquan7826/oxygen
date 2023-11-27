@@ -16,8 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
-    val weather: WeatherRepository,
-    val location: LocationRepository,
+    private val weatherRepository: WeatherRepository,
+    private val locationRepository: LocationRepository,
 ) : ViewModel() {
     data class OverviewState(
         val state: LoadState = LoadState.LOADING,
@@ -40,14 +40,10 @@ class OverviewViewModel @Inject constructor(
                 state = LoadState.LOADING
             )
         }
-        location.getCurrentLocation().listen(
-            onError = { exception ->
-                onError(exception.message)
-            }
-        ) { location ->
+        locationRepository.getCurrentLocation().listen { location ->
             Single.zip(
-                weather.getCurrentWeatherInfo(location),
-                weather.getWeatherInfoIn24h(location)
+                weatherRepository.getCurrentWeatherInfo(location),
+                weatherRepository.getWeatherInfoIn24h(location)
             ) { current, next24h ->
                 OverviewState(
                     state = LoadState.LOADED,
@@ -70,6 +66,7 @@ class OverviewViewModel @Inject constructor(
                 }
             }
         }
+
     }
 
     private fun onError(error: String?) {
