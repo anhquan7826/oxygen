@@ -124,7 +124,7 @@ fun UserComposable(viewModel: UserViewModel) {
                     aqis = state.history!!.history.map { h -> h.aqi },
                 ) {
                     AsyncImage(
-                        state.userData!!.avt,
+                        state.userData!!.avatar,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

@@ -1,6 +1,7 @@
 package com.nhom1.oxygen.ui.home.composables
 
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +43,7 @@ import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.composables.OOverallStatus
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.ui.details.DetailsActivity
+import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.home.OverviewViewModel
 import com.nhom1.oxygen.utils.constants.LoadState.ERROR
 import com.nhom1.oxygen.utils.constants.LoadState.LOADING
@@ -49,9 +52,11 @@ import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.getTimeString
 import com.nhom1.oxygen.utils.toJson
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OverviewComposable(viewModel: OverviewViewModel) {
+fun OverviewComposable(viewModel: OverviewViewModel, homeController: HomeActivity.HomePageController) {
     val state by viewModel.overviewState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     Scaffold(
         topBar = {
@@ -118,7 +123,9 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
                         )
                     )
                     // TODO: Suggestion
-                    SuggestBox(suggestion = "Nên hạn chế hoạt động ngoài trời, đặc biệt vào buổi trưa. Sử dụng máy lọc không khí trong nhà và giữ cửa sổ kín để tránh khói và bụi. Nếu cần phải ra ngoài, đeo khẩu trang N95 để bảo vệ đường hô hấp.")
+                    SuggestBox(suggestion = "Nên hạn chế hoạt động ngoài trời, đặc biệt vào buổi trưa. Sử dụng máy lọc không khí trong nhà và giữ cửa sổ kín để tránh khói và bụi. Nếu cần phải ra ngoài, đeo khẩu trang N95 để bảo vệ đường hô hấp.") {
+                        homeController.goto(2)
+                    }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(
@@ -140,11 +147,11 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
                         )
                     }
                     Row {
-                        TempBox(value = 23.0, modifier = Modifier.weight(1f))
+                        TempBox(value = 23.0, modifier = Modifier.weight(1f), celsius = viewModel.tempUnit)
                         Box(Modifier.width(16.dp))
                         HumidityBox(value = 60.0, modifier = Modifier.weight(1f))
                     }
-                    WeatherForecastToday(forecasts = state.weather24h!!)
+                    WeatherForecastToday(forecasts = state.weather24h!!, celsius = viewModel.tempUnit)
                     OButtonPrimary(
                         text = stringResource(R.string.details),
                         modifier = Modifier.padding(bottom = 32.dp)
@@ -169,13 +176,11 @@ fun OverviewComposable(viewModel: OverviewViewModel) {
 }
 
 @Composable
-fun SuggestBox(suggestion: String) {
+fun SuggestBox(suggestion: String, onClick: () -> Unit) {
     OCard(modifier = Modifier
         .padding(bottom = 16.dp)
         .oBorder(),
-        onClick = {
-
-        }
+        onClick = onClick
     ) {
         Column {
             Row(
@@ -258,7 +263,7 @@ fun HumidityBox(modifier: Modifier = Modifier, value: Double) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = stringResource(R.string.temperature)
+                    text = stringResource(R.string.humidity)
                 )
                 Text(
                     text = value.toPrettyString() + "%",

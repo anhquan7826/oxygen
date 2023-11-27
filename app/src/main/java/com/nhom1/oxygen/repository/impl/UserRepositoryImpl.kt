@@ -1,7 +1,9 @@
 package com.nhom1.oxygen.repository.impl
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.AuthCredential
@@ -15,8 +17,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class UserRepositoryImpl(
     private val firebaseAuth: FirebaseAuth,
@@ -74,10 +75,19 @@ class UserRepositoryImpl(
         )
     }
 
-    override fun setUserAvatar(avatar: File): Completable {
-        val requestBody = avatar.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val multipart = MultipartBody.Part.createFormData("image", avatar.name, requestBody)
-        return service.user.setAvatar(avatar = multipart)
+    override fun setUserAvatar(avatar: Uri, contentResolver: ContentResolver): Completable {
+        return Completable.create { emitter ->
+            contentResolver.openFileDescriptor(avatar, "r").use { descriptor ->
+                descriptor?.fileDescriptor?.toRequestBody("multipart/form-data".toMediaTypeOrNull())?.let { requestBody ->
+                    val multipart = MultipartBody.Part.createFormData("image", "avatar", requestBody)
+                    service.user.setAvatar(avatar = multipart).listen(
+                        onError = { emitter.onError(it) }
+                    ) {
+                        emitter.onComplete()
+                    }
+                }
+            }
+        }
     }
 
     override fun setUserDiseases(diseases: List<String>): Completable {

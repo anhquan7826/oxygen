@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.repository.SettingRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.listen
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class OverviewViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val locationRepository: LocationRepository,
+    private val settingRepository: SettingRepository
 ) : ViewModel() {
     data class OverviewState(
         val state: LoadState = LoadState.LOADING,
@@ -29,6 +31,8 @@ class OverviewViewModel @Inject constructor(
 
     private val _overviewState = MutableStateFlow(OverviewState())
     val overviewState = _overviewState.asStateFlow()
+
+    val tempUnit: Boolean get() = settingRepository.temperatureUnit
 
     init {
         load()

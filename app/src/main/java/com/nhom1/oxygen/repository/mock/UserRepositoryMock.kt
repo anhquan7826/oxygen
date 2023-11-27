@@ -1,7 +1,9 @@
 package com.nhom1.oxygen.repository.mock
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
@@ -13,13 +15,15 @@ import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.UserRepository
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
-import java.io.File
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.TimeUnit
 
 class UserRepositoryMock : UserRepository {
     private var userDataMock = OUser(
         id = 1,
-        avt = "https://upload.wikimedia.org/wikipedia/commons/4/48/RedCat_8727.jpg",
+        avatar = "https://upload.wikimedia.org/wikipedia/commons/4/48/RedCat_8727.jpg",
         diseases = listOf(
             ODisease(
                 id = 0,
@@ -84,8 +88,15 @@ class UserRepositoryMock : UserRepository {
         }.delay(1000, TimeUnit.MILLISECONDS)
     }
 
-    override fun setUserAvatar(avatar: File): Completable {
-        return Completable.create { it.onComplete() }.delay(500, TimeUnit.MILLISECONDS)
+    override fun setUserAvatar(avatar: Uri, contentResolver: ContentResolver): Completable {
+        return Completable.create { emitter ->
+            contentResolver.openFileDescriptor(avatar, "r").use { descriptor ->
+                descriptor?.fileDescriptor?.toRequestBody("multipart/form-data".toMediaTypeOrNull())?.let { requestBody ->
+                    val multipart = MultipartBody.Part.createFormData("image", "avatar", requestBody)
+                    emitter.onComplete()
+                }
+            }
+        }
     }
 
     override fun setUserDiseases(diseases: List<String>): Completable {

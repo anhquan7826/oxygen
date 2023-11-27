@@ -1,7 +1,7 @@
 package com.nhom1.oxygen.ui.profile.edit
 
+import android.content.Context
 import android.net.Uri
-import androidx.core.net.toFile
 import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.model.user.OUserProfile
@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,7 +56,7 @@ class EditProfileViewModel @Inject constructor(
     fun load(initialUserData: OUser) {
         this.initialUserData = initialUserData
 
-        currentAvt = Uri.parse(initialUserData.avt)
+        currentAvt = Uri.parse(initialUserData.avatar)
         currentName = initialUserData.name
         currentDob = initialUserData.profile?.dateOfBirth
         currentSex = initialUserData.profile?.sex
@@ -143,7 +144,7 @@ class EditProfileViewModel @Inject constructor(
 
     fun hasModified(): Boolean {
         return when {
-            currentAvt.toString() != initialUserData.avt -> true
+            currentAvt.toString() != initialUserData.avatar -> true
             currentName != initialUserData.name -> true
             currentDob != initialUserData.profile?.dateOfBirth -> true
             currentSex != initialUserData.profile?.sex -> true
@@ -168,7 +169,7 @@ class EditProfileViewModel @Inject constructor(
         }
     }
 
-    fun saveUserData() {
+    fun saveUserData(context: Context) {
         _saveState.update {
             SaveProfileState(
                 saved = false
@@ -183,8 +184,11 @@ class EditProfileViewModel @Inject constructor(
                 }
             }
         ) {
-            if (currentAvt.toString() != initialUserData.avt) {
-                userRepository.setUserAvatar(currentAvt.toFile())
+            if (currentAvt.toString() != initialUserData.avatar) {
+                context.contentResolver.openFileDescriptor(currentAvt, "r").use {
+                    it?.fileDescriptor?.toRequestBody()
+                }
+                userRepository.setUserAvatar(currentAvt, context.contentResolver)
             }
             _saveState.update {
                 SaveProfileState(

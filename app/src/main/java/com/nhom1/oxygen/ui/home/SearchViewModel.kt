@@ -8,6 +8,7 @@ import com.nhom1.oxygen.utils.listen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -16,37 +17,49 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    locationRepository: LocationRepository,
-    weatherRepository: WeatherRepository
+    private val locationRepository: LocationRepository,
+    private val weatherRepository: WeatherRepository
 ) : ViewModel() {
     data class SearchState(
-        val searchValue: String,
-        val result: List<OLocation>
+        val searchValue: String = "",
+        val result: List<OLocation> = listOf(),
+        val searchHistory: List<OLocation> = listOf(),
     )
 
-    private val _state = MutableStateFlow(SearchState("", listOf()))
+    private val _state = MutableStateFlow(SearchState())
     val state = _state.asStateFlow()
 
     private lateinit var emitter: ObservableEmitter<String>
 
     init {
+        load()
+    }
+
+    fun load() {
+        locationRepository.getSearchedLocation().listen { locations ->
+            _state.update {
+                it.copy(
+                    searchHistory = locations
+                )
+            }
+        }
         Observable.create { emitter = it }.debounce(1000, TimeUnit.MILLISECONDS).listen { query ->
             if (query.isEmpty()) {
                 _state.update {
-                    SearchState("", listOf())
+                    it.copy(searchValue = "", result = listOf())
                 }
             } else {
                 locationRepository.findLocation(query).listen { locations ->
                     if (locations.isEmpty()) {
                         _state.update {
-                            SearchState(
+                            it.copy(
                                 searchValue = query,
                                 result = listOf()
                             )
                         }
                     } else {
                         _state.update {
-                            SearchState(
+                            it.copy(
                                 searchValue = query,
                                 result = locations
                             )
@@ -59,5 +72,17 @@ class SearchViewModel @Inject constructor(
 
     fun onQueryChanged(value: String) {
         emitter.onNext(value)
+    }
+
+    fun saveLocation(location: OLocation) {
+        locationRepository.addSearchedLocation(location).listen(observeOn = Schedulers.io()) {
+            locationRepository.getSearchedLocation().listen { locations ->
+                _state.update {
+                    it.copy(
+                        searchHistory = locations
+                    )
+                }
+            }
+        }
     }
 }

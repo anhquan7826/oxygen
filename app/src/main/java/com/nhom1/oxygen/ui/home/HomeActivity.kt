@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,15 +20,14 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,21 +45,40 @@ import com.nhom1.oxygen.ui.home.composables.UserComposable
 import com.nhom1.oxygen.utils.extensions.oShadow
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.osmdroid.config.Configuration
 
 @AndroidEntryPoint
 class HomeActivity : ComponentActivity() {
+    inner class HomePageController(
+        val pagerState: PagerState,
+        private val keyboardController: SoftwareKeyboardController? = null
+    ) {
+        private val _currentPage = MutableStateFlow(0)
+        val currentPage = _currentPage.asStateFlow()
+
+        fun goto(page: Int) {
+            keyboardController?.hide()
+            _currentPage.update { page }
+            coroutineScope.launch {
+                pagerState.animateScrollToPage(page, 0F)
+            }
+        }
+    }
+
+    private val items = mapOf(
+        0 to "overview", 1 to "search", 2 to "suggestion", 3 to "user"
+    )
+    private lateinit var homeController: HomePageController
+
     private lateinit var overviewViewModel: OverviewViewModel
     private lateinit var searchViewModel: SearchViewModel
     private lateinit var suggestionViewModel: SuggestionViewModel
     private lateinit var userViewModel: UserViewModel
 
     private lateinit var coroutineScope: CoroutineScope
-
-    private val items = mapOf(
-        0 to "overview", 1 to "search", 2 to "suggestion", 3 to "user"
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,9 +87,12 @@ class HomeActivity : ComponentActivity() {
         searchViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
         suggestionViewModel = ViewModelProvider(this)[SuggestionViewModel::class.java]
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
-        Configuration.getInstance().load(this, getSharedPreferences("osmdroid", MODE_PRIVATE))
         setContent {
             coroutineScope = rememberCoroutineScope()
+            homeController = HomePageController(
+                rememberPagerState { items.size },
+                LocalSoftwareKeyboardController.current
+            )
             OxygenTheme {
                 Surface {
                     HomeView()
@@ -81,11 +103,7 @@ class HomeActivity : ComponentActivity() {
 
     @Composable
     private fun HomeView() {
-        val pagerState = rememberPagerState { items.size }
-        var currentPage by remember {
-            mutableIntStateOf(0)
-        }
-        val keyboardController = LocalSoftwareKeyboardController.current
+        val page by homeController.currentPage.collectAsState()
         Scaffold(
             bottomBar = {
                 NavigationBar(
@@ -95,20 +113,16 @@ class HomeActivity : ComponentActivity() {
                     for (item in items) {
                         NavigationBarItem(
                             alwaysShowLabel = false,
-                            selected = currentPage == item.key,
+                            selected = page == item.key,
                             onClick = {
-                                keyboardController?.hide()
-                                currentPage = item.key
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(currentPage, 0F)
-                                }
+                                homeController.goto(item.key)
                             },
                             colors = NavigationBarItemDefaults.colors(
                                 indicatorColor = Color.White
                             ),
                             icon = {
                                 Icon(
-                                    if (currentPage == item.key) when (item.value) {
+                                    if (page == item.key) when (item.value) {
                                         "overview" -> painterResource(id = R.drawable.house)
                                         "search" -> painterResource(id = R.drawable.search_location)
                                         "suggestion" -> painterResource(id = R.drawable.news_colored)
@@ -151,11 +165,11 @@ class HomeActivity : ComponentActivity() {
                 modifier = Modifier
                     .padding(it)
                     .fillMaxSize(),
-                state = pagerState,
+                state = homeController.pagerState,
                 userScrollEnabled = false,
             ) { currentPage ->
                 when (currentPage) {
-                    0 -> OverviewComposable(overviewViewModel)
+                    0 -> OverviewComposable(overviewViewModel, homeController)
                     1 -> SearchComposable(searchViewModel)
                     2 -> SuggestionComposable(suggestionViewModel)
                     3 -> UserComposable(userViewModel)

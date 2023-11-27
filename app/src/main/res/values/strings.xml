@@ -99,4 +99,8 @@
     <string name="detected_diseases">Các bệnh phát hiện được</string>
     <string name="unidentified">Chưa xác định</string>
     <string name="address_cannot_be_empty">Địa chỉ không được để trống!</string>
+    <string name="temperature_unit">Đơn vị nhiệt độ</string>
+    <string name="receive_notification">Nhận thông báo</string>
+    <string name="humidity">Độ ẩm</string>
+    <string name="recent_search">Tìm kiếm gần đây</string>
 </resources>

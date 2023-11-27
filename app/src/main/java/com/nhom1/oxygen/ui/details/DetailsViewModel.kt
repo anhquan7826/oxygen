@@ -3,6 +3,7 @@ package com.nhom1.oxygen.ui.details
 import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.weather.OWeather
+import com.nhom1.oxygen.repository.SettingRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.listen
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
+    private val settingRepository: SettingRepository
 ) : ViewModel() {
     data class DetailState(
         val state: LoadState = LoadState.LOADING,
@@ -27,6 +29,8 @@ class DetailsViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(DetailState())
     val state = _state.asStateFlow()
+
+    val tempUnit: Boolean get() = settingRepository.temperatureUnit
 
     fun load(
         location: OLocation,

@@ -2,6 +2,7 @@ package com.nhom1.oxygen.repository.impl
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.nhom1.oxygen.data.database.OxygenDatabase
 import com.nhom1.oxygen.data.model.divisions.ODistrict
 import com.nhom1.oxygen.data.model.divisions.OProvince
 import com.nhom1.oxygen.data.model.divisions.OWard
@@ -10,11 +11,13 @@ import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.fromJson
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 class LocationRepositoryImpl(
     private val context: Context,
     private val service: OxygenService,
+    private val database: OxygenDatabase
 ) : LocationRepository {
     private val sharedPreferences =
         context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
@@ -49,5 +52,13 @@ class LocationRepositoryImpl(
 
     override fun getWards(districtId: String): Single<List<OWard>> {
         return service.division.getWards(districtId)
+    }
+
+    override fun getSearchedLocation(): Single<List<OLocation>> {
+        return database.searchedLocationDao().getSearchedLocation()
+    }
+
+    override fun addSearchedLocation(location: OLocation): Completable {
+        return database.searchedLocationDao().addSearchedLocation(location)
     }
 }

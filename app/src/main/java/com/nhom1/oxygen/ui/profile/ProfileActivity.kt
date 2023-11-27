@@ -179,7 +179,7 @@ class ProfileActivity : ComponentActivity() {
                                 )
                             }
                             AsyncImage(
-                                state.userData!!.avt,
+                                state.userData!!.avatar,
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier

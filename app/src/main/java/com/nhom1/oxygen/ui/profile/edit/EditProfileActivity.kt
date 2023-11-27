@@ -139,7 +139,7 @@ class EditProfileActivity : ComponentActivity() {
                     ),
                     onActionPressed = listOf {
                         if (viewModel.canSave()) {
-                            viewModel.saveUserData()
+                            viewModel.saveUserData(this)
                         } else {
                             Toast.makeText(
                                 this,
@@ -176,7 +176,7 @@ class EditProfileActivity : ComponentActivity() {
                     modifier = Modifier
                         .padding(bottom = 32.dp)
                         .align(Alignment.CenterHorizontally),
-                    initialImage = Uri.parse(userData.avt),
+                    initialImage = Uri.parse(userData.avatar),
                     viewModel = viewModel
                 )
                 NameField(

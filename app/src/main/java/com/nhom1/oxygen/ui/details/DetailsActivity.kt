@@ -236,6 +236,7 @@ class DetailsActivity : ComponentActivity() {
                                 current = state.weatherCurrent!!,
                                 next24h = state.weather24h!!,
                                 next7d = state.weather7d!!,
+                                celsius = viewModel.tempUnit,
                                 modifier = Modifier.padding(bottom = 32.dp)
                             )
                         }
@@ -322,7 +323,8 @@ class DetailsActivity : ComponentActivity() {
         modifier: Modifier = Modifier,
         current: OWeather,
         next24h: List<OWeather>,
-        next7d: List<OWeather>
+        next7d: List<OWeather>,
+        celsius: Boolean = true,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -330,7 +332,7 @@ class DetailsActivity : ComponentActivity() {
         ) {
             Text(
                 text = stringResource(R.string.weather_forecast),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
             val pagerState = rememberPagerState { 2 }
             val coroutineScope = rememberCoroutineScope()
@@ -358,10 +360,11 @@ class DetailsActivity : ComponentActivity() {
                             "dd/MM/yyyy - HH:mm"
                         ),
                         now = current,
-                        next24h = next24h
+                        next24h = next24h,
+                        celsius = celsius
                     )
 
-                    1 -> ForecastWeek(forecasts = next7d)
+                    1 -> ForecastWeek(forecasts = next7d, celsius = celsius)
                 }
             }
         }
@@ -427,6 +430,7 @@ class DetailsActivity : ComponentActivity() {
                     unit = "µg/m3",
                     modifier = Modifier
                         .weight(1f)
+                        .height(100.dp)
                         .padding(end = 4.dp)
                 )
                 IndexCard(
@@ -435,6 +439,7 @@ class DetailsActivity : ComponentActivity() {
                     unit = "µg/m3",
                     modifier = Modifier
                         .weight(1f)
+                        .height(100.dp)
                         .padding(start = 4.dp)
                 )
             }
@@ -447,6 +452,7 @@ class DetailsActivity : ComponentActivity() {
                     unit = "µg/m3",
                     modifier = Modifier
                         .weight(1f)
+                        .height(100.dp)
                         .padding(end = 4.dp)
                 )
                 IndexCard(
@@ -455,6 +461,7 @@ class DetailsActivity : ComponentActivity() {
                     unit = "µg/m3",
                     modifier = Modifier
                         .weight(1f)
+                        .height(100.dp)
                         .padding(start = 4.dp)
                 )
             }
@@ -466,6 +473,7 @@ class DetailsActivity : ComponentActivity() {
                     unit = "µg/m3",
                     modifier = Modifier
                         .weight(1f)
+                        .height(100.dp)
                         .padding(end = 4.dp)
                 )
                 IndexCard(
@@ -475,6 +483,7 @@ class DetailsActivity : ComponentActivity() {
                     unit = "µg/m3",
                     modifier = Modifier
                         .weight(1f)
+                        .height(100.dp)
                         .padding(start = 4.dp)
                 )
             }

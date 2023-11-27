@@ -1,14 +1,18 @@
 package com.nhom1.oxygen.repository.mock
 
+import com.nhom1.oxygen.data.database.OxygenDatabase
 import com.nhom1.oxygen.data.model.divisions.ODistrict
 import com.nhom1.oxygen.data.model.divisions.OProvince
 import com.nhom1.oxygen.data.model.divisions.OWard
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.repository.LocationRepository
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import java.util.concurrent.TimeUnit
 
-class LocationRepositoryMock : LocationRepository {
+class LocationRepositoryMock(
+    private val database: OxygenDatabase
+) : LocationRepository {
     override fun getCurrentLocation(): Single<OLocation> {
         return Single.create {
             it.onSuccess(
@@ -196,5 +200,13 @@ class LocationRepositoryMock : LocationRepository {
                 )
             )
         }.delay(250, TimeUnit.MILLISECONDS)
+    }
+
+    override fun getSearchedLocation(): Single<List<OLocation>> {
+        return database.searchedLocationDao().getSearchedLocation()
+    }
+
+    override fun addSearchedLocation(location: OLocation): Completable {
+        return database.searchedLocationDao().addSearchedLocation(location)
     }
 }
