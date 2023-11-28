@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -48,8 +49,11 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OBarChart
@@ -62,6 +66,7 @@ import com.nhom1.oxygen.common.constants.OxygenColors
 import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.history.OHourlyHistory
+import com.nhom1.oxygen.utils.bitmapDescriptor
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.getTimeString
 import dagger.hilt.android.AndroidEntryPoint
@@ -169,7 +174,7 @@ class HistoryActivity : ComponentActivity() {
 
                                     val camState = rememberCameraPositionState(key = pagerState.currentPage.toString())
                                     if (!pagerState.isScrollInProgress && it == pagerState.currentPage) {
-                                        LaunchedEffect(pagerState.currentPage) {
+                                        LaunchedEffect(true) {
                                             camState.animate(
                                                 update = newLatLngBounds(
                                                     bounds, 20
@@ -303,22 +308,32 @@ class HistoryActivity : ComponentActivity() {
                         width = 3f,
                         jointType = JointType.ROUND
                     )
+                    for (h in history) {
+                        Marker(
+                            state = rememberMarkerState(position = LatLng(h.latitude, h.longitude)),
+                            draggable = false,
+                            icon = bitmapDescriptor(
+                                this@HistoryActivity, R.drawable.radio_button_unchecked
+                            ),
+                            anchor = Offset(0.5f, 0.5f)
+                        )
+                    }
                     if (selectedPosition != null) {
-//                        Marker(
-//                            state = MarkerState(
-//                                position = LatLng(
-//                                    selectedPosition.latitude,
-//                                    selectedPosition.longitude
-//                                )
-//                            ),
-//                            draggable = false,
-//                            title = "${
-//                                getTimeString(
-//                                    selectedPosition.time,
-//                                    "HH"
-//                                )
-//                            }h, ${selectedPosition.aqi}",
-//                        )
+                        Marker(
+                            state = MarkerState(
+                                position = LatLng(
+                                    selectedPosition.latitude,
+                                    selectedPosition.longitude
+                                )
+                            ),
+                            draggable = false,
+                            title = "${
+                                getTimeString(
+                                    selectedPosition.time,
+                                    "HH"
+                                )
+                            }h, ${selectedPosition.aqi}",
+                        )
                     }
                 }
             }
