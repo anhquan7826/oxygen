@@ -100,7 +100,7 @@
     <string name="no_history">Không có lịch sử!</string>
     <string name="notification">Thông báo</string>
     <string name="no_notification">Không có thông báo</string>
-    <string name="enter_pathology_here">Khai bái bệnh lý tại đây.</string>
+    <string name="enter_pathology_here">Khai báo bệnh lý tại đây.</string>
     <string name="declared_diseases">Bệnh đã khai báo</string>
     <string name="text_continue">Tiếp tục</string>
     <string name="aqi_index_info">AQI (Air Quality Index) là một chỉ số báo cáo chất lượng không khí hàng ngày. Đây được coi là một thước đo đơn giản hóa mức độ ô nhiễm không khí, cho biết không khí xung quanh ta là sạch hay ô nhiễm, ô nhiễm đến mức độ nào. Rủi ro đối với sức khỏe cộng đồng càng cao khi chỉ số AQI càng lớn. Chỉ số AQI tập trung vào sự ảnh hưởng tới sức khỏe người dân có thể gặp trong vòng vài giờ hoặc vài ngày sau khi hít thở không khí ô nhiễm.</string>
