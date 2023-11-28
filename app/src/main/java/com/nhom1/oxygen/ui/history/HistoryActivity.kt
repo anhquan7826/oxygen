@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,14 +41,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.nhom1.oxygen.R
@@ -66,8 +66,6 @@ import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.getTimeString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlin.math.cos
-import kotlin.math.ln
 
 @AndroidEntryPoint
 class HistoryActivity : ComponentActivity() {
@@ -160,21 +158,25 @@ class HistoryActivity : ComponentActivity() {
                                     }
                                 }
                                 HorizontalPager(state = pagerState) {
-                                    val bounds = LatLngBounds.builder().let { builder ->
-                                        for (h in state.history!![it].history) {
-                                            builder.include(LatLng(h.latitude, h.longitude))
+                                    val bounds = rememberSaveable {
+                                        LatLngBounds.builder().let { builder ->
+                                            for (h in state.history!![pagerState.currentPage].history) {
+                                                builder.include(LatLng(h.latitude, h.longitude))
+                                            }
+                                            builder.build()
                                         }
-                                        builder.build()
                                     }
 
-                                    val camState = rememberCameraPositionState()
-                                    LaunchedEffect(it) {
-                                        camState.animate(
-                                            update = CameraUpdateFactory.newLatLngBounds(
-                                                bounds, 20
-                                            ),
-                                            durationMs = 500
-                                        )
+                                    val camState = rememberCameraPositionState(key = pagerState.currentPage.toString())
+                                    if (!pagerState.isScrollInProgress && it == pagerState.currentPage) {
+                                        LaunchedEffect(pagerState.currentPage) {
+                                            camState.animate(
+                                                update = newLatLngBounds(
+                                                    bounds, 20
+                                                ),
+                                                durationMs = 1000
+                                            )
+                                        }
                                     }
                                     Column(
                                         modifier = Modifier
@@ -195,10 +197,10 @@ class HistoryActivity : ComponentActivity() {
                                                 if (selectedPosition == history) {
                                                     selectedPosition = null
                                                     camState.animate(
-                                                        update = CameraUpdateFactory.newLatLngBounds(
+                                                        update = newLatLngBounds(
                                                             bounds, 20
                                                         ),
-                                                        durationMs = 500
+                                                        durationMs = 1000
                                                     )
                                                 } else {
                                                     selectedPosition = history
@@ -209,7 +211,7 @@ class HistoryActivity : ComponentActivity() {
                                                                 history.longitude
                                                             ), 20F
                                                         ),
-                                                        durationMs = 500
+                                                        durationMs = 1000
                                                     )
                                                 }
                                             }
@@ -283,18 +285,6 @@ class HistoryActivity : ComponentActivity() {
                     .height(300.dp)
                     .clip(RoundedCornerShape(12.dp))
             ) {
-                val bounds by remember {
-                    mutableStateOf(
-                        calculateBoundingBox(
-                            history.map {
-                                LatLng(
-                                    it.latitude,
-                                    it.longitude
-                                )
-                            }
-                        )
-                    )
-                }
                 GoogleMap(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = camState,
@@ -303,12 +293,8 @@ class HistoryActivity : ComponentActivity() {
                         isIndoorEnabled = false,
                         isMyLocationEnabled = false,
                         isTrafficEnabled = false,
-                        latLngBoundsForCameraTarget = if (bounds != null) LatLngBounds(
-                            bounds!!.first,
-                            bounds!!.second
-                        ) else null,
                         maxZoomPreference = 15f,
-                    )
+                    ),
                 ) {
                     Polyline(
                         points = history.map { LatLng(it.latitude, it.longitude) },
@@ -318,75 +304,24 @@ class HistoryActivity : ComponentActivity() {
                         jointType = JointType.ROUND
                     )
                     if (selectedPosition != null) {
-                        Marker(
-                            state = MarkerState(
-                                position = LatLng(
-                                    selectedPosition.latitude,
-                                    selectedPosition.longitude
-                                )
-                            ),
-                            draggable = false,
-                            title = "${
-                                getTimeString(
-                                    selectedPosition.time,
-                                    "HH"
-                                )
-                            }h, ${selectedPosition.aqi}",
-
-                            )
+//                        Marker(
+//                            state = MarkerState(
+//                                position = LatLng(
+//                                    selectedPosition.latitude,
+//                                    selectedPosition.longitude
+//                                )
+//                            ),
+//                            draggable = false,
+//                            title = "${
+//                                getTimeString(
+//                                    selectedPosition.time,
+//                                    "HH"
+//                                )
+//                            }h, ${selectedPosition.aqi}",
+//                        )
                     }
                 }
             }
         }
-    }
-
-    private fun calculateBoundingBox(coordinates: List<LatLng>): Pair<LatLng, LatLng>? {
-        if (coordinates.isEmpty()) {
-            return null
-        }
-
-        var minLat = Double.MAX_VALUE
-        var maxLat = Double.MIN_VALUE
-        var minLng = Double.MAX_VALUE
-        var maxLng = Double.MIN_VALUE
-
-        for (coordinate in coordinates) {
-            minLat = minOf(minLat, coordinate.latitude)
-            maxLat = maxOf(maxLat, coordinate.latitude)
-            minLng = minOf(minLng, coordinate.longitude)
-            maxLng = maxOf(maxLng, coordinate.longitude)
-        }
-
-        val southwest = LatLng(minLat, minLng)
-        val northeast = LatLng(maxLat, maxLng)
-
-        return Pair(southwest, northeast)
-    }
-
-    private fun calculateCenter(southwest: LatLng, northeast: LatLng): LatLng {
-        val centerLat = (southwest.latitude + northeast.latitude) / 2
-        val centerLng = (southwest.longitude + northeast.longitude) / 2
-
-        return LatLng(centerLat, centerLng)
-    }
-
-    private fun calculateZoomLevel(southwest: LatLng, northeast: LatLng): Float {
-        val globeWidth = 256.0
-        val zoomMax = 8.0
-
-        val latDiff = Math.toRadians(northeast.latitude - southwest.latitude)
-        val lngDiff = Math.toRadians(northeast.longitude - southwest.longitude)
-
-        val latFraction = (cos(Math.toRadians(southwest.latitude)) +
-                cos(Math.toRadians(northeast.latitude))) / 2
-
-        val lngFraction = (lngDiff + 2 * Math.PI) / (2 * Math.PI)
-
-        val latZoom = ln(globeWidth / latDiff / latFraction) / ln(2.0)
-        val lngZoom = ln(globeWidth / lngDiff / lngFraction) / ln(2.0)
-
-        val zoom = minOf(latZoom, lngZoom, zoomMax)
-
-        return zoom.toFloat()
     }
 }
