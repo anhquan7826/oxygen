@@ -6,6 +6,7 @@ object SPKeys {
     const val CURRENT_LOCATION = "current_location"
 
     object Settings {
+        const val LANGUAGE = "language"
         const val TEMP_UNIT = "temp_unit"
         const val RECEIVE_NOTIFICATION = "receive_notification"
     }

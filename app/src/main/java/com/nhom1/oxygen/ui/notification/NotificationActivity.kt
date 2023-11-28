@@ -154,7 +154,8 @@ class NotificationActivity : ComponentActivity() {
                         ) {
                             Text(
                                 text = stringResource(R.string.no_notification),
-                                modifier = Modifier.align(Alignment.Center)
+                                color = Color.Gray,
+                                modifier = Modifier.align(Alignment.Center),
                             )
                         }
                     } else {

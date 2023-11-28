@@ -1,12 +1,14 @@
 package com.nhom1.oxygen.ui.settings
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -24,26 +26,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.ViewModelProvider
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OCard
 import com.nhom1.oxygen.common.composables.OSwitch
+import com.nhom1.oxygen.common.composables.OTextSwitch
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.repository.SettingRepository
+import com.nhom1.oxygen.utils.constants.OLanguage
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsActivity : ComponentActivity() {
-    private lateinit var viewModel: SettingsViewModel
     @Inject
     lateinit var settingRepository: SettingRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
         setContent {
             OxygenTheme {
                 Surface(
@@ -82,39 +83,89 @@ class SettingsActivity : ComponentActivity() {
                     .padding(it)
                     .padding(top = 32.dp, bottom = 16.dp)
             ) {
-                SettingTile(
-                    title = stringResource(R.string.temperature_unit),
-                    initialValue = settingRepository.temperatureUnit,
-                    enabledTitle = "Celsius",
-                    disabledTitle = "Fahrenheit",
-                    onCheck = { value ->
-                        settingRepository.temperatureUnit = value
-                    }
-                )
-                SettingTile(
-                    title = stringResource(R.string.receive_notification),
-                    initialValue = settingRepository.receiveNotification,
-                    onCheck = { value ->
-                        settingRepository.receiveNotification = value
-                    }
-                )
+                LanguageTile()
+                TempUnitTile()
+                NotificationTile()
             }
         }
     }
 
     @Composable
-    fun SettingTile(title: String, initialValue: Boolean, enabledTitle: String? = null, disabledTitle: String? = null, onCheck: (Boolean) -> Unit) {
+    fun LanguageTile() {
         OCard(
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+        ) {
+            Column {
+                Text(
+                    text = stringResource(R.string.language),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                OTextSwitch(
+                    values = listOf(
+                        OLanguage.UNSPECIFIED, OLanguage.VIETNAMESE, OLanguage.ENGLISH
+                    ),
+                    initialValue = settingRepository.language,
+                    title = {
+                        when (it) {
+                            OLanguage.VIETNAMESE -> resources.getString(R.string.vietnamese)
+                            OLanguage.ENGLISH -> resources.getString(R.string.english)
+                            else -> resources.getString(R.string.system)
+                        }
+                    }
+                ) {
+                    settingRepository.language = it
+                    Toast.makeText(
+                        this@SettingsActivity,
+                        resources.getString(R.string.language_will_change_after_app_restart),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun TempUnitTile() {
+        OCard(
+            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+        ) {
+            Column {
+                Text(
+                    text = stringResource(R.string.temperature_unit),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                OTextSwitch(
+                    values = listOf(
+                        true, false
+                    ),
+                    initialValue = settingRepository.temperatureUnit,
+                    title = {
+                        if (it) "Celsius" else "Fahrenheit"
+                    }
+                ) {
+                    settingRepository.temperatureUnit = it
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun NotificationTile() {
+        OCard(
+            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = title,
+                    text = stringResource(R.string.receive_notification),
                     modifier = Modifier.weight(1f)
                 )
-                OSwitch(initialValue = initialValue, onChange = onCheck, enabledTitle = enabledTitle, disabledTitle = disabledTitle)
+                OSwitch(
+                    initialValue = settingRepository.receiveNotification,
+                ) {
+                    settingRepository.receiveNotification = it
+                }
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.nhom1.oxygen.utils.constants
 
-enum class OLanguage {
-    UNSPECIFIED,
-    ENGLISH,
-    VIETNAMESE,
+object OLanguage {
+    const val UNSPECIFIED = "unspecified"
+    const val ENGLISH = "en"
+    const val VIETNAMESE = "vi"
 }

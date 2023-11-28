@@ -110,4 +110,9 @@
     <string name="pm_index_info">PM is an abbreviation for Particulate Matter, which refers to particulate substances (solid or liquid). The number 2.5 represents the size of particles with a diameter smaller than or equal to 2.5 micrometers (µm), which is one millionth of a meter. Similarly, the designation PM10 refers to particles with a diameter smaller than or equal to 10 µm (but larger than the size of PM2.5).\n\nFine dust particles PM2.5 and PM10 enter the human body through the respiratory system when individuals breathe. Depending on the size of the dust particles, the degree of penetration varies. While PM10 particles enter the body through the airway and accumulate in the lungs, PM2.5 particles are more hazardous as they can penetrate into lung sacs, pulmonary veins, and infiltrate the bloodstream of individuals.\n\nWhen the concentration of PM2.5 fine dust in the outdoor air increases, it causes the air to become hazy, reducing visibility similar to fog. PM2.5 fine dust can easily penetrate the human body through the respiratory tract, causing various dangerous health conditions such as stroke, heart disease, and cancer. Individuals regularly exposed to fine dust may experience health issues such as sneezing, runny nose, difficulty breathing, and dry eyes. Prolonged exposure can increase the risk of reduced lung function, chronic bronchitis, and an increased likelihood of death from lung cancer and heart disease.</string>
     <string name="ok" translatable="false">OK</string>
     <string name="hello">Hello</string>
+    <string name="language">Language</string>
+    <string name="vietnamese">Vietnamese</string>
+    <string name="english">English</string>
+    <string name="system">System</string>
+    <string name="language_will_change_after_app_restart">Language will change after app restart!</string>
 </resources>

@@ -8,6 +8,7 @@ import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.landing.LandingActivity
 import com.nhom1.oxygen.ui.login.LoginActivity
 import com.nhom1.oxygen.utils.ConfigUtil
+import com.nhom1.oxygen.utils.LanguageUtil
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ConfigUtil.setup(this)
+        LanguageUtil.setLanguage(this)
     }
 
     override fun onStart() {
