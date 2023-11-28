@@ -49,7 +49,7 @@ fun OOverallStatus(
         stringResource(R.string.moderate_description),
         stringResource(R.string.bad_description),
         stringResource(R.string.unhealthy_description),
-        stringResource(R.string.very_unhealth_description),
+        stringResource(R.string.very_unhealthy_description),
         stringResource(R.string.hazardous_description)
     )
     Card(

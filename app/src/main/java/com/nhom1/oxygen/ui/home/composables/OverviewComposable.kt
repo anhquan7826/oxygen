@@ -1,6 +1,8 @@
 package com.nhom1.oxygen.ui.home.composables
 
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
@@ -23,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +46,7 @@ import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.home.OverviewViewModel
+import com.nhom1.oxygen.ui.notification.NotificationActivity
 import com.nhom1.oxygen.utils.constants.LoadState.ERROR
 import com.nhom1.oxygen.utils.constants.LoadState.LOADING
 import com.nhom1.oxygen.utils.extensions.oBorder
@@ -54,20 +56,32 @@ import com.nhom1.oxygen.utils.toJson
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OverviewComposable(viewModel: OverviewViewModel, homeController: HomeActivity.HomePageController) {
+fun OverviewComposable(
+    viewModel: OverviewViewModel,
+    homeController: HomeActivity.HomePageController
+) {
     val state by viewModel.overviewState.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val notificationLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.data?.hasExtra("count") == true) {
+            viewModel.setNotificationCount(it.data!!.getIntExtra("count", 0))
+        }
+    }
     Scaffold(
         topBar = {
             OAppBar(
                 title = stringResource(id = R.string.oxygen),
                 leading = painterResource(id = R.drawable.fresh_air_blue),
                 actions = listOf(
-                    painterResource(id = R.drawable.bell)
+                    if (state.notifications == 0)
+                        painterResource(id = R.drawable.bell)
+                    else
+                        painterResource(id = R.drawable.bell_available)
                 ),
                 onActionPressed = listOf {
-                    // TODO: Open notification
+                    notificationLauncher.launch(Intent(context, NotificationActivity::class.java))
                 }
             )
         },
@@ -147,11 +161,18 @@ fun OverviewComposable(viewModel: OverviewViewModel, homeController: HomeActivit
                         )
                     }
                     Row {
-                        TempBox(value = 23.0, modifier = Modifier.weight(1f), celsius = viewModel.tempUnit)
+                        TempBox(
+                            value = 23.0,
+                            modifier = Modifier.weight(1f),
+                            celsius = viewModel.tempUnit
+                        )
                         Box(Modifier.width(16.dp))
                         HumidityBox(value = 60.0, modifier = Modifier.weight(1f))
                     }
-                    WeatherForecastToday(forecasts = state.weather24h!!, celsius = viewModel.tempUnit)
+                    WeatherForecastToday(
+                        forecasts = state.weather24h!!,
+                        celsius = viewModel.tempUnit
+                    )
                     OButtonPrimary(
                         text = stringResource(R.string.details),
                         modifier = Modifier.padding(bottom = 32.dp)
@@ -177,9 +198,10 @@ fun OverviewComposable(viewModel: OverviewViewModel, homeController: HomeActivit
 
 @Composable
 fun SuggestBox(suggestion: String, onClick: () -> Unit) {
-    OCard(modifier = Modifier
-        .padding(bottom = 16.dp)
-        .oBorder(),
+    OCard(
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+            .oBorder(),
         onClick = onClick
     ) {
         Column {

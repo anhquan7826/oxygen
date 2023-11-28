@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nhom1.oxygen.data.database.dao.NotificationDao
 import com.nhom1.oxygen.data.database.dao.SearchedLocationDao
 import com.nhom1.oxygen.data.model.location.OLocation
+import com.nhom1.oxygen.data.model.notification.ONotification
 
 @Database(
-    entities = [OLocation::class],
-    version = 1
+    entities = [OLocation::class, ONotification::class],
+    version = 2
 )
 abstract class OxygenDatabase : RoomDatabase() {
     companion object {
@@ -17,9 +19,12 @@ abstract class OxygenDatabase : RoomDatabase() {
             return Room.databaseBuilder(
                 context,
                 OxygenDatabase::class.java, "oxygen-database"
-            ).build()
+            )
+                .fallbackToDestructiveMigration()
+                .build()
         }
     }
 
     abstract fun searchedLocationDao(): SearchedLocationDao
+    abstract fun notificationDao(): NotificationDao
 }

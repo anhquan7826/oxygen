@@ -46,7 +46,7 @@ class DetailsHelperActivity : ComponentActivity() {
         Scaffold(
             topBar = {
                 OAppBar(
-                    title = stringResource(R.string.informations),
+                    title = stringResource(R.string.information),
                     leading = painterResource(id = R.drawable.arrow_back),
                     onLeadingPressed = {
                         finish()

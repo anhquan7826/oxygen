@@ -105,7 +105,7 @@ fun UserComposable(viewModel: UserViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Xin chào",
+                    text = stringResource(R.string.hello),
                     fontSize = 16.sp,
                     modifier = Modifier.padding(
                         bottom = 8.dp,

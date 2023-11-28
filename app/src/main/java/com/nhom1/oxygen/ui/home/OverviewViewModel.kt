@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.repository.NotificationRepository
 import com.nhom1.oxygen.repository.SettingRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.constants.LoadState
@@ -19,10 +20,12 @@ import javax.inject.Inject
 class OverviewViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val locationRepository: LocationRepository,
-    private val settingRepository: SettingRepository
+    private val settingRepository: SettingRepository,
+    private val notificationRepository: NotificationRepository,
 ) : ViewModel() {
     data class OverviewState(
         val state: LoadState = LoadState.LOADING,
+        val notifications: Int = 0,
         val location: OLocation? = null,
         val weatherCurrent: OWeather? = null,
         val weather24h: List<OWeather>? = null,
@@ -46,11 +49,13 @@ class OverviewViewModel @Inject constructor(
         }
         locationRepository.getCurrentLocation().listen { location ->
             Single.zip(
+                notificationRepository.countNotifications(),
                 weatherRepository.getCurrentWeatherInfo(location),
                 weatherRepository.getWeatherInfoIn24h(location)
-            ) { current, next24h ->
+            ) { notifications, current, next24h ->
                 OverviewState(
                     state = LoadState.LOADED,
+                    notifications = notifications,
                     location = location,
                     weatherCurrent = current,
                     weather24h = next24h
@@ -73,11 +78,10 @@ class OverviewViewModel @Inject constructor(
 
     }
 
-    private fun onError(error: String?) {
+    fun setNotificationCount(count: Int) {
         _overviewState.update {
-            OverviewState(
-                state = LoadState.ERROR,
-                error = error
+            it.copy(
+                notifications = count
             )
         }
     }

@@ -235,6 +235,9 @@ class DeclareMedicalHistoryActivity : ComponentActivity() {
                 ) {
                     OTextField(
                         maxLines = Int.MAX_VALUE,
+                        placeholder = {
+                                      Text(stringResource(R.string.enter_pathology_here))
+                        },
                         modifier = Modifier.height(250.dp)
                     ) { value ->
                         viewModel.setPathology(value)
@@ -258,7 +261,7 @@ class DeclareMedicalHistoryActivity : ComponentActivity() {
                 }
                 if (state.diseases.isNotEmpty()) {
                     Field(
-                        label = stringResource(R.string.detected_diseases),
+                        label = stringResource(R.string.declared_diseases),
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
                         for (disease in state.diseases) {

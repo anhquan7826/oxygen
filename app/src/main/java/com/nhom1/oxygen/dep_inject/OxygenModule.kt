@@ -8,10 +8,12 @@ import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.ArticleRepository
 import com.nhom1.oxygen.repository.HistoryRepository
 import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.repository.NotificationRepository
 import com.nhom1.oxygen.repository.PathologyRepository
 import com.nhom1.oxygen.repository.SettingRepository
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.repository.WeatherRepository
+import com.nhom1.oxygen.repository.impl.NotificationRepositoryImpl
 import com.nhom1.oxygen.repository.impl.SettingRepositoryImpl
 import com.nhom1.oxygen.repository.mock.ArticleRepositoryMock
 import com.nhom1.oxygen.repository.mock.HistoryRepositoryMock
@@ -135,5 +137,11 @@ internal object OxygenModule {
     @Singleton
     fun provideSettingRepository(@ApplicationContext context: Context): SettingRepository {
         return SettingRepositoryImpl(context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE))
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(database: OxygenDatabase): NotificationRepository {
+        return NotificationRepositoryImpl(database)
     }
 }
