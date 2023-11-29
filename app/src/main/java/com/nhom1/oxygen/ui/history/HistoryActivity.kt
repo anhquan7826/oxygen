@@ -67,6 +67,7 @@ import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.utils.bitmapDescriptor
 import com.nhom1.oxygen.utils.constants.LoadState
+import com.nhom1.oxygen.utils.extensions.fillGaps
 import com.nhom1.oxygen.utils.getAQIColor
 import com.nhom1.oxygen.utils.getTimeString
 import dagger.hilt.android.AndroidEntryPoint
@@ -172,7 +173,8 @@ class HistoryActivity : ComponentActivity() {
                                         }
                                     }
 
-                                    val camState = rememberCameraPositionState(key = pagerState.currentPage.toString())
+                                    val camState =
+                                        rememberCameraPositionState(key = pagerState.currentPage.toString())
                                     if (!pagerState.isScrollInProgress && it == pagerState.currentPage) {
                                         LaunchedEffect(true) {
                                             camState.animate(
@@ -255,12 +257,12 @@ class HistoryActivity : ComponentActivity() {
             OBarChart(
                 data = OBarChartData(
                     maxYValue = 500.0,
-                    barsData = history.map {
+                    barsData = history.fillGaps().mapIndexed { index, h ->
                         OBarChartData.OBarData(
-                            label = "${getTimeString(it.time, "HH")}h",
-                            value = it.aqi.toDouble(),
-                            color = getAQIColor(it.aqi),
-                            onClick = { onDataClick(it) }
+                            label = "${index}h",
+                            value = h?.aqi?.toDouble() ?: -1.0,
+                            color = h?.let { getAQIColor(h.aqi) } ?: Color.Gray,
+                            onClick = { h?.let { onDataClick(h) } }
                         )
                     }
                 )

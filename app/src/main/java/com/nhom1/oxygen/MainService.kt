@@ -131,10 +131,10 @@ class MainService : Service() {
 
     private var prevHour = -1
     private fun addHistory() {
-        infoLog("${this::class.simpleName}: Adding user's history.")
         if (userRepository.isSignedIn()) {
             val hour = getHour(now())
             if (prevHour < hour) {
+                infoLog("${this::class.simpleName}: Adding user's history.")
                 historyRepository.addLocationHistory().listen(
                     onError = {
                         Toast.makeText(

@@ -26,14 +26,14 @@ class HistoryRepositoryMock : HistoryRepository {
             it.onSuccess(List(7) { i ->
                 OHistory(
                     time = 1700672400L + i * 86400,
-                    history = List(24) { j ->
+                    history = MutableList(24) { j ->
                         OHourlyHistory(
                             latitude = 21.03119444 + Random.nextDouble(-1.0, 1.0),
                             longitude = 105.76388889 + Random.nextDouble(-1.0, 1.0),
                             aqi = Random.nextInt(501),
                             time = 1700672400L + i * 86400 + j * 3600
                         )
-                    }
+                    }.apply { removeAt(3); removeAt(12); removeAt(13) }
                 )
             }.sortedByDescending { e -> e.time })
         }.delay(1000, TimeUnit.MILLISECONDS)

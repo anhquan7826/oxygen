@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.common.constants.OxygenColors
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
+import java.lang.Double.max
 import kotlin.random.Random
 
 data class OBarChartData(
@@ -82,21 +83,23 @@ fun OBarChart(
                     modifier = Modifier
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(8.dp))
-                        .clickable {
+                        .clickable(
+                            enabled = bar.value != -1.0
+                        ) {
                             selectedBar = if (selectedBar == bar) null else bar
                             bar.onClick.invoke()
                         }
                 ) {
                     Text(
-                        text = bar.value.toPrettyString(),
-                        color = bar.color,
+                        text = if (bar.value == -1.0) "N/A" else bar.value.toPrettyString(),
+                        color = if (bar.value == -1.0) Color.Gray else bar.color,
                         fontSize = if (bar == selectedBar) 12.sp else 9.sp,
                         fontWeight = if (bar == selectedBar) FontWeight.SemiBold else FontWeight.Light
                     )
                     Box(
                         modifier = Modifier
                             .width(barWidth)
-                            .height(210.dp.times((bar.value / data.maxYValue).toFloat()))
+                            .height(210.dp.times((max(0.0, bar.value) / data.maxYValue).toFloat()))
                             .padding(horizontal = barPadding)
                             .clip(RoundedCornerShape(8.dp))
                             .background(
@@ -112,6 +115,7 @@ fun OBarChart(
                             bar.label,
                             style = TextStyle(
                                 fontSize = 12.sp,
+                                color = if (bar.value == -1.0) Color.Gray else Color.Black
                             )
                         )
                         drawLine(

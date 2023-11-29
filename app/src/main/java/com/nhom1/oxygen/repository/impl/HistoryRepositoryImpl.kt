@@ -46,7 +46,7 @@ class HistoryRepositoryImpl(
         return service.history.getHistoryToday().map {
             OHistory(
                 time = now(),
-                history = it
+                history = it.sortedBy { e -> e.time }
             )
         }
     }

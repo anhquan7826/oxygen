@@ -1,7 +1,6 @@
 package com.nhom1.oxygen.common.composables
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,24 +26,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.constants.OxygenColors
+import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.getAQIColor
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.random.Random
 
 @Composable
 fun OExposureChart(aqis: List<Int>) {
@@ -126,12 +122,11 @@ fun OExposureChart(aqis: List<Int>) {
 @Composable
 fun OExposure(
     modifier: Modifier = Modifier,
-    aqis: List<Int>,
+    hourlyHistory: List<OHourlyHistory?>,
     canvasSize: Dp = 256.dp,
     content: (@Composable BoxScope.() -> Unit)? = null
 ) {
-    Box(
-    ) {
+    Box {
         Canvas(
             modifier = modifier
                 .align(Alignment.Center)
@@ -139,11 +134,11 @@ fun OExposure(
                 .padding(32.dp)
         ) {
             for (i in 0..23) {
-                val aqi = if (i < aqis.size) aqis[i] else -1
+                val h = hourlyHistory.getOrNull(i)
                 drawArc(
                     color = when {
-                        (aqi == -1) -> Color.Gray
-                        else -> getAQIColor(aqi)
+                        (h == null) -> Color.Gray
+                        else -> getAQIColor(h.aqi)
                     }.copy(alpha = 0.75f),
                     startAngle = 120f + (i * 12.5f),
                     sweepAngle = 12f,
@@ -205,14 +200,18 @@ fun OExposure(
         content?.invoke(this)
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun OExposurePreview() {
-    OExposure(aqis = (0..12).map { Random.nextInt(501) }) {
-        Image(
-            painter = painterResource(id = R.drawable.user_colored), contentDescription = null,
-            modifier = Modifier.size(96.dp).align(Alignment.Center)
-        )
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun OExposurePreview() {
+//    OExposure(aqis = (0..12).map { Random.nextInt(501) }.toMutableList().apply {
+//        removeAt(3)
+//    }) {
+//        Image(
+//            painter = painterResource(id = R.drawable.user_colored), contentDescription = null,
+//            modifier = Modifier
+//                .size(96.dp)
+//                .align(Alignment.Center)
+//        )
+//    }
+//}

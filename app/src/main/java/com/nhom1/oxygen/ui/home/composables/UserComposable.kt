@@ -46,6 +46,7 @@ import com.nhom1.oxygen.ui.medical.DeclareMedicalHistoryActivity
 import com.nhom1.oxygen.ui.profile.ProfileActivity
 import com.nhom1.oxygen.ui.settings.SettingsActivity
 import com.nhom1.oxygen.utils.constants.LoadState
+import com.nhom1.oxygen.utils.extensions.fillGaps
 import com.nhom1.oxygen.utils.toJson
 
 @Composable
@@ -121,7 +122,7 @@ fun UserComposable(viewModel: UserViewModel) {
                     )
                 )
                 OExposure(
-                    aqis = state.history!!.history.map { h -> h.aqi },
+                    hourlyHistory = state.history!!.history.fillGaps(),
                 ) {
                     AsyncImage(
                         state.userData!!.avatar,
