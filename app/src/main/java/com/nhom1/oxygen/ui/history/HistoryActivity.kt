@@ -67,6 +67,7 @@ import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.utils.bitmapDescriptor
 import com.nhom1.oxygen.utils.constants.LoadState
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.extensions.fillGaps
 import com.nhom1.oxygen.utils.getAQIColor
 import com.nhom1.oxygen.utils.getTimeString
@@ -163,10 +164,10 @@ class HistoryActivity : ComponentActivity() {
                                         }
                                     }
                                 }
-                                HorizontalPager(state = pagerState) {
-                                    val bounds = rememberSaveable {
+                                HorizontalPager(state = pagerState, key = { it }) {
+                                    val bounds = rememberSaveable(it) {
                                         LatLngBounds.builder().let { builder ->
-                                            for (h in state.history!![pagerState.currentPage].history) {
+                                            for (h in state.history!![it].history) {
                                                 builder.include(LatLng(h.latitude, h.longitude))
                                             }
                                             builder.build()
