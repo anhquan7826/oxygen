@@ -25,15 +25,12 @@ class UserRepositoryMock : UserRepository {
         avatar = "https://upload.wikimedia.org/wikipedia/commons/4/48/RedCat_8727.jpg",
         diseases = listOf(
             ODisease(
-                id = 0,
                 name = "Lậu"
             ),
             ODisease(
-                id = 0,
                 name = "Giang mai"
             ),
             ODisease(
-                id = 0,
                 name = "AIDS"
             )
         ),

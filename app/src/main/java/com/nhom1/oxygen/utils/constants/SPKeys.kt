@@ -10,4 +10,9 @@ object SPKeys {
         const val TEMP_UNIT = "temp_unit"
         const val RECEIVE_NOTIFICATION = "receive_notification"
     }
+
+    object Cache {
+        const val CACHE_SHORT_SUGGESTION = "cache_short_suggestion"
+        const val CACHE_LONG_SUGGESTION = "cache_long_suggestion"
+    }
 }

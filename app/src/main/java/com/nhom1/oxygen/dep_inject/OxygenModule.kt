@@ -11,6 +11,7 @@ import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.NotificationRepository
 import com.nhom1.oxygen.repository.PathologyRepository
 import com.nhom1.oxygen.repository.SettingRepository
+import com.nhom1.oxygen.repository.SuggestionRepository
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.repository.impl.NotificationRepositoryImpl
@@ -19,6 +20,7 @@ import com.nhom1.oxygen.repository.mock.ArticleRepositoryMock
 import com.nhom1.oxygen.repository.mock.HistoryRepositoryMock
 import com.nhom1.oxygen.repository.mock.LocationRepositoryMock
 import com.nhom1.oxygen.repository.mock.PathologyRepositoryMock
+import com.nhom1.oxygen.repository.mock.SuggestionRepositoryMock
 import com.nhom1.oxygen.repository.mock.UserRepositoryMock
 import com.nhom1.oxygen.repository.mock.WeatherRepositoryMock
 import dagger.Module
@@ -73,6 +75,10 @@ internal object OxygenModule {
                 builder.create(OxygenService.History::class.java)
             override val division: OxygenService.Division =
                 builder.create(OxygenService.Division::class.java)
+            override val suggestion: OxygenService.Suggestion =
+                builder.create(OxygenService.Suggestion::class.java)
+            override val analyzer: OxygenService.Analyzer =
+                builder.create(OxygenService.Analyzer::class.java)
         }
     }
 
@@ -130,8 +136,28 @@ internal object OxygenModule {
 
     @Provides
     @Singleton
-    fun providePathologyRepository(): PathologyRepository {
+    fun providePathologyRepository(service: OxygenService): PathologyRepository {
+//        return PathologyRepositoryImpl(service)
         return PathologyRepositoryMock()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSuggestionRepository(
+        @ApplicationContext context: Context,
+        service: OxygenService,
+        locationRepository: LocationRepository,
+        weatherRepository: WeatherRepository,
+        userRepository: UserRepository
+    ): SuggestionRepository {
+//        return SuggestionRepositoryImpl(
+//            context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE),
+//            service,
+//            locationRepository,
+//            weatherRepository,
+//            userRepository
+//        )
+        return SuggestionRepositoryMock()
     }
 
     @Provides

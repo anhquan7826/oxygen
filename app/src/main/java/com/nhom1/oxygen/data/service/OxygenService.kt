@@ -1,5 +1,6 @@
 package com.nhom1.oxygen.data.service
 
+import com.nhom1.oxygen.data.model.analysis.ODiseaseAnalysis
 import com.nhom1.oxygen.data.model.article.OArticle
 import com.nhom1.oxygen.data.model.divisions.ODistrict
 import com.nhom1.oxygen.data.model.divisions.OProvince
@@ -7,6 +8,8 @@ import com.nhom1.oxygen.data.model.divisions.OWard
 import com.nhom1.oxygen.data.model.history.OHistory
 import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.data.model.location.OLocation
+import com.nhom1.oxygen.data.model.suggestion.OLongSuggestion
+import com.nhom1.oxygen.data.model.suggestion.OShortSuggestion
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.model.user.OUserProfile
 import com.nhom1.oxygen.data.model.weather.OWeather
@@ -20,6 +23,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 interface OxygenService {
     interface User {
@@ -135,4 +139,21 @@ interface OxygenService {
     }
 
     val division: Division
+
+    interface Suggestion {
+        @GET(OxygenAPI.Suggestion.SHORT_SUGGESTION)
+        fun getShortSuggestion(@QueryMap airQuality: Map<String, Any>): Single<OShortSuggestion>
+
+        @GET(OxygenAPI.Suggestion.LONG_SUGGESTION)
+        fun getLongSuggestion(@QueryMap input: Map<String, Any>): Single<OLongSuggestion>
+    }
+
+    val suggestion: Suggestion
+
+    interface Analyzer {
+        @GET(OxygenAPI.Analyzer.ANALYZE_DISEASES)
+        fun analyzeDiseases(@Query("disease") description: String): Single<ODiseaseAnalysis>
+    }
+
+    val analyzer: Analyzer
 }

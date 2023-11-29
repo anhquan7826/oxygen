@@ -61,7 +61,6 @@ import com.nhom1.oxygen.common.composables.OError
 import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.composables.OPageIndicator
 import com.nhom1.oxygen.common.composables.PieChart
-import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.weather.OAirQuality
@@ -70,6 +69,7 @@ import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.fromJson
+import com.nhom1.oxygen.utils.getAQIColor
 import com.nhom1.oxygen.utils.getHour
 import com.nhom1.oxygen.utils.getTimeString
 import com.nhom1.oxygen.utils.now

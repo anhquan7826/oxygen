@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.constants.OxygenColors
-import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.utils.extensions.oBorder
+import com.nhom1.oxygen.utils.getAQIColor
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos

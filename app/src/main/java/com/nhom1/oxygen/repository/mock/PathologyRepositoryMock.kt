@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 
 class PathologyRepositoryMock : PathologyRepository {
     override fun analyzePathology(input: String): Single<List<String>> {
-        return Single.create<List<String>> {
+        return Single.create {
             it.onSuccess(listOf(
                 "Tiểu đường",
                 "Viêm gan B",

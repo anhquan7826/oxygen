@@ -267,12 +267,15 @@ class NotificationActivity : ComponentActivity() {
                                 text = notification.message
                             )
                         }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
                             val date: String
                             val now = getTimeString(now(), "dd/MM/yyyy")
                             val fromNotification = getTimeString(notification.time, "dd/MM/YYYY")
                             date = if (now == fromNotification) {
-                                "Hôm nay"
+                                stringResource(R.string.today)
                             } else {
                                 fromNotification
                             }

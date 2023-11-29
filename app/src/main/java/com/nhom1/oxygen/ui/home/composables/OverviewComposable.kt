@@ -134,8 +134,7 @@ fun OverviewComposable(
                             bottom = 16.dp
                         )
                     )
-                    // TODO: Suggestion
-                    SuggestBox(suggestion = "Nên hạn chế hoạt động ngoài trời, đặc biệt vào buổi trưa. Sử dụng máy lọc không khí trong nhà và giữ cửa sổ kín để tránh khói và bụi. Nếu cần phải ra ngoài, đeo khẩu trang N95 để bảo vệ đường hô hấp.") {
+                    SuggestBox(suggestion = state.suggestion!!) {
                         homeController.goto(2)
                     }
                     Row(

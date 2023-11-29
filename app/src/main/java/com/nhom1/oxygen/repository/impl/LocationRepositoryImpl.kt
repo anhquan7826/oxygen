@@ -29,6 +29,8 @@ class LocationRepositoryImpl(
         val info: OLocation
     )
 
+    private val cacheDistance = 100
+
     private lateinit var cachedLocation: CachedLocationInfo
 
     @SuppressLint("MissingPermission")
@@ -49,7 +51,7 @@ class LocationRepositoryImpl(
                     CoordinateUtil.distance(
                         Pair(cachedLocation.latitude, cachedLocation.longitude),
                         Pair(latitude, longitude)
-                    ) > 100 -> {
+                    ) > cacheDistance -> {
                 service.geocoding.getLocation(latitude, longitude).map {
                     cachedLocation = CachedLocationInfo(latitude, longitude, it)
                     it

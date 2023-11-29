@@ -1,9 +1,13 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class
+)
 
 package com.nhom1.oxygen.ui.landing
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,7 +26,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,7 +47,7 @@ import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.login.LoginActivity
-import com.nhom1.oxygen.utils.ConfigUtil
+import com.nhom1.oxygen.utils.constants.SPKeys
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -55,8 +58,9 @@ class LandingActivity : ComponentActivity() {
     @Inject
     lateinit var userRepository: UserRepository
 
-    private lateinit var coroutineScope: CoroutineScope
+    private lateinit var sharedPreferences: SharedPreferences
 
+    private lateinit var coroutineScope: CoroutineScope
     private lateinit var pagerState: PagerState
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -66,6 +70,7 @@ class LandingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        sharedPreferences = getSharedPreferences(packageName, Context.MODE_PRIVATE)
         setContent {
             coroutineScope = rememberCoroutineScope()
             pagerState = rememberPagerState() { 3 }
@@ -275,8 +280,11 @@ class LandingActivity : ComponentActivity() {
                 pagerState.animateScrollToPage(pagerState.currentPage + 1, 0F)
             }
         } else {
-            ConfigUtil.firstLaunch = false
-            MainService.startService(this)
+            sharedPreferences.edit().putBoolean(SPKeys.FIRST_LAUNCH, false).apply()
+            MainService.apply {
+                stopService(this@LandingActivity)
+                startService(this@LandingActivity)
+            }
             if (!userRepository.isSignedIn()) {
                 startActivity(Intent(this@LandingActivity, LoginActivity::class.java))
             } else {

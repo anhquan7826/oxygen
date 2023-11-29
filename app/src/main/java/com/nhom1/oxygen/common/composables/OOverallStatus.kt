@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nhom1.oxygen.R
-import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.utils.extensions.oBorder
+import com.nhom1.oxygen.utils.getAQIColor
 import java.lang.Integer.min
 
 @Composable
@@ -67,7 +67,7 @@ fun OOverallStatus(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 8.dp)
+                    .padding(end = 12.dp)
             ) {
                 Text(
                     text = place,
@@ -84,9 +84,9 @@ fun OOverallStatus(
                     text = stringResource(R.string.current_atmosphere),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(top = 12.dp)
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
                 )
-                Text(
+                AutoSizeText(
                     text = when {
                         (aqi in 0..50) -> statuses[0]
                         (aqi in 51..100) -> statuses[1]
@@ -95,7 +95,8 @@ fun OOverallStatus(
                         (aqi in 151..200) -> statuses[3]
                         else -> statuses[5]
                     },
-                    fontSize = 32.sp,
+                    maxTextSize = 32.sp,
+                    maxLines = 1,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
@@ -235,7 +236,7 @@ fun OOverallStatusPreview() {
     OOverallStatus(
         place = "Cầu Giấy, Hà Nội",
         country = "Việt Nam",
-        aqi = 100
+        aqi = 256
     )
 }
 

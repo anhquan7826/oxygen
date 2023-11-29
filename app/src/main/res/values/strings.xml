@@ -68,6 +68,12 @@
     <string name="unhealthy_description">Unhealthy air quality. General public may experience health effects, especially the sensity groups.</string>
     <string name="very_unhealthy_description">Health alert: The risk of health effects is increased for everyone.</string>
     <string name="hazardous_description">Health warning of emergency conditions: everyone is more likely to be affected.</string>
+    <string name="good_description_short">Fresh air, no harm.</string>
+    <string name="moderate_description_short">Air is okay, may affect sensitive individuals.</string>
+    <string name="bad_description_short">Poor air quality, impacting those with weakened health.</string>
+    <string name="unhealthy_description_short">Bad air, serious impact, especially for sensitive individuals.</string>
+    <string name="very_unhealthy_description_short">Very poor air quality, everyone at risk of significant impact.</string>
+    <string name="hazardous_description_short">Hazardous air, emergency precautions advised.</string>
     <string name="current_atmosphere">Current atmospheric quality:</string>
     <string name="login_to_oxygen">Sign in to Oxygen</string>
     <string name="login_with_google">Sign in with Google</string>
@@ -117,4 +123,8 @@
     <string name="language_will_change_after_app_restart">Language will change after app restart!</string>
     <string name="oxygen_is_providing_you_services_in_the_background">Oxygen is providing you services in the background.</string>
     <string name="weather">Weather</string>
+    <string name="warning_notification_content">Your are entering a polluted area. Tap to see suggested actions.</string>
+    <string name="you_are_entering_polluted_area_please_take_cautious">You are entering polluted area! Please take cautious!</string>
+    <string name="welcome">Welcome</string>
+    <string name="today">Today</string>
 </resources>

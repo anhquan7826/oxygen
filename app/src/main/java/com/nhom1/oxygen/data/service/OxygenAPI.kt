@@ -38,4 +38,13 @@ object OxygenAPI {
         const val GET_DISTRICTS = "locationlist/districts"
         const val GET_WARDS = "locationlist/wards"
     }
+
+    object Suggestion {
+        const val SHORT_SUGGESTION = "ai/suggestion/short"
+        const val LONG_SUGGESTION = "ai/suggestion/long"
+    }
+
+    object Analyzer {
+        const val ANALYZE_DISEASES = "ai/analyze-disease"
+    }
 }

@@ -134,7 +134,7 @@ class LoginActivity : ComponentActivity() {
                         .clip(CircleShape)
                 )
                 Text(
-                    text = "Chào mừng ${loginState.username!!}",
+                    text = stringResource(R.string.welcome) + " ${loginState.username!!}",
                     modifier = Modifier.padding(top = 16.dp)
                 )
                 LaunchedEffect(true) {

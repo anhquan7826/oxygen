@@ -63,11 +63,11 @@ import com.nhom1.oxygen.common.composables.OLoading
 import com.nhom1.oxygen.common.composables.OTab
 import com.nhom1.oxygen.common.composables.OTabRow
 import com.nhom1.oxygen.common.constants.OxygenColors
-import com.nhom1.oxygen.common.constants.getAQIColor
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.utils.bitmapDescriptor
 import com.nhom1.oxygen.utils.constants.LoadState
+import com.nhom1.oxygen.utils.getAQIColor
 import com.nhom1.oxygen.utils.getTimeString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

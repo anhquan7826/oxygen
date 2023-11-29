@@ -1,40 +1,33 @@
 package com.nhom1.oxygen
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.net.Uri
 import android.os.IBinder
 import android.os.Looper
-import android.widget.RemoteViews
 import android.widget.Toast
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.NotificationTarget
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.nhom1.oxygen.common.constants.getAQIColor
+import com.nhom1.oxygen.data.model.notification.ONotification
 import com.nhom1.oxygen.repository.HistoryRepository
 import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.repository.NotificationRepository
 import com.nhom1.oxygen.repository.SettingRepository
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.repository.WeatherRepository
-import com.nhom1.oxygen.ui.home.HomeActivity
+import com.nhom1.oxygen.utils.NotificationUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
-import com.nhom1.oxygen.utils.extensions.toPrettyString
+import com.nhom1.oxygen.utils.getAQILevel
 import com.nhom1.oxygen.utils.getHour
 import com.nhom1.oxygen.utils.infoLog
 import com.nhom1.oxygen.utils.listen
@@ -48,8 +41,11 @@ import javax.inject.Inject
 class MainService : Service() {
     companion object {
         fun startService(context: Context) {
-            context.stopService(Intent(context, MainService::class.java))
             context.startForegroundService(Intent(context, MainService::class.java))
+        }
+
+        fun stopService(context: Context) {
+            context.stopService(Intent(context, MainService::class.java))
         }
     }
 
@@ -73,62 +69,29 @@ class MainService : Service() {
     @Inject
     lateinit var settingsRepository: SettingRepository
 
-    private lateinit var channelId: String
-    private val minTimeInterval = 300000L
+    @Inject
+    lateinit var notificationRepository: NotificationRepository
 
-    private lateinit var notification: Notification
-    private lateinit var notificationView: RemoteViews
+    private val minTimeInterval = 300 * 1000L
 
     override fun onCreate() {
         super.onCreate()
-        channelId = "$packageName.service"
         sharedPreferences = getSharedPreferences(
             packageName, Context.MODE_PRIVATE
         )
         locationManager = getSystemService(LocationManager::class.java)
         notificationManager = getSystemService(NotificationManager::class.java)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        notificationView = RemoteViews(packageName, R.layout.layout_notification_expanded)
-        configureNotificationChannel()
-        notification = buildPersistentNotification()
+        NotificationUtil.configure(applicationContext)
+        startForeground(1, NotificationUtil.getPersistentNotification(applicationContext))
+        trackLocation()
+        infoLog("${this::class.simpleName}: Created.")
     }
 
     override fun onBind(intent: Intent): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        infoLog("${this::class.simpleName}: Started.")
-        startForeground(1, notification)
-        trackLocation()
         return START_STICKY
-    }
-
-    private fun configureNotificationChannel() {
-        notificationManager.createNotificationChannel(
-            NotificationChannel(
-                channelId,
-                "Persistent Notification",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "This channel is used for Oxygen background service."
-                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            }
-        )
-    }
-
-    private fun buildPersistentNotification(): Notification {
-        return Notification.Builder(this, "$packageName.service")
-            .setSmallIcon(R.drawable.fresh_air_rounded)
-            .setCustomContentView(RemoteViews(packageName, R.layout.layout_notification))
-            .setCustomBigContentView(notificationView)
-            .setOngoing(true)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    this,
-                    0,
-                    Intent(this, HomeActivity::class.java).putExtra("refresh", true),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            ).build()
     }
 
     private fun trackLocation() {
@@ -188,48 +151,32 @@ class MainService : Service() {
     }
 
     private fun updateWeatherInfo() {
-        infoLog("${this::class.simpleName}: Getting weather info.")
         locationRepository.getCurrentLocation().listen { location ->
             weatherRepository.getCurrentWeatherInfo(location).listen { weather ->
-                infoLog("${this::class.simpleName}: Setting weather info.")
-                notificationView.apply {
-                    weather.airQuality.aqi.let {
-                        setTextViewText(R.id.aqi, it.toString())
-                        setTextColor(R.id.aqi, getAQIColor(it).toArgb())
-                        setTextViewText(
-                            R.id.aqi_desc,
-                            getString(
-                                when {
-                                    (it in 0..50) -> R.string.good
-                                    (it in 51..100) -> R.string.moderate
-                                    (it in 101..150) -> R.string.bad
-                                    (it in 151..200) -> R.string.unhealthy
-                                    (it in 201..300) -> R.string.very_unhealthy
-                                    else -> R.string.hazardous
-                                }
-                            )
-                        )
-                    }
-
-                    val target = NotificationTarget(
-                        this@MainService,
-                        R.id.weather,
-                        notificationView,
-                        notification,
-                        1
-                    )
-                    Glide
-                        .with(this@MainService)
-                        .asBitmap()
-                        .load(Uri.parse(weather.condition.icon))
-                        .into(target)
-                    setTextViewText(
-                        R.id.temperature,
-                        if (settingsRepository.temperatureUnit) "${weather.tempC.toPrettyString()}°C" else "${weather.tempF.toPrettyString()}°F"
-                    )
-                }
-                notificationManager.notify(1, notification)
+                NotificationUtil.updatePersistentNotification(
+                    applicationContext,
+                    weather,
+                    settingsRepository.temperatureUnit
+                )
+                showWarningNotification(weather.airQuality.aqi)
             }
         }
+    }
+
+    private var previousAQILevel: Int = Int.MAX_VALUE
+    private fun showWarningNotification(aqi: Int) {
+        if (!settingsRepository.receiveNotification) return
+        val currentAQILevel = getAQILevel(aqi)
+        if (currentAQILevel > previousAQILevel) {
+            NotificationUtil.showWarningNotification(applicationContext)
+            notificationRepository.addNotification(
+                ONotification(
+                    type = ONotification.TYPE_WARNING,
+                    time = now(),
+                    message = getString(R.string.you_are_entering_polluted_area_please_take_cautious)
+                )
+            ).listen {}
+        }
+        previousAQILevel = currentAQILevel
     }
 }

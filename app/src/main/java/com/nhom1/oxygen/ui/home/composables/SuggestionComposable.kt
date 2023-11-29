@@ -69,6 +69,7 @@ import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.ui.home.SuggestionViewModel
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oBorder
+import com.nhom1.oxygen.utils.getAQILevel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -153,7 +154,8 @@ fun SuggestionComposable(viewModel: SuggestionViewModel) {
                         }
                         if (page == 0) {
                             SuggestionPage(
-                                weather = state.weather!!
+                                weather = state.weather!!,
+                                suggestions = state.suggestions!!
                             )
                         } else {
                             ArticlePage(state.articles!!)
@@ -186,7 +188,7 @@ fun ArticlePage(articles: List<OArticle>) {
 }
 
 @Composable
-fun SuggestionPage(weather: OWeather) {
+fun SuggestionPage(weather: OWeather, suggestions: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -213,7 +215,8 @@ fun SuggestionPage(weather: OWeather) {
                 modifier = Modifier
                     .padding(start = 4.dp)
                     .fillMaxHeight()
-                    .weight(1f)
+                    .weight(1f),
+                aqi = weather.airQuality.aqi
             )
         }
         Row(
@@ -232,26 +235,38 @@ fun SuggestionPage(weather: OWeather) {
                 fontSize = 16.sp
             )
         }
-        repeat(4) {
-            SuggestionText(suggestion = "Hạn chế hoạt động ngoài trời, đặc biệt vào buổi trưa.")
+        for (suggestion in suggestions) {
+            SuggestionText(suggestion = suggestion)
         }
     }
 }
 
 @Composable
-fun WarningCard(modifier: Modifier = Modifier) {
+fun WarningCard(modifier: Modifier = Modifier, aqi: Int) {
     OCard(modifier = modifier.oBorder()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
-                painter = painterResource(id = R.drawable.warning),
-                contentDescription = null
+                painter = when (getAQILevel(aqi)) {
+                    0 -> painterResource(id = R.drawable.check_mark_colored)
+                    1, 2, 3 -> painterResource(id = R.drawable.notify_colored)
+                    else -> painterResource(id = R.drawable.warning)
+                },
+                contentDescription = null,
+                modifier = Modifier.weight(1f).size(64.dp)
             )
             Text(
-                text = "Không khí hiện tại không tốt cho sức khỏe. Hãy cẩn thận.",
+                text = when (getAQILevel(aqi)) {
+                    0 -> stringResource(R.string.good_description_short)
+                    1 -> stringResource(id = R.string.moderate_description_short)
+                    2 -> stringResource(id = R.string.bad_description_short)
+                    3 -> stringResource(id = R.string.unhealthy_description_short)
+                    4 -> stringResource(id = R.string.very_unhealthy_description_short)
+                    else -> stringResource(id = R.string.hazardous_description_short)
+                },
                 textAlign = TextAlign.Center,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }

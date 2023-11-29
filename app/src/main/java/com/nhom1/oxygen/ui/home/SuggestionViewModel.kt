@@ -5,6 +5,7 @@ import com.nhom1.oxygen.data.model.article.OArticle
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.repository.ArticleRepository
 import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.repository.SuggestionRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.listen
@@ -19,11 +20,13 @@ import javax.inject.Inject
 class SuggestionViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val articleRepository: ArticleRepository,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val suggestionRepository: SuggestionRepository
 ) : ViewModel() {
     data class SuggestionState(
         val state: LoadState = LoadState.LOADING,
         val weather: OWeather? = null,
+        val suggestions: List<String>? = null,
         val articles: List<OArticle>? = null,
         val error: String? = null
     )
@@ -42,11 +45,13 @@ class SuggestionViewModel @Inject constructor(
         locationRepository.getCurrentLocation().listen { location ->
             Single.zip(
                 weatherRepository.getCurrentWeatherInfo(location),
+                suggestionRepository.getLongSuggestion(),
                 articleRepository.getArticle()
-            ) { weather, articles ->
+            ) { weather, suggestions, articles ->
                 SuggestionState(
                     state = LoadState.LOADED,
                     weather = weather,
+                    suggestions = suggestions,
                     articles = articles
                 )
             }.listen(
@@ -62,6 +67,5 @@ class SuggestionViewModel @Inject constructor(
                 _state.update { result }
             }
         }
-
     }
 }

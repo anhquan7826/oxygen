@@ -15,6 +15,9 @@ class WeatherRepositoryImpl(private val service: OxygenService) : WeatherReposit
         val weathers: List<OWeather>? = null
     )
 
+    private val cacheInterval = 900
+    private val cacheDistance = 100
+
     private lateinit var cachedWeatherCurrent: CachedWeatherInfo
     private lateinit var cachedWeather24h: CachedWeatherInfo
     private lateinit var cachedWeather7d: CachedWeatherInfo
@@ -22,8 +25,8 @@ class WeatherRepositoryImpl(private val service: OxygenService) : WeatherReposit
     override fun getCurrentWeatherInfo(location: OLocation): Single<OWeather> {
         return when {
             !this::cachedWeatherCurrent.isInitialized
-                    || (now() - cachedWeatherCurrent.time > 900)
-                    || (location.distance(cachedWeatherCurrent.location) > 100) -> {
+                    || (now() - cachedWeatherCurrent.time > cacheInterval)
+                    || (location.distance(cachedWeatherCurrent.location) > cacheDistance) -> {
                 service.weather.getCurrent(location.latitude, location.longitude).map {
                     cachedWeatherCurrent = CachedWeatherInfo(
                         time = now(),
@@ -45,8 +48,8 @@ class WeatherRepositoryImpl(private val service: OxygenService) : WeatherReposit
     override fun getWeatherInfoIn24h(location: OLocation): Single<List<OWeather>> {
         return when {
             !this::cachedWeather24h.isInitialized
-                    || (now() - cachedWeather24h.time > 900)
-                    || (location.distance(cachedWeather24h.location) > 100) -> {
+                    || (now() - cachedWeather24h.time > cacheInterval)
+                    || (location.distance(cachedWeather24h.location) > cacheDistance) -> {
                 service.weather.get24h(location.latitude, location.longitude).map {
                     cachedWeather24h = CachedWeatherInfo(
                         time = now(),
@@ -68,8 +71,8 @@ class WeatherRepositoryImpl(private val service: OxygenService) : WeatherReposit
     override fun getWeatherInfoIn7d(location: OLocation): Single<List<OWeather>> {
         return when {
             !this::cachedWeather7d.isInitialized
-                    || (now() - cachedWeather7d.time > 900)
-                    || (location.distance(cachedWeather7d.location) > 100) -> {
+                    || (now() - cachedWeather7d.time > cacheInterval)
+                    || (location.distance(cachedWeather7d.location) > cacheDistance) -> {
                 service.weather.get7d(location.latitude, location.longitude).map {
                     cachedWeather7d = CachedWeatherInfo(
                         time = now(),

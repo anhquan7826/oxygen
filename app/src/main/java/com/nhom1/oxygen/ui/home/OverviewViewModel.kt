@@ -6,6 +6,7 @@ import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.NotificationRepository
 import com.nhom1.oxygen.repository.SettingRepository
+import com.nhom1.oxygen.repository.SuggestionRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.listen
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class OverviewViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val locationRepository: LocationRepository,
+    private val suggestionRepository: SuggestionRepository,
     private val settingRepository: SettingRepository,
     private val notificationRepository: NotificationRepository,
 ) : ViewModel() {
@@ -27,6 +29,7 @@ class OverviewViewModel @Inject constructor(
         val state: LoadState = LoadState.LOADING,
         val notifications: Int = 0,
         val location: OLocation? = null,
+        val suggestion: String? = null,
         val weatherCurrent: OWeather? = null,
         val weather24h: List<OWeather>? = null,
         val error: String? = null
@@ -51,12 +54,14 @@ class OverviewViewModel @Inject constructor(
             Single.zip(
                 notificationRepository.countNotifications(),
                 weatherRepository.getCurrentWeatherInfo(location),
-                weatherRepository.getWeatherInfoIn24h(location)
-            ) { notifications, current, next24h ->
+                weatherRepository.getWeatherInfoIn24h(location),
+                suggestionRepository.getShortSuggestion()
+            ) { notifications, current, next24h, suggestion ->
                 OverviewState(
                     state = LoadState.LOADED,
                     notifications = notifications,
                     location = location,
+                    suggestion = suggestion,
                     weatherCurrent = current,
                     weather24h = next24h
                 )

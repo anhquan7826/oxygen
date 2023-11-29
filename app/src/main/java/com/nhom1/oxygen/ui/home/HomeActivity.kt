@@ -115,6 +115,11 @@ class HomeActivity : ComponentActivity() {
                 reloadData()
             }
         }
+        if (intent.hasExtra("goToSuggestion")) {
+            if (intent.getBooleanExtra("goToSuggestion", false)) {
+                homeController.goto(2)
+            }
+        }
     }
 
     @Composable

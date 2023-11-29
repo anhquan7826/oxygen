@@ -48,12 +48,12 @@ import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OCard
 import com.nhom1.oxygen.common.composables.OError
 import com.nhom1.oxygen.common.composables.OLoading
-import com.nhom1.oxygen.common.constants.getBMIColor
 import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.ui.profile.edit.EditProfileActivity
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
+import com.nhom1.oxygen.utils.getBMIColor
 import com.nhom1.oxygen.utils.getTimeString
 import com.nhom1.oxygen.utils.toJson
 import dagger.hilt.android.AndroidEntryPoint
