@@ -124,4 +124,7 @@
     <string name="you_are_entering_polluted_area_please_take_cautious">Bạn đang đi vào khu vực có độ ô nhiễm cao! Hãy bảo vệ sức khỏe!</string>
     <string name="welcome">Chào mừng</string>
     <string name="today">Hôm nay</string>
+    <string name="next_week">Tuần tới</string>
+    <string name="chance_of_rain">Tỉ lệ có mưa</string>
+    <string name="discard">Hủy bỏ</string>
 </resources>

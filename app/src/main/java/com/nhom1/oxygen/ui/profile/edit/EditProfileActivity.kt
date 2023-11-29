@@ -209,7 +209,7 @@ class EditProfileActivity : ComponentActivity() {
             ODialog(title = stringResource(id = R.string.warning),
                 content = stringResource(R.string.cancel_edit_content),
                 cancelText = stringResource(id = R.string.back),
-                confirmText = stringResource(id = R.string.cancel),
+                confirmText = stringResource(R.string.discard),
                 onCancel = {
                     showCancelDialog = false
                 },
