@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.history.OHistory
 import com.nhom1.oxygen.repository.HistoryRepository
 import com.nhom1.oxygen.utils.constants.LoadState
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.listen
+import com.nhom1.oxygen.utils.toMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -96,6 +96,7 @@ class HistoryActivity : ComponentActivity() {
     @Composable
     fun HistoryView() {
         val state by viewModel.state.collectAsState()
+        debugLog(state.history?.firstOrNull())
         Scaffold(
             topBar = {
                 OAppBar(
@@ -164,10 +165,13 @@ class HistoryActivity : ComponentActivity() {
                                         }
                                     }
                                 }
-                                HorizontalPager(state = pagerState, key = { it }) {
-                                    val bounds = rememberSaveable(it) {
+                                HorizontalPager(
+                                    state = pagerState,
+                                    key = { state.history!![it].time }
+                                ) {
+                                    val bounds = rememberSaveable(pagerState.currentPage) {
                                         LatLngBounds.builder().let { builder ->
-                                            for (h in state.history!![it].history) {
+                                            for (h in state.history!![pagerState.currentPage].history.fillGaps().filterNotNull()) {
                                                 builder.include(LatLng(h.latitude, h.longitude))
                                             }
                                             builder.build()
@@ -198,7 +202,7 @@ class HistoryActivity : ComponentActivity() {
                                             mutableStateOf<OHourlyHistory?>(null)
                                         }
                                         ExposureChart(
-                                            history = state.history!![it].history,
+                                            history = state.history!![pagerState.currentPage].history.fillGaps(),
                                             modifier = Modifier.padding(top = 32.dp, bottom = 32.dp)
                                         ) { history ->
                                             coroutineScope.launch {
@@ -226,7 +230,7 @@ class HistoryActivity : ComponentActivity() {
                                         }
                                         MovingHistory(
                                             modifier = Modifier.padding(bottom = 32.dp),
-                                            history = state.history!![it].history,
+                                            history = state.history!![pagerState.currentPage].history.fillGaps().filterNotNull(),
                                             camState = camState,
                                             selectedPosition = selectedPosition
                                         )
@@ -243,7 +247,7 @@ class HistoryActivity : ComponentActivity() {
     @Composable
     fun ExposureChart(
         modifier: Modifier = Modifier,
-        history: List<OHourlyHistory>,
+        history: List<OHourlyHistory?>,
         onDataClick: (OHourlyHistory) -> Unit
     ) {
         Column(
@@ -258,7 +262,7 @@ class HistoryActivity : ComponentActivity() {
             OBarChart(
                 data = OBarChartData(
                     maxYValue = 500.0,
-                    barsData = history.fillGaps().mapIndexed { index, h ->
+                    barsData = history.mapIndexed { index, h ->
                         OBarChartData.OBarData(
                             label = "${index}h",
                             value = h?.aqi?.toDouble() ?: -1.0,
