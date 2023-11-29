@@ -6,6 +6,7 @@ import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.SuggestionRepository
 import com.nhom1.oxygen.utils.compareAQILevel
 import com.nhom1.oxygen.utils.constants.SPKeys
+import com.nhom1.oxygen.utils.extensions.compareIgnoreOrder
 import com.nhom1.oxygen.utils.gson
 import com.nhom1.oxygen.utils.now
 import com.nhom1.oxygen.utils.toMap
@@ -18,6 +19,7 @@ class SuggestionRepositoryImpl(
     private data class CachedSuggestion(
         val time: Long,
         val aqi: Int,
+        val diseases: List<String> = listOf(),
         val suggestion: String? = null,
         val suggestions: List<String>? = null
     )
@@ -80,7 +82,7 @@ class SuggestionRepositoryImpl(
             !this::cachedShortSuggestion.isInitialized || now() - cachedShortSuggestion.time > interval || compareAQILevel(
                 cachedShortSuggestion.aqi,
                 airQuality.aqi
-            ) != 0 -> {
+            ) != 0 || diseases.compareIgnoreOrder(cachedLongSuggestion.diseases) -> {
                 service
                     .suggestion
                     .getLongSuggestion(
@@ -91,7 +93,8 @@ class SuggestionRepositoryImpl(
                         cachedLongSuggestion = CachedSuggestion(
                             time = now(),
                             aqi = airQuality.aqi,
-                            suggestions = it.suggestions
+                            suggestions = it.suggestions,
+                            diseases = diseases
                         )
                         sharedPreferences.edit().putString(
                             SPKeys.Cache.CACHE_LONG_SUGGESTION,
