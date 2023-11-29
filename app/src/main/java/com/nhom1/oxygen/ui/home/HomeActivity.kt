@@ -2,6 +2,7 @@
 
 package com.nhom1.oxygen.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -97,6 +98,21 @@ class HomeActivity : ComponentActivity() {
                 Surface {
                     HomeView()
                 }
+            }
+        }
+    }
+
+    private fun reloadData() {
+        overviewViewModel.load()
+        suggestionViewModel.load()
+        userViewModel.load()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.hasExtra("refresh")) {
+            if (intent.getBooleanExtra("refresh", false)) {
+                reloadData()
             }
         }
     }

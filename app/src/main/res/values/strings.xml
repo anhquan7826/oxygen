@@ -115,4 +115,6 @@
     <string name="english">English</string>
     <string name="system">System</string>
     <string name="language_will_change_after_app_restart">Language will change after app restart!</string>
+    <string name="oxygen_is_providing_you_services_in_the_background">Oxygen is providing you services in the background.</string>
+    <string name="weather">Weather</string>
 </resources>

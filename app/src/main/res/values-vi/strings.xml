@@ -112,4 +112,6 @@
     <string name="english">Tiếng Anh</string>
     <string name="system">Hệ thống</string>
     <string name="language_will_change_after_app_restart">Ngôn ngữ sẽ thay đổi sau khi khởi động lại ứng dụng!</string>
+    <string name="oxygen_is_providing_you_services_in_the_background">Oxygen đang cung cấp dịch vụ cho bạn dưới nền.</string>
+    <string name="weather">Thời tiết</string>
 </resources>

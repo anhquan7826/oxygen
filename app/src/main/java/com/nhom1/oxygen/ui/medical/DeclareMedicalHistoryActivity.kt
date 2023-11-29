@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -150,7 +151,7 @@ class DeclareMedicalHistoryActivity : ComponentActivity() {
                     right = 16.dp
                 )
             ),
-            modifier = Modifier.statusBarsPadding()
+            modifier = Modifier.statusBarsPadding().imePadding()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

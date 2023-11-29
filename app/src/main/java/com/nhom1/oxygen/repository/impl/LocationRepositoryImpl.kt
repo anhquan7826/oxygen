@@ -9,6 +9,7 @@ import com.nhom1.oxygen.data.model.divisions.OWard
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.LocationRepository
+import com.nhom1.oxygen.utils.CoordinateUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.fromJson
 import io.reactivex.rxjava3.core.Completable
@@ -21,6 +22,14 @@ class LocationRepositoryImpl(
 ) : LocationRepository {
     private val sharedPreferences =
         context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+
+    data class CachedLocationInfo(
+        val latitude: Double,
+        val longitude: Double,
+        val info: OLocation
+    )
+
+    private lateinit var cachedLocation: CachedLocationInfo
 
     @SuppressLint("MissingPermission")
     override fun getCurrentLocation(): Single<OLocation> {
@@ -35,23 +44,81 @@ class LocationRepositoryImpl(
     }
 
     override fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation> {
-        return service.geocoding.getLocation(latitude, longitude)
+        return when {
+            !this::cachedLocation.isInitialized ||
+                    CoordinateUtil.distance(
+                        Pair(cachedLocation.latitude, cachedLocation.longitude),
+                        Pair(latitude, longitude)
+                    ) > 100 -> {
+                service.geocoding.getLocation(latitude, longitude).map {
+                    cachedLocation = CachedLocationInfo(latitude, longitude, it)
+                    it
+                }
+            }
+
+            else -> {
+                Single.create {
+                    it.onSuccess(cachedLocation.info)
+                }
+            }
+        }
     }
 
     override fun findLocation(query: String): Single<List<OLocation>> {
         return service.geocoding.searchLocation(query)
     }
 
+    private lateinit var cachedProvinces: List<OProvince>
     override fun getProvinces(): Single<List<OProvince>> {
-        return service.division.getProvinces()
+        return when {
+            !this::cachedProvinces.isInitialized -> {
+                service.division.getProvinces().map {
+                    cachedProvinces = it
+                    it
+                }
+            }
+
+            else -> {
+                Single.create { it.onSuccess(cachedProvinces) }
+            }
+        }
     }
+
+    private val cachedDistrict = mutableMapOf<String, List<ODistrict>>()
 
     override fun getDistricts(provinceId: String): Single<List<ODistrict>> {
-        return service.division.getDistricts(provinceId)
+        return when {
+            cachedDistrict.containsKey(provinceId) -> {
+                Single.create {
+                    it.onSuccess(cachedDistrict[provinceId]!!)
+                }
+            }
+
+            else -> {
+                service.division.getDistricts(provinceId).map {
+                    cachedDistrict[provinceId] = it
+                    it
+                }
+            }
+        }
     }
 
+    private val cachedWard = mutableMapOf<String, List<OWard>>()
     override fun getWards(districtId: String): Single<List<OWard>> {
-        return service.division.getWards(districtId)
+        return when {
+            cachedDistrict.containsKey(districtId) -> {
+                Single.create {
+                    it.onSuccess(cachedWard[districtId]!!)
+                }
+            }
+
+            else -> {
+                service.division.getWards(districtId).map {
+                    cachedWard[districtId] = it
+                    it
+                }
+            }
+        }
     }
 
     override fun getSearchedLocation(): Single<List<OLocation>> {

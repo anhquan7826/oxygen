@@ -2,6 +2,7 @@ package com.nhom1.oxygen.data.model.location
 
 import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
+import com.nhom1.oxygen.utils.CoordinateUtil
 
 @Entity(
     tableName = "searched_location",
@@ -15,9 +16,15 @@ data class OLocation(
     val country: String,
     @SerializedName("country_code") val countryCode: String,
     val province: String,
-    @SerializedName("suburb") val district: String,
-    @SerializedName("quarter") val ward: String,
-    val street: String,
+    val district: String,
+    val ward: String,
     @SerializedName("lat") val latitude: Double,
     @SerializedName("lon") val longitude: Double,
-)
+) {
+    fun distance(other: OLocation): Double {
+        return CoordinateUtil.distance(
+            Pair(latitude, longitude),
+            Pair(other.latitude, other.longitude)
+        )
+    }
+}

@@ -24,7 +24,6 @@ class LocationRepositoryMock(
                     district = "Thach That District",
                     latitude = 21.0039985,
                     longitude = 105.50181441601865,
-                    street = "Đường Làng Văn hóa",
                     ward = "Thạch Hòa"
                 )
             )
@@ -42,7 +41,6 @@ class LocationRepositoryMock(
                     district = "Thach That District",
                     latitude = 21.0039985,
                     longitude = 105.50181441601865,
-                    street = "Đường Làng Văn hóa",
                     ward = "Thạch Hòa"
                 )
             )
@@ -61,7 +59,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -72,7 +69,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -83,7 +79,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -94,7 +89,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -105,7 +99,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -116,7 +109,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -127,7 +119,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -138,7 +129,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -149,7 +139,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                     OLocation(
@@ -160,7 +149,6 @@ class LocationRepositoryMock(
                         district = "Thach That District",
                         latitude = 21.0039985,
                         longitude = 105.50181441601865,
-                        street = "Đường Làng Văn hóa",
                         ward = "Thạch Hòa"
                     ),
                 )

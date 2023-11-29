@@ -3,7 +3,6 @@ package com.nhom1.oxygen.ui.home.composables
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +53,6 @@ import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.getTimeString
 import com.nhom1.oxygen.utils.toJson
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OverviewComposable(
     viewModel: OverviewViewModel,

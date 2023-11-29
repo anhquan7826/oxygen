@@ -120,10 +120,11 @@ internal object OxygenModule {
     @Provides
     @Singleton
     fun provideHistoryRepository(
-        @ApplicationContext context: Context,
-        service: OxygenService
+        service: OxygenService,
+        locationRepository: LocationRepository,
+        weatherRepository: WeatherRepository
     ): HistoryRepository {
-//        return HistoryRepositoryImpl(context, service)
+//        return HistoryRepositoryImpl(service, locationRepository, weatherRepository)
         return HistoryRepositoryMock()
     }
 
@@ -136,7 +137,12 @@ internal object OxygenModule {
     @Provides
     @Singleton
     fun provideSettingRepository(@ApplicationContext context: Context): SettingRepository {
-        return SettingRepositoryImpl(context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE))
+        return SettingRepositoryImpl(
+            context.getSharedPreferences(
+                context.packageName,
+                Context.MODE_PRIVATE
+            )
+        )
     }
 
     @Provides

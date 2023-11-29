@@ -13,5 +13,4 @@ class ArticleRepositoryImpl(private val service: OxygenService) : ArticleReposit
     override fun findArticle(query: String): Single<List<OArticle>> {
         return service.article.findArticles(query)
     }
-
 }
