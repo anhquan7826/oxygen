@@ -12,6 +12,7 @@ object SPKeys {
     }
 
     object Cache {
+        const val CACHE_UPLOAD_HISTORY_TIMESTAMP = "cache+upload_history_timestamp"
         const val CACHE_SHORT_SUGGESTION = "cache_short_suggestion"
         const val CACHE_LONG_SUGGESTION = "cache_long_suggestion"
     }

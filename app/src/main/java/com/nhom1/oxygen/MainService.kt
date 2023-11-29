@@ -12,6 +12,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -134,11 +135,12 @@ class MainService : Service() {
         }
     }
 
-    private var prevHour = -1
+    private var prevHour =
+        sharedPreferences.getLong(SPKeys.Cache.CACHE_UPLOAD_HISTORY_TIMESTAMP, -1)
+
     private fun addHistory() {
         if (userRepository.isSignedIn()) {
-            val hour = getHour(now())
-            if (prevHour < hour) {
+            if (now() - prevHour > 3600) {
                 infoLog("${this::class.simpleName}: Adding user's history.")
                 historyRepository.addLocationHistory().listen(
                     onError = {
@@ -149,7 +151,10 @@ class MainService : Service() {
                         ).show()
                     }
                 ) {
-                    prevHour = hour
+                    prevHour = now()
+                    sharedPreferences.edit {
+                        putLong(SPKeys.Cache.CACHE_UPLOAD_HISTORY_TIMESTAMP, prevHour)
+                    }
                 }
             }
         }
