@@ -58,8 +58,8 @@ import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.toPrettyString
-import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getBMIColor
+import com.nhom1.oxygen.utils.gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -71,7 +71,7 @@ class DeclareMedicalHistoryActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         viewModel = ViewModelProvider(this)[DeclareMedicalHistoryViewModel::class.java]
-        userData = fromJson(intent.getStringExtra("userData")!!, OUser::class.java)!!
+        userData = gson.fromJson(intent.getStringExtra("userData")!!, OUser::class.java)
         setContent {
             OxygenTheme {
                 Surface(

@@ -55,7 +55,7 @@ import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.getBMIColor
 import com.nhom1.oxygen.utils.getTimeString
-import com.nhom1.oxygen.utils.toJson
+import com.nhom1.oxygen.utils.gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -105,7 +105,7 @@ class ProfileActivity : ComponentActivity() {
                             Intent(
                                 this,
                                 EditProfileActivity::class.java
-                            ).putExtra("userData", toJson(state.userData!!))
+                            ).putExtra("userData", gson.toJson(state.userData!!))
                         )
                     }
                 )

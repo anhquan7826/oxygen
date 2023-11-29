@@ -37,6 +37,7 @@ class UserRepositoryImpl(
         credential: AuthCredential,
         onResult: (OxygenService.User.OnSignInResult?) -> Unit
     ) {
+        cachedUserData = null
         firebaseAuth.signInWithCredential(credential).addOnSuccessListener {
             if (it.user == null) {
                 onResult.invoke(null)
@@ -62,11 +63,20 @@ class UserRepositoryImpl(
         return firebaseAuth.currentUser != null
     }
 
+    private var cachedUserData: OUser? = null
     override fun getUserData(): Single<OUser> {
-        return service.user.getInfo()
+        return if (cachedUserData == null) {
+            service.user.getInfo().map {
+                cachedUserData = it
+                it
+            }
+        } else {
+            Single.create { it.onSuccess(cachedUserData!!) }
+        }
     }
 
     override fun setUserData(newUserData: OUser): Completable {
+        cachedUserData = null
         return service.user.setInfo(
             OxygenService.User.SetInfoRequest(
                 name = newUserData.name,
@@ -76,6 +86,7 @@ class UserRepositoryImpl(
     }
 
     override fun setUserAvatar(avatar: Uri, contentResolver: ContentResolver): Completable {
+        cachedUserData = null
         return Completable.create { emitter ->
             contentResolver.openInputStream(avatar).use { inputStream ->
                 if (inputStream != null) {
@@ -101,6 +112,7 @@ class UserRepositoryImpl(
         height: Double,
         diseases: List<String>
     ): Completable {
+        cachedUserData = null
         return service.user.setDiseases(
             OxygenService.User.SetDiseasesRequest(
                 weight, height, diseases
@@ -109,6 +121,7 @@ class UserRepositoryImpl(
     }
 
     override fun signOut() {
+        cachedUserData = null
         firebaseAuth.signOut()
     }
 }

@@ -1,6 +1,5 @@
 package com.nhom1.oxygen.repository.impl
 
-import android.annotation.SuppressLint
 import android.content.Context
 import com.nhom1.oxygen.data.database.OxygenDatabase
 import com.nhom1.oxygen.data.model.divisions.ODistrict
@@ -11,7 +10,8 @@ import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.utils.CoordinateUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
-import com.nhom1.oxygen.utils.fromJson
+import com.nhom1.oxygen.utils.debugLog
+import com.nhom1.oxygen.utils.gson
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -33,15 +33,21 @@ class LocationRepositoryImpl(
 
     private lateinit var cachedLocation: CachedLocationInfo
 
-    @SuppressLint("MissingPermission")
     override fun getCurrentLocation(): Single<OLocation> {
         return Single.create { emitter ->
-            emitter.onSuccess(
-                fromJson(
-                    sharedPreferences.getString(SPKeys.CURRENT_LOCATION, "")!!,
+            while (true) {
+                if (sharedPreferences.contains(SPKeys.CURRENT_LOCATION)) break
+            }
+            try {
+                val location = gson.fromJson(
+                    sharedPreferences.getString(SPKeys.CURRENT_LOCATION, "").toString(),
                     OLocation::class.java
-                )!!
-            )
+                )
+                debugLog("${this::class.simpleName}: Got location: $location")
+                emitter.onSuccess(location)
+            } catch (e: Exception) {
+                emitter.onError(e)
+            }
         }
     }
 
@@ -52,6 +58,7 @@ class LocationRepositoryImpl(
                         Pair(cachedLocation.latitude, cachedLocation.longitude),
                         Pair(latitude, longitude)
                     ) > cacheDistance -> {
+                debugLog("${this::class.simpleName}: getLocationFromCoordinate: new!")
                 service.geocoding.getLocation(latitude, longitude).map {
                     cachedLocation = CachedLocationInfo(latitude, longitude, it)
                     it
@@ -60,6 +67,7 @@ class LocationRepositoryImpl(
 
             else -> {
                 Single.create {
+                    debugLog("${this::class.simpleName}: getLocationFromCoordinate: cached!")
                     it.onSuccess(cachedLocation.info)
                 }
             }

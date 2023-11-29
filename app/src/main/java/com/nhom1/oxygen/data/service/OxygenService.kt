@@ -142,10 +142,10 @@ interface OxygenService {
 
     interface Suggestion {
         @GET(OxygenAPI.Suggestion.SHORT_SUGGESTION)
-        fun getShortSuggestion(@QueryMap airQuality: Map<String, Any>): Single<OShortSuggestion>
+        fun getShortSuggestion(@QueryMap airQuality: Map<String, String>): Single<OShortSuggestion>
 
         @GET(OxygenAPI.Suggestion.LONG_SUGGESTION)
-        fun getLongSuggestion(@QueryMap input: Map<String, Any>): Single<OLongSuggestion>
+        fun getLongSuggestion(@QueryMap input: Map<String, String>): Single<OLongSuggestion>
     }
 
     val suggestion: Suggestion

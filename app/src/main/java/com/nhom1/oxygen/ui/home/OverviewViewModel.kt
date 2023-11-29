@@ -50,21 +50,22 @@ class OverviewViewModel @Inject constructor(
                 state = LoadState.LOADING
             )
         }
-        locationRepository.getCurrentLocation().listen { location ->
+        locationRepository.getCurrentLocation().listen(
+            onError = { exception ->
+                _overviewState.update {
+                    OverviewState(
+                        state = LoadState.ERROR,
+                        error = exception.message
+                    )
+                }
+            }
+        ) { location ->
             Single.zip(
                 notificationRepository.countNotifications(),
                 weatherRepository.getCurrentWeatherInfo(location),
                 weatherRepository.getWeatherInfoIn24h(location),
-                suggestionRepository.getShortSuggestion()
-            ) { notifications, current, next24h, suggestion ->
-                OverviewState(
-                    state = LoadState.LOADED,
-                    notifications = notifications,
-                    location = location,
-                    suggestion = suggestion,
-                    weatherCurrent = current,
-                    weather24h = next24h
-                )
+            ) { notifications, current, next24h ->
+                Triple(notifications, current, next24h)
             }.listen(
                 onError = { exception ->
                     _overviewState.update {
@@ -75,9 +76,32 @@ class OverviewViewModel @Inject constructor(
                     }
                 }
             ) { result ->
-                _overviewState.update {
-                    result
+                val notifications = result.first
+                val current = result.second
+                val next24h = result.third
+                suggestionRepository.getShortSuggestion(current.airQuality).listen(
+                    onError = { exception ->
+                        _overviewState.update {
+                            OverviewState(
+                                state = LoadState.ERROR,
+                                error = exception.message
+                            )
+                        }
+                    }
+                ) { suggestion ->
+                    _overviewState.update {
+                        OverviewState(
+                            state = LoadState.LOADED,
+                            notifications = notifications,
+                            location = location,
+                            suggestion = suggestion,
+                            weatherCurrent = current,
+                            weather24h = next24h
+                        )
+                    }
+
                 }
+
             }
         }
 

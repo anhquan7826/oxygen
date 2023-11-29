@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
@@ -32,6 +33,10 @@ fun runSingle(
             it.onError(e)
         }
     }.subscribeOn(subscribeOn).observeOn(observeOn).subscribe({}, onError)
+}
+
+fun Disposable.addTo(disposable: CompositeDisposable) {
+    disposable.add(this)
 }
 
 fun runPeriodic(

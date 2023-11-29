@@ -1,10 +1,12 @@
 package com.nhom1.oxygen
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.landing.LandingActivity
@@ -19,6 +21,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var userRepository: UserRepository
 
+    @Inject
+    lateinit var locationRepository: LocationRepository
+
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +32,7 @@ class MainActivity : ComponentActivity() {
         LanguageUtil.setLanguage(this)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
         MainService.startService(this)

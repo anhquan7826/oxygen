@@ -7,7 +7,6 @@ import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.model.user.OUserProfile
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.UserRepository
-import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.errorLog
 import com.nhom1.oxygen.utils.listen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -84,7 +83,6 @@ class EditProfileViewModel @Inject constructor(
 
     fun setAvt(uri: Uri) {
         currentAvt = uri
-        debugLog(uri)
     }
 
     fun setName(name: String) {

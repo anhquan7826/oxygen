@@ -1,7 +1,7 @@
 package com.nhom1.oxygen.data.service
 
 object OxygenAPI {
-    const val baseUrl = "https://6552-2a09-bac1-7a80-50-00-17-312.ngrok-free.app/api/v1/"
+    const val baseUrl = "https://oxygen.radrat.vn/api/v1/"
 
     object User {
         const val SET_DISEASES = "users/diseases"

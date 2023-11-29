@@ -68,11 +68,11 @@ import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
-import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getAQIColor
 import com.nhom1.oxygen.utils.getAQILevel
 import com.nhom1.oxygen.utils.getHour
 import com.nhom1.oxygen.utils.getTimeString
+import com.nhom1.oxygen.utils.gson
 import com.nhom1.oxygen.utils.now
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -91,25 +91,25 @@ class DetailsActivity : ComponentActivity() {
         viewModel = ViewModelProvider(this)[DetailsViewModel::class.java]
         if (intent.extras != null) {
             if (intent.extras!!.containsKey("location")) {
-                location = fromJson(
+                location = gson.fromJson(
                     intent.extras!!.getString("location").toString(),
                     OLocation::class.java
                 )
             }
             if (intent.extras!!.containsKey("weatherCurrent")) {
-                weatherCurrent = fromJson(
+                weatherCurrent = gson.fromJson(
                     intent.extras!!.getString("weatherCurrent").toString(),
                     OWeather::class.java
                 )
             }
             if (intent.extras!!.containsKey("weather24h")) {
                 weather24h = intent.extras!!.getStringArray("weather24h")?.map { e ->
-                    fromJson(e.toString(), OWeather::class.java)!!
+                    gson.fromJson(e.toString(), OWeather::class.java)
                 }
             }
             if (intent.extras!!.containsKey("weather7d")) {
                 weather7d = intent.extras!!.getStringArray("weather7d")?.map { e ->
-                    fromJson(e.toString(), OWeather::class.java)!!
+                    gson.fromJson(e.toString(), OWeather::class.java)
                 }
             }
         }
@@ -223,7 +223,7 @@ class DetailsActivity : ComponentActivity() {
                                     state.weatherCurrent!!.airQuality.no2,
                                     state.weatherCurrent!!.airQuality.o3,
                                     state.weatherCurrent!!.airQuality.so2,
-                                    state.weatherCurrent!!.airQuality.pm25,
+                                    state.weatherCurrent!!.airQuality.pm2_5,
                                     state.weatherCurrent!!.airQuality.pm10,
                                     state.weatherCurrent!!.airQuality.aqi
                                 ),
@@ -315,6 +315,7 @@ class DetailsActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun WeatherForecast(
         modifier: Modifier = Modifier,
@@ -480,7 +481,7 @@ class DetailsActivity : ComponentActivity() {
                 IndexCard(
                     type = "PM2.5",
                     autoSubscriptType = false,
-                    value = value.pm25,
+                    value = value.pm2_5,
                     unit = "µg/m3",
                     modifier = Modifier
                         .weight(1f)
@@ -741,18 +742,21 @@ class DetailsActivity : ComponentActivity() {
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
-                            Text(
-                                text = stringResource(id = R.string.chance_of_rain),
-                                fontWeight = FontWeight.Light,
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = "${forecast.chanceOfRain}%",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
+                            if (forecast.chanceOfRain != null) {
+                                Text(
+                                    text = stringResource(id = R.string.chance_of_rain),
+                                    fontWeight = FontWeight.Light,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "${forecast.chanceOfRain}%",
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            }
+
                             Text(
                                 text = stringResource(id = R.string.aqi_index_title),
                                 fontWeight = FontWeight.Light,

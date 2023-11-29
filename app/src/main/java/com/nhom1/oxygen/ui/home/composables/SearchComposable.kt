@@ -5,7 +5,6 @@ package com.nhom1.oxygen.ui.home.composables
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,9 +38,8 @@ import com.nhom1.oxygen.common.composables.OTextField
 import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.SearchViewModel
 import com.nhom1.oxygen.utils.extensions.oClip
-import com.nhom1.oxygen.utils.toJson
+import com.nhom1.oxygen.utils.gson
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchComposable(viewModel: SearchViewModel) {
     val state by viewModel.state.collectAsState()
@@ -111,7 +109,7 @@ fun SearchComposable(viewModel: SearchViewModel) {
                                     ) {
                                         context.startActivity(
                                             Intent(context, DetailsActivity::class.java).putExtra(
-                                                "location", toJson(result)
+                                                "location", gson.toJson(result)
                                             )
                                         )
                                     }
@@ -148,7 +146,7 @@ fun SearchComposable(viewModel: SearchViewModel) {
                                     viewModel.saveLocation(result)
                                     context.startActivity(
                                         Intent(context, DetailsActivity::class.java).putExtra(
-                                            "location", toJson(result)
+                                            "location", gson.toJson(result)
                                         )
                                     )
                                 }

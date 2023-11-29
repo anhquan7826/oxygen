@@ -26,7 +26,7 @@ class WeatherRepositoryMock : WeatherRepository {
             code = 1003
         ),
         airQuality = OAirQuality(
-            co = 547.4, no2 = 7.8, o3 = 95.8, so2 = 30.5, pm25 = 73.9, pm10 = 76.8, aqi = Random.nextInt(501)
+            co = 547.4, no2 = 7.8, o3 = 95.8, so2 = 30.5, pm2_5 = 73.9, pm10 = 76.8, aqi = Random.nextInt(501)
         )
     )
 

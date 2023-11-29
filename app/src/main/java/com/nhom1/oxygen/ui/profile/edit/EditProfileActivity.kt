@@ -67,9 +67,8 @@ import com.nhom1.oxygen.common.theme.OxygenTheme
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.ui.medical.DeclareMedicalHistoryActivity
 import com.nhom1.oxygen.utils.extensions.oBorder
-import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getTimeString
-import com.nhom1.oxygen.utils.toJson
+import com.nhom1.oxygen.utils.gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -87,7 +86,7 @@ class EditProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         viewModel = ViewModelProvider(this)[EditProfileViewModel::class.java]
-        userData = fromJson(intent.extras!!.getString("userData")!!, OUser::class.java)!!
+        userData = gson.fromJson(intent.extras!!.getString("userData")!!, OUser::class.java)
         viewModel.load(userData)
         setContent {
             OxygenTheme {
@@ -201,7 +200,7 @@ class EditProfileActivity : ComponentActivity() {
                         Intent(
                             this@EditProfileActivity,
                             DeclareMedicalHistoryActivity::class.java
-                        ).putExtra("userData", toJson(userData))
+                        ).putExtra("userData", gson.toJson(userData))
                     )
                 }
             }

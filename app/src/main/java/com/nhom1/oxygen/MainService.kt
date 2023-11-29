@@ -29,10 +29,10 @@ import com.nhom1.oxygen.utils.NotificationUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.getAQILevel
 import com.nhom1.oxygen.utils.getHour
+import com.nhom1.oxygen.utils.gson
 import com.nhom1.oxygen.utils.infoLog
 import com.nhom1.oxygen.utils.listen
 import com.nhom1.oxygen.utils.now
-import com.nhom1.oxygen.utils.toJson
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -104,6 +104,10 @@ class MainService : Service() {
             ) != PackageManager.PERMISSION_GRANTED
         ) return
         infoLog("${this::class.simpleName}: Tracking user's location: ${LocalDateTime.now()}.")
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+            onLocationUpdate(it.latitude, it.longitude)
+
+        }
         fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, minTimeInterval).build(),
             object : LocationCallback() {
@@ -120,9 +124,10 @@ class MainService : Service() {
     private fun onLocationUpdate(latitude: Double, longitude: Double) {
         infoLog("${this::class.simpleName}: User's location updated: $latitude, $longitude: ${LocalDateTime.now()}")
         locationRepository.getLocationFromCoordinate(latitude, longitude).listen {
+            infoLog("${this::class.simpleName}: Got location info: $it: ${LocalDateTime.now()}")
             sharedPreferences
                 .edit()
-                .putString(SPKeys.CURRENT_LOCATION, toJson(it))
+                .putString(SPKeys.CURRENT_LOCATION, gson.toJson(it))
                 .apply()
             addHistory()
             updateWeatherInfo()

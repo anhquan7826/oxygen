@@ -49,7 +49,7 @@ import com.nhom1.oxygen.utils.constants.LoadState.LOADING
 import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.getTimeString
-import com.nhom1.oxygen.utils.toJson
+import com.nhom1.oxygen.utils.gson
 
 @Composable
 fun OverviewComposable(
@@ -168,12 +168,12 @@ fun OverviewComposable(
                             Intent(context, DetailsActivity::class.java)
                                 .putExtra(
                                     "location",
-                                    toJson(state.location!!)
+                                    gson.toJson(state.location!!)
                                 )
-                                .putExtra("weatherCurrent", toJson(state.weatherCurrent!!))
+                                .putExtra("weatherCurrent", gson.toJson(state.weatherCurrent!!))
                                 .putExtra(
                                     "weather24h",
-                                    state.weather24h!!.map { e -> toJson(e) }.toTypedArray()
+                                    state.weather24h!!.map { e -> gson.toJson(e) }.toTypedArray()
                                 )
                         )
                     }

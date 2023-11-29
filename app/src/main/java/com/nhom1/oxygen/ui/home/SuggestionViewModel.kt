@@ -6,6 +6,7 @@ import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.repository.ArticleRepository
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.SuggestionRepository
+import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.listen
@@ -21,6 +22,7 @@ class SuggestionViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val articleRepository: ArticleRepository,
     private val locationRepository: LocationRepository,
+    private val userRepository: UserRepository,
     private val suggestionRepository: SuggestionRepository
 ) : ViewModel() {
     data class SuggestionState(
@@ -42,18 +44,22 @@ class SuggestionViewModel @Inject constructor(
         _state.update {
             SuggestionState()
         }
-        locationRepository.getCurrentLocation().listen { location ->
+        locationRepository.getCurrentLocation().listen(
+            onError = { exception ->
+                _state.update {
+                    SuggestionState(
+                        state = LoadState.ERROR,
+                        error = exception.message
+                    )
+                }
+            }
+        ) { location ->
             Single.zip(
                 weatherRepository.getCurrentWeatherInfo(location),
-                suggestionRepository.getLongSuggestion(),
-                articleRepository.getArticle()
-            ) { weather, suggestions, articles ->
-                SuggestionState(
-                    state = LoadState.LOADED,
-                    weather = weather,
-                    suggestions = suggestions,
-                    articles = articles
-                )
+                articleRepository.getArticle(),
+                userRepository.getUserData()
+            ) { weather, articles, userData ->
+                Triple(weather, articles, userData)
             }.listen(
                 onError = { exception ->
                     _state.update {
@@ -64,7 +70,31 @@ class SuggestionViewModel @Inject constructor(
                     }
                 }
             ) { result ->
-                _state.update { result }
+                val weather = result.first
+                val articles = result.second
+                val userData = result.third
+                suggestionRepository.getLongSuggestion(
+                    airQuality = weather.airQuality,
+                    diseases = userData.diseases?.map { e -> e.name } ?: listOf()
+                ).listen(
+                    onError = { exception ->
+                        _state.update {
+                            SuggestionState(
+                                state = LoadState.ERROR,
+                                error = exception.message
+                            )
+                        }
+                    }
+                ) { suggestions ->
+                    _state.update {
+                        SuggestionState(
+                            state = LoadState.LOADED,
+                            weather = weather,
+                            suggestions = suggestions,
+                            articles = articles
+                        )
+                    }
+                }
             }
         }
     }

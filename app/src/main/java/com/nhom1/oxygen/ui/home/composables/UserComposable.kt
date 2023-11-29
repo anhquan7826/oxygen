@@ -47,7 +47,7 @@ import com.nhom1.oxygen.ui.profile.ProfileActivity
 import com.nhom1.oxygen.ui.settings.SettingsActivity
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.extensions.fillGaps
-import com.nhom1.oxygen.utils.toJson
+import com.nhom1.oxygen.utils.gson
 
 @Composable
 fun UserComposable(viewModel: UserViewModel) {
@@ -169,7 +169,7 @@ fun UserComposable(viewModel: UserViewModel) {
                         Intent(
                             context,
                             DeclareMedicalHistoryActivity::class.java
-                        ).putExtra("userData", toJson(state.userData!!))
+                        ).putExtra("userData", gson.toJson(state.userData!!))
                     )
                 }
                 OOption(
