@@ -152,7 +152,6 @@ fun AutoSizeText(
     CompositionLocalProvider(LocalDensity provides Density(density = density, fontScale = 1F)) {
         BoxWithConstraints(
             modifier = modifier,
-            contentAlignment = textAlignment,
         ) {
             // (1 / density).sp represents 1px when font scale equals 1
             val step = remember(stepGranularityTextSize) {
