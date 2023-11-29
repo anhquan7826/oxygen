@@ -3,7 +3,6 @@ package com.nhom1.oxygen.ui.home.composables
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,10 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -31,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -121,11 +119,11 @@ fun OverviewComposable(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(padding)
-                        .fillMaxSize()
                         .verticalScroll(rememberScrollState())
+                        .padding(padding)
+                        .padding(top = 32.dp)
+                        .fillMaxSize()
                 ) {
-                    Box(modifier = Modifier.height(32.dp))
                     OOverallStatus(
                         place = "${state.location!!.district}, ${state.location!!.province}",
                         country = state.location!!.country,
@@ -157,15 +155,7 @@ fun OverviewComposable(
                             fontSize = 16.sp,
                         )
                     }
-                    Row {
-                        TempBox(
-                            value = 23.0,
-                            modifier = Modifier.weight(1f),
-                            celsius = viewModel.tempUnit
-                        )
-                        Box(Modifier.width(16.dp))
-                        HumidityBox(value = 60.0, modifier = Modifier.weight(1f))
-                    }
+                    WeatherBox(weather = state.weatherCurrent!!, celsius = viewModel.tempUnit)
                     WeatherForecastToday(
                         forecasts = state.weather24h!!,
                         celsius = viewModel.tempUnit
@@ -230,7 +220,7 @@ fun SuggestBox(suggestion: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun TempBox(modifier: Modifier = Modifier, value: Double, celsius: Boolean = true) {
+fun WeatherBox(modifier: Modifier = Modifier, weather: OWeather, celsius: Boolean = true) {
     OCard(
         modifier = modifier
             .padding(bottom = 16.dp)
@@ -239,56 +229,37 @@ fun TempBox(modifier: Modifier = Modifier, value: Double, celsius: Boolean = tru
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.temperature),
-                contentDescription = null,
-                modifier = Modifier.size(72.dp)
-            )
             Column(
-                modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = stringResource(R.string.temperature)
+                    text = if (celsius) "${weather.tempC.toPrettyString()}°C" else "${weather.tempF.toPrettyString()}°F",
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
                 Text(
-                    text = value.toPrettyString() + if (celsius) "°C" else "°F",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(top = 16.dp)
+                    text = weather.condition.text,
+                    textAlign = TextAlign.Center
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun HumidityBox(modifier: Modifier = Modifier, value: Double) {
-    OCard(
-        modifier = modifier
-            .padding(bottom = 16.dp)
-            .oBorder()
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.humidity),
-                contentDescription = null,
-                modifier = Modifier.size(72.dp)
-            )
             Column(
-                modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = stringResource(R.string.humidity)
+                AsyncImage(
+                    weather.condition.icon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .size(72.dp)
                 )
-                Text(
-                    text = value.toPrettyString() + "%",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(top = 16.dp)
+                if (weather.chanceOfRain != null) Text(
+                    text = "${stringResource(R.string.chance_of_rain)}:\n${weather.chanceOfRain}%",
+                    fontSize = 12.sp,
+                    softWrap = true,
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -306,15 +277,14 @@ fun WeatherForecastToday(
             .padding(bottom = 16.dp)
             .horizontalScroll(rememberScrollState())
     ) {
-        repeat(forecasts.size) { index ->
-            val forecast = forecasts[index]
+        forecasts.forEach { forecast ->
             OCard(
                 contentPadding = 4.dp,
                 modifier = Modifier
                     .padding(end = if (forecast == forecasts.last()) 0.dp else 4.dp)
                     .size(
                         width = 100.dp,
-                        height = 300.dp,
+                        height = 150.dp,
                     )
                     .oBorder()
             ) {
@@ -334,7 +304,7 @@ fun WeatherForecastToday(
                         AsyncImage(
                             forecast.condition.icon,
                             contentDescription = null,
-                            modifier = Modifier.padding(horizontal = 8.dp)
+                            modifier = Modifier.size(42.dp)
                         )
                         if (forecast.chanceOfRain != null)
                             Text(

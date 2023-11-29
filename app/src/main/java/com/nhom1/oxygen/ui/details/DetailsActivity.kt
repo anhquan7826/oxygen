@@ -70,6 +70,7 @@ import com.nhom1.oxygen.utils.extensions.oBorder
 import com.nhom1.oxygen.utils.extensions.toPrettyString
 import com.nhom1.oxygen.utils.fromJson
 import com.nhom1.oxygen.utils.getAQIColor
+import com.nhom1.oxygen.utils.getAQILevel
 import com.nhom1.oxygen.utils.getHour
 import com.nhom1.oxygen.utils.getTimeString
 import com.nhom1.oxygen.utils.now
@@ -102,7 +103,7 @@ class DetailsActivity : ComponentActivity() {
                 )
             }
             if (intent.extras!!.containsKey("weather24h")) {
-                weather7d = intent.extras!!.getStringArray("weather24h")?.map { e ->
+                weather24h = intent.extras!!.getStringArray("weather24h")?.map { e ->
                     fromJson(e.toString(), OWeather::class.java)!!
                 }
             }
@@ -112,6 +113,7 @@ class DetailsActivity : ComponentActivity() {
                 }
             }
         }
+        if (location != null) viewModel.load(location!!, weatherCurrent, weather24h, weather7d)
         setContent {
             OxygenTheme {
                 Surface(
@@ -121,11 +123,6 @@ class DetailsActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (location != null) viewModel.load(location!!, weatherCurrent, weather24h, weather7d)
     }
 
     @Composable
@@ -261,8 +258,8 @@ class DetailsActivity : ComponentActivity() {
             val coroutineScope = rememberCoroutineScope()
             OPageIndicator(
                 indicators = listOf(
-                    "Hôm nay",
-                    "Tuần tới"
+                    stringResource(id = R.string.today),
+                    stringResource(id = R.string.next_week)
                 ),
                 currentIndex = pagerState.currentPage,
                 modifier = Modifier
@@ -338,8 +335,8 @@ class DetailsActivity : ComponentActivity() {
             val coroutineScope = rememberCoroutineScope()
             OPageIndicator(
                 indicators = listOf(
-                    "Hôm nay",
-                    "Tuần tới"
+                    stringResource(id = R.string.today),
+                    stringResource(R.string.next_week)
                 ),
                 currentIndex = pagerState.currentPage,
                 modifier = Modifier
@@ -360,7 +357,7 @@ class DetailsActivity : ComponentActivity() {
                             "dd/MM/yyyy - HH:mm"
                         ),
                         now = current,
-                        next24h = next24h,
+                        next24h = next24h.filter { e -> getHour(e.time) > getHour(now()) },
                         celsius = celsius
                     )
 
@@ -390,6 +387,7 @@ class DetailsActivity : ComponentActivity() {
                     .oBorder()
             ) {
                 Row {
+                    val color = if (getAQILevel(value.aqi) > 1) Color.White else Color.Black
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -399,6 +397,7 @@ class DetailsActivity : ComponentActivity() {
                             text = "AQI",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.SemiBold,
+                            color = color,
                             textAlign = TextAlign.Start,
                             modifier = Modifier.align(Alignment.Center)
                         )
@@ -410,11 +409,13 @@ class DetailsActivity : ComponentActivity() {
                     ) {
                         PieChart(
                             value = value.aqi / 500.0,
+                            dark = color == Color.Black,
                             modifier = Modifier.align(Alignment.Center)
                         )
                         Text(
                             text = value.aqi.toString(),
                             fontSize = 32.sp,
+                            color = color,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.Center)
                         )
@@ -591,14 +592,21 @@ class DetailsActivity : ComponentActivity() {
                             text = time,
                             fontWeight = FontWeight.Light
                         )
-                        Box(
+                        Column(
+                            verticalArrangement = Arrangement.Center,
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
                                 text = if (celsius) "${now.tempC.toPrettyString()}°C" else "${now.tempF.toPrettyString()}°F",
                                 fontSize = 48.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.align(Alignment.Center)
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            if (now.chanceOfRain != null) Text(
+                                text = "${stringResource(R.string.chance_of_rain)}: ${now.chanceOfRain}%",
+                                fontSize = 12.sp,
+                                softWrap = true,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
@@ -661,6 +669,7 @@ class DetailsActivity : ComponentActivity() {
                                     Text(
                                         text = forecast.airQuality.aqi.toString(),
                                         textAlign = TextAlign.Center,
+                                        color = if (getAQILevel(forecast.airQuality.aqi) > 1) Color.White else Color.Black,
                                         fontSize = 12.sp,
                                         modifier = Modifier
                                             .align(Alignment.BottomCenter)
@@ -721,7 +730,7 @@ class DetailsActivity : ComponentActivity() {
                                 )
                             }
                             Text(
-                                text = "Nhiệt độ",
+                                text = stringResource(id = R.string.temperature),
                                 fontWeight = FontWeight.Light,
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(bottom = 4.dp)
@@ -733,7 +742,8 @@ class DetailsActivity : ComponentActivity() {
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                             Text(
-                                text = "Tỉ lệ có mưa", fontWeight = FontWeight.Light,
+                                text = stringResource(id = R.string.chance_of_rain),
+                                fontWeight = FontWeight.Light,
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
@@ -752,6 +762,7 @@ class DetailsActivity : ComponentActivity() {
                             Text(
                                 text = forecast.airQuality.aqi.toString(),
                                 textAlign = TextAlign.Center,
+                                color = if (getAQILevel(forecast.airQuality.aqi) > 1) Color.White else Color.Black,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
                                     .background(

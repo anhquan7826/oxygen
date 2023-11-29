@@ -127,4 +127,6 @@
     <string name="you_are_entering_polluted_area_please_take_cautious">You are entering polluted area! Please take cautious!</string>
     <string name="welcome">Welcome</string>
     <string name="today">Today</string>
+    <string name="next_week">Next week</string>
+    <string name="chance_of_rain">Chance of rain</string>
 </resources>
