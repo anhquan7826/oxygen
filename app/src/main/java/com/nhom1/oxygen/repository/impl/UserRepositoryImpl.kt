@@ -11,7 +11,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.UserRepository
+import com.nhom1.oxygen.utils.FirebaseUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.listen
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -66,11 +68,12 @@ class UserRepositoryImpl(
     private var cachedUserData: OUser? = null
     override fun getUserData(): Single<OUser> {
         return if (cachedUserData == null) {
-            service.user.getInfo().map {
+            debugLog("${this::class.simpleName}: getUserData: new!")
+            service.user.getInfo().doOnSuccess {
                 cachedUserData = it
-                it
             }
         } else {
+            debugLog("${this::class.simpleName}: getUserData: cached!")
             Single.create { it.onSuccess(cachedUserData!!) }
         }
     }

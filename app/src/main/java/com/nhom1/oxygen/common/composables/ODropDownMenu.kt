@@ -30,15 +30,11 @@ import com.nhom1.oxygen.utils.extensions.oBorder
 fun <T : Any> ODropdownMenu(
     modifier: Modifier = Modifier,
     entries: Map<T, String>,
-    defaultSelected: T? = null,
-    placeholder: String? = null,
+    value: String,
     onSelected: (T) -> Unit
 ) {
     var expanded by remember {
         mutableStateOf(false)
-    }
-    var selected by rememberSaveable {
-        mutableStateOf(defaultSelected)
     }
     ExposedDropdownMenuBox(
         modifier = modifier.clip(RoundedCornerShape(12.dp)),
@@ -52,7 +48,7 @@ fun <T : Any> ODropdownMenu(
                 .fillMaxWidth()
                 .menuAnchor()
                 .oBorder(),
-            value = entries[selected] ?: placeholder ?: "",
+            value = value,
             onValueChange = {},
             readOnly = true,
             shape = RoundedCornerShape(12.dp),
@@ -83,23 +79,10 @@ fun <T : Any> ODropdownMenu(
                     },
                     onClick = {
                         expanded = false
-                        selected = entry.key
                         onSelected.invoke(entry.key)
                     }
                 )
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ODropdownMenuPreview() {
-    ODropdownMenu(
-        entries = mapOf(
-            0 to "Menu 0",
-            1 to "Menu 1",
-            2 to "Menu 2"
-        )
-    ) {}
 }

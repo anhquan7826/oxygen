@@ -340,7 +340,7 @@ class EditProfileActivity : ComponentActivity() {
 
     @Composable
     fun AddressField(modifier: Modifier = Modifier, viewModel: EditProfileViewModel) {
-        val state by viewModel.divisionState.collectAsState()
+        val state by viewModel.state.collectAsState()
         Column(
             modifier = modifier
         ) {
@@ -349,7 +349,8 @@ class EditProfileActivity : ComponentActivity() {
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 ODropdownMenu(
-                    entries = state.provinces, placeholder = userData.profile?.province
+                    entries = state.provinces,
+                    value = state.currentProvince
                 ) {
                     viewModel.setProvince(it)
                 }
@@ -364,7 +365,8 @@ class EditProfileActivity : ComponentActivity() {
                         .weight(1f)
                 ) {
                     ODropdownMenu(
-                        entries = state.districts, placeholder = userData.profile?.district
+                        entries = state.districts,
+                        value = state.currentDistrict
                     ) {
                         viewModel.setDistrict(it)
                     }
@@ -376,7 +378,8 @@ class EditProfileActivity : ComponentActivity() {
                         .weight(1f)
                 ) {
                     ODropdownMenu(
-                        entries = state.wards, placeholder = userData.profile?.ward
+                        entries = state.wards,
+                        value = state.currentWard
                     ) {
                         viewModel.setWard(it)
                     }

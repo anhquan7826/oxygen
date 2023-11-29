@@ -43,7 +43,6 @@ class LocationRepositoryImpl(
                     sharedPreferences.getString(SPKeys.CURRENT_LOCATION, "").toString(),
                     OLocation::class.java
                 )
-                debugLog("${this::class.simpleName}: Got location: $location")
                 emitter.onSuccess(location)
             } catch (e: Exception) {
                 emitter.onError(e)
@@ -59,9 +58,8 @@ class LocationRepositoryImpl(
                         Pair(latitude, longitude)
                     ) > cacheDistance -> {
                 debugLog("${this::class.simpleName}: getLocationFromCoordinate: new!")
-                service.geocoding.getLocation(latitude, longitude).map {
+                service.geocoding.getLocation(latitude, longitude).doOnSuccess {
                     cachedLocation = CachedLocationInfo(latitude, longitude, it)
-                    it
                 }
             }
 

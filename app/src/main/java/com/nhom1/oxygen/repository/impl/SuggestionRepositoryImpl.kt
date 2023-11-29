@@ -6,6 +6,7 @@ import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.SuggestionRepository
 import com.nhom1.oxygen.utils.compareAQILevel
 import com.nhom1.oxygen.utils.constants.SPKeys
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.extensions.compareIgnoreOrder
 import com.nhom1.oxygen.utils.gson
 import com.nhom1.oxygen.utils.now
@@ -50,23 +51,27 @@ class SuggestionRepositoryImpl(
                 cachedShortSuggestion.aqi,
                 airQuality.aqi
             ) != 0 -> {
+                debugLog("${this::class.simpleName}: getShortSuggestion: new!")
                 service.suggestion
                     .getShortSuggestion(toMap(airQuality).mapValues { it.value.toString() })
                     .map {
+                        it.suggestion
+                    }
+                    .doOnSuccess {
                         cachedShortSuggestion = CachedSuggestion(
                             time = now(),
                             aqi = airQuality.aqi,
-                            suggestion = it.suggestion
+                            suggestion = it
                         )
                         sharedPreferences.edit().putString(
                             SPKeys.Cache.CACHE_SHORT_SUGGESTION,
                             gson.toJson(cachedShortSuggestion)
                         ).apply()
-                        it.suggestion
                     }
             }
 
             else -> {
+                debugLog("${this::class.simpleName}: getShortSuggestion: cached!")
                 Single.create {
                     it.onSuccess(cachedShortSuggestion.suggestion!!)
                 }
@@ -83,6 +88,7 @@ class SuggestionRepositoryImpl(
                 cachedShortSuggestion.aqi,
                 airQuality.aqi
             ) != 0 || diseases.compareIgnoreOrder(cachedLongSuggestion.diseases) -> {
+                debugLog("${this::class.simpleName}: getLongSuggestion: new!")
                 service
                     .suggestion
                     .getLongSuggestion(
@@ -90,21 +96,24 @@ class SuggestionRepositoryImpl(
                             if (diseases.isNotEmpty()) plus("illness" to diseases.joinToString(", "))
                         }.mapValues { it.value.toString() }
                     ).map {
+                        it.suggestions
+                    }
+                    .doOnSuccess {
                         cachedLongSuggestion = CachedSuggestion(
                             time = now(),
                             aqi = airQuality.aqi,
-                            suggestions = it.suggestions,
+                            suggestions = it,
                             diseases = diseases
                         )
                         sharedPreferences.edit().putString(
                             SPKeys.Cache.CACHE_LONG_SUGGESTION,
                             gson.toJson(cachedLongSuggestion)
                         ).apply()
-                        it.suggestions
                     }
             }
 
             else -> {
+                debugLog("${this::class.simpleName}: getLongSuggestion: cached!")
                 Single.create {
                     it.onSuccess(cachedLongSuggestion.suggestions!!)
                 }

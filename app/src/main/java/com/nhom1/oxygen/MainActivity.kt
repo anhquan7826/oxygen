@@ -11,6 +11,7 @@ import com.nhom1.oxygen.repository.UserRepository
 import com.nhom1.oxygen.ui.home.HomeActivity
 import com.nhom1.oxygen.ui.landing.LandingActivity
 import com.nhom1.oxygen.ui.login.LoginActivity
+import com.nhom1.oxygen.utils.FirebaseUtil
 import com.nhom1.oxygen.utils.LanguageUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
+        FirebaseUtil.refreshIdTokenIfNeeded(this)
         MainService.startService(this)
         val isFirstTimeLaunch = sharedPreferences.getBoolean(SPKeys.FIRST_LAUNCH, true)
         if (isFirstTimeLaunch) {

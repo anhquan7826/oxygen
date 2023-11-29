@@ -106,7 +106,6 @@ class MainService : Service() {
         infoLog("${this::class.simpleName}: Tracking user's location: ${LocalDateTime.now()}.")
         fusedLocationProviderClient.lastLocation.addOnSuccessListener {
             onLocationUpdate(it.latitude, it.longitude)
-
         }
         fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, minTimeInterval).build(),
@@ -121,7 +120,8 @@ class MainService : Service() {
         )
     }
 
-    private fun onLocationUpdate(latitude: Double, longitude: Double) {
+    private fun onLocationUpdate(latitude: Double?, longitude: Double?) {
+        if (latitude == null || longitude == null) return
         infoLog("${this::class.simpleName}: User's location updated: $latitude, $longitude: ${LocalDateTime.now()}")
         locationRepository.getLocationFromCoordinate(latitude, longitude).listen {
             infoLog("${this::class.simpleName}: Got location info: $it: ${LocalDateTime.now()}")

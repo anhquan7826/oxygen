@@ -4,6 +4,7 @@ import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.WeatherRepository
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.now
 import io.reactivex.rxjava3.core.Single
 
@@ -27,17 +28,18 @@ class WeatherRepositoryImpl(private val service: OxygenService) : WeatherReposit
             !this::cachedWeatherCurrent.isInitialized
                     || (now() - cachedWeatherCurrent.time > cacheInterval)
                     || (location.distance(cachedWeatherCurrent.location) > cacheDistance) -> {
-                service.weather.getCurrent(location.latitude, location.longitude).map {
+                debugLog("${this::class.simpleName}: getCurrentWeatherInfo: new!")
+                service.weather.getCurrent(location.latitude, location.longitude).doOnSuccess {
                     cachedWeatherCurrent = CachedWeatherInfo(
                         time = now(),
                         location = location,
                         weather = it
                     )
-                    it
                 }
             }
 
             else -> {
+                debugLog("${this::class.simpleName}: getCurrentWeatherInfo: cached!")
                 return Single.create {
                     it.onSuccess(cachedWeatherCurrent.weather!!)
                 }
@@ -50,17 +52,18 @@ class WeatherRepositoryImpl(private val service: OxygenService) : WeatherReposit
             !this::cachedWeather24h.isInitialized
                     || (now() - cachedWeather24h.time > cacheInterval)
                     || (location.distance(cachedWeather24h.location) > cacheDistance) -> {
-                service.weather.get24h(location.latitude, location.longitude).map {
+                debugLog("${this::class.simpleName}: get24hWeatherInfo: new!")
+                service.weather.get24h(location.latitude, location.longitude).doOnSuccess {
                     cachedWeather24h = CachedWeatherInfo(
                         time = now(),
                         location = location,
                         weathers = it
                     )
-                    it
                 }
             }
 
             else -> {
+                debugLog("${this::class.simpleName}: get24WeatherInfo: cached!")
                 return Single.create {
                     it.onSuccess(cachedWeather24h.weathers!!)
                 }
@@ -73,17 +76,18 @@ class WeatherRepositoryImpl(private val service: OxygenService) : WeatherReposit
             !this::cachedWeather7d.isInitialized
                     || (now() - cachedWeather7d.time > cacheInterval)
                     || (location.distance(cachedWeather7d.location) > cacheDistance) -> {
-                service.weather.get7d(location.latitude, location.longitude).map {
+                debugLog("${this::class.simpleName}: get7dWeatherInfo: new!")
+                service.weather.get7d(location.latitude, location.longitude).doOnSuccess {
                     cachedWeather7d = CachedWeatherInfo(
                         time = now(),
                         location = location,
                         weathers = it
                     )
-                    it
                 }
             }
 
             else -> {
+                debugLog("${this::class.simpleName}: get7dWeatherInfo: cached!")
                 return Single.create {
                     it.onSuccess(cachedWeather7d.weathers!!)
                 }
