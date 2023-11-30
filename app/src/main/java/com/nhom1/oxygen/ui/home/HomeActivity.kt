@@ -107,7 +107,7 @@ class HomeActivity : ComponentActivity() {
         super.onNewIntent(intent)
         if (intent.hasExtra("refresh")) {
             if (intent.getBooleanExtra("refresh", false)) {
-                MainService.reloadService(this)
+                MainService.doBackgroundJob(this)
                 pageLoaded.replaceAll { false }
             }
         }

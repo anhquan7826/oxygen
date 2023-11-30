@@ -43,7 +43,7 @@ class MainService : Service() {
             context.startForegroundService(Intent(context, MainService::class.java))
         }
 
-        fun reloadService(context: Context) {
+        fun doBackgroundJob(context: Context) {
             context.startForegroundService(
                 Intent(
                     context,
@@ -98,7 +98,7 @@ class MainService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.getBooleanExtra("reload", false) == true) {
             infoLog("${this::class.simpleName}: Reloaded.")
-            reloadService()
+            doBackgroundJob()
         }
         return START_STICKY
     }
@@ -133,10 +133,10 @@ class MainService : Service() {
         infoLog("${this::class.simpleName}: User's location updated: $latitude, $longitude: ${LocalDateTime.now()}")
         lastLatitude = latitude
         lastLongitude = longitude
-        reloadService()
+        doBackgroundJob()
     }
 
-    private fun reloadService() {
+    private fun doBackgroundJob() {
         weatherRepository.getCurrentWeatherInfo(lastLatitude, lastLongitude).listen { weather ->
             NotificationUtil.updatePersistentNotification(
                 applicationContext,

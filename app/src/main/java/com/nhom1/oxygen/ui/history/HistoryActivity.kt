@@ -25,9 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -144,6 +146,14 @@ class HistoryActivity : ComponentActivity() {
                         } else {
                             val pagerState = rememberPagerState { state.history!!.size }
                             val coroutineScope = rememberCoroutineScope()
+                            val initiatedMap = remember {
+                                val list = Array(state.history!!.size) { false }
+                                mutableListOf(*list)
+                            }
+                            val selectedPositions = remember {
+                                val list = Array<OHourlyHistory?>(state.history!!.size) { null }
+                                mutableStateListOf(*list)
+                            }
                             Column(
                                 modifier = Modifier.fillMaxSize()
                             ) {
@@ -165,7 +175,8 @@ class HistoryActivity : ComponentActivity() {
                                 }
                                 HorizontalPager(
                                     state = pagerState,
-                                    key = { state.history!![it].time }
+                                    key = { state.history!![it].time },
+                                    userScrollEnabled = false,
                                 ) {
                                     val bounds = rememberSaveable(pagerState.currentPage) {
                                         LatLngBounds.builder().let { builder ->
@@ -176,10 +187,13 @@ class HistoryActivity : ComponentActivity() {
                                         }
                                     }
 
-                                    val camState =
-                                        rememberCameraPositionState(key = pagerState.currentPage.toString())
-                                    if (!pagerState.isScrollInProgress && it == pagerState.currentPage) {
-                                        LaunchedEffect(true) {
+                                    val camState = rememberCameraPositionState(
+                                        key = pagerState.currentPage.toString()
+                                    )
+
+                                    if (!initiatedMap[pagerState.currentPage] && !pagerState.isScrollInProgress && it == pagerState.currentPage) {
+                                        LaunchedEffect(pagerState.currentPage) {
+                                            initiatedMap[pagerState.currentPage] = true
                                             camState.animate(
                                                 update = newLatLngBounds(
                                                     bounds, 20
@@ -188,6 +202,7 @@ class HistoryActivity : ComponentActivity() {
                                             )
                                         }
                                     }
+
                                     Column(
                                         modifier = Modifier
                                             .fillMaxSize()
@@ -196,16 +211,13 @@ class HistoryActivity : ComponentActivity() {
                                             )
                                             .padding(horizontal = 16.dp)
                                     ) {
-                                        var selectedPosition by remember {
-                                            mutableStateOf<OHourlyHistory?>(null)
-                                        }
                                         ExposureChart(
                                             history = state.history!![pagerState.currentPage].history,
                                             modifier = Modifier.padding(top = 32.dp, bottom = 32.dp)
                                         ) { history ->
                                             coroutineScope.launch {
-                                                if (selectedPosition == history) {
-                                                    selectedPosition = null
+                                                if (selectedPositions[pagerState.currentPage] == history) {
+                                                    selectedPositions[pagerState.currentPage] = null
                                                     camState.animate(
                                                         update = newLatLngBounds(
                                                             bounds, 20
@@ -213,7 +225,8 @@ class HistoryActivity : ComponentActivity() {
                                                         durationMs = 1000
                                                     )
                                                 } else {
-                                                    selectedPosition = history
+                                                    selectedPositions[pagerState.currentPage] =
+                                                        history
                                                     camState.animate(
                                                         update = CameraUpdateFactory.newLatLngZoom(
                                                             LatLng(
@@ -230,7 +243,7 @@ class HistoryActivity : ComponentActivity() {
                                             modifier = Modifier.padding(bottom = 32.dp),
                                             history = state.history!![pagerState.currentPage].history.filterNotNull(),
                                             camState = camState,
-                                            selectedPosition = selectedPosition
+                                            selectedPosition = selectedPositions[pagerState.currentPage]
                                         )
                                     }
                                 }

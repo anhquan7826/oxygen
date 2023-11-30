@@ -45,7 +45,6 @@ class HistoryViewModel @Inject constructor(
                 }
             }
         ) { result ->
-            debugLog(gson.toJson(result))
             _state.update {
                 HistoryState(
                     state = LoadState.LOADED,
