@@ -9,73 +9,73 @@
 ## Giao diện ứng dụng
 ### Landing
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/24cbf220-6228-4029-9cb6-494859d30f09" width="200" />
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/d38a4033-eaa6-4b83-ba58-faaeaa4d85b4" width="200" /> 
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/d8420c1a-d0df-4e37-b44c-b6a8536e899c" width="200" />
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/6ab95f26-9a0d-4d42-8178-1592972dd05a" width="200" />
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/221c8bdd-d75e-4667-95bb-861d4c33e50c" width="200" /> 
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/1af174a9-fe81-4d5b-bcc4-8ccc347eeb95" width="200" />
 </p>
 
 ### Sign in
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/5169336f-c570-408f-a78d-1d1915866edd" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/e06d3c39-2c8c-4e29-b659-81fb7cf442eb" width="200">
 </p>
 
 ### Home
 
 #### Overview
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/a3af23c2-d425-4de9-b75d-825d6530c544" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/cc91a2ea-2571-4c57-b063-c0c32dab31e3" width="200">
 </p>
 
 #### Notification
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/f99b5f59-570e-49c4-8f17-7841167f3a6d" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/54b78cb0-e8b1-4964-be3b-39b14bcbecff" width="200">
 </p>
 
 #### Detail
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/51684baf-5137-46a1-a8b3-b883fba3cf2d" width="200">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/8effbe26-4acc-4c2d-975d-a8d9665fcac4" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/1e18d35f-e309-46ec-83ba-047bb3053324" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/bc3baea9-b599-40b3-9b2e-5a4d07b618e5" width="200">
 </p>
 
 #### Search
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/edb93f4b-f1be-4a37-b8de-b89102c5b74a" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/b33a825b-a4ec-4676-98a0-70c4315605b4" width="200">
 </p>
 
 #### Suggestion & News
 
 ##### Suggestion
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/075a90f2-393b-444f-b3b2-f4e191b583b8" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/b18a406f-5b70-4f15-b7ac-3f78b5757b34" width="200">
 </p>
 
 ##### News
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/d25e2325-2c27-427d-81b7-c3b606c831de" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/81624620-4860-4207-9a25-fd07ef43b8f7" width="200">
 </p>
 
 #### User
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/d19d51c9-4e8e-4a71-8129-57cd8bf740b0" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/a9032d44-e7a9-46de-a75c-8f7fc275aa12" width="200">
 </p>
 
 ##### History
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/80197812-db6e-45af-848e-3c4d8bede5f2" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/6321cce8-2e51-412a-a8d0-86bcdbfe6510" width="200">
 </p>
 
 ##### Profile
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/3c305e13-0d38-4fd3-90e2-1ef96a920797" width="200">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/c3f8f83d-5e3f-4f05-a2ad-c4a329e2f36e" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/25a08552-f50c-45cc-9ac9-e84b43ab5ce0" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/64fe3395-3b3c-4e3f-b8b5-91434b6a73ef" width="200">
 </p>
 
 ##### Medical History
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/f379fcb3-9305-4bb1-be66-e583c41980fc" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/d46d5971-1e24-4e36-9a72-5538099a82ae" width="200">
 </p>
 
 ##### Settings
 <p float="left">
-  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/404517cf-957a-4739-9ae2-ee93664f9330" width="200">
+  <img src="https://github.com/anhquan7826/oxygen/assets/78075693/c6ab3971-7a65-4070-9639-4b4fd293a8e7" width="200">
 </p>
