@@ -94,17 +94,16 @@ class NotificationActivity : ComponentActivity() {
                         finish()
                     },
                     actions = listOf(
-                        painterResource(id = R.drawable.add),
+//                        painterResource(id = R.drawable.add),
                         painterResource(id = R.drawable.clear_all)
                     ),
-                    onActionPressed = listOf(
-                        {
-                            viewModel.addNotification()
-                        },
-                        {
-                            viewModel.clearAllNotifications()
-                        }
-                    )
+                    onActionPressed = listOf
+//                        {
+//                            viewModel.addNotification()
+//                        },
+                    {
+                        viewModel.clearAllNotifications()
+                    }
                 )
             },
             containerColor = Color.White,
