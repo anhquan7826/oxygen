@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,8 +37,10 @@ import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OAppBar
 import com.nhom1.oxygen.common.composables.OCard
 import com.nhom1.oxygen.common.composables.OTextField
+import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.ui.details.DetailsActivity
 import com.nhom1.oxygen.ui.home.SearchViewModel
+import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.extensions.oClip
 import com.nhom1.oxygen.utils.gson
 
@@ -104,8 +108,7 @@ fun SearchComposable(viewModel: SearchViewModel) {
                             for (result in state.searchHistory) {
                                 item {
                                     SearchResult(
-                                        result.name ?: result.district,
-                                        "${result.province}, ${result.country}"
+                                        result
                                     ) {
                                         context.startActivity(
                                             Intent(context, DetailsActivity::class.java).putExtra(
@@ -140,8 +143,7 @@ fun SearchComposable(viewModel: SearchViewModel) {
                         for (result in state.result) {
                             item {
                                 SearchResult(
-                                    result.name ?: result.district,
-                                    "${result.province}, ${result.country}"
+                                    result
                                 ) {
                                     viewModel.saveLocation(result)
                                     context.startActivity(
@@ -160,29 +162,48 @@ fun SearchComposable(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun SearchResult(result: String, location: String, onClick: () -> Unit) {
+fun SearchResult(location: OLocation, onClick: () -> Unit) {
     OCard(
         modifier = Modifier
             .padding(bottom = 8.dp)
+            .height(64.dp)
             .oClip(),
         contentPadding = 8.dp,
         onClick = onClick
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxHeight()
         ) {
             Text(
-                text = result,
+                text = if (location.name.isNotEmpty())
+                    location.name
+                else if (location.province.isNotEmpty())
+                    location.province
+                else if (location.district.isNotEmpty())
+                    location.district
+                else
+                    location.ward,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .weight(1f)
+                    .padding(end = 8.dp)
             )
-            Text(
-                text = location,
-                fontWeight = FontWeight.Light,
-                fontSize = 12.sp
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (location.district.isNotEmpty()) Text(
+                    text = location.district,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 10.sp
+                )
+                if (location.province.isNotEmpty()) Text(
+                    text = location.province,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 10.sp
+                )
+            }
             Icon(
                 painter = painterResource(id = R.drawable.chevron_right),
                 contentDescription = null

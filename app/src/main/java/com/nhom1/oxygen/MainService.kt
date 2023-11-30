@@ -92,6 +92,9 @@ class MainService : Service() {
     override fun onBind(intent: Intent): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        infoLog("${this::class.simpleName}: Started.")
+        prevHour = sharedPreferences.getLong(SPKeys.Cache.CACHE_UPLOAD_HISTORY_TIMESTAMP, -1)
+        updateWeatherInfo()
         return START_STICKY
     }
 
@@ -106,7 +109,9 @@ class MainService : Service() {
         ) return
         infoLog("${this::class.simpleName}: Tracking user's location: ${LocalDateTime.now()}.")
         fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-            onLocationUpdate(it.latitude, it.longitude)
+            try {
+                onLocationUpdate(it.latitude, it.longitude)
+            } catch (_: Exception) {}
         }
         fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, minTimeInterval).build(),
@@ -135,8 +140,8 @@ class MainService : Service() {
         }
     }
 
-    private var prevHour =
-        sharedPreferences.getLong(SPKeys.Cache.CACHE_UPLOAD_HISTORY_TIMESTAMP, -1)
+    private var prevHour = -1L
+
 
     private fun addHistory() {
         if (userRepository.isSignedIn()) {

@@ -44,7 +44,9 @@ class MainActivity : ComponentActivity() {
         } else if (!userRepository.isSignedIn()) {
             startActivity(Intent(this, LoginActivity::class.java))
         } else {
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java).apply {
+                intent.extras?.let { putExtras(it) }
+            })
         }
         finish()
     }

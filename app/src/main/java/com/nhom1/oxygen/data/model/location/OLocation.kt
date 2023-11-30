@@ -12,7 +12,7 @@ import com.nhom1.oxygen.utils.CoordinateUtil
     ]
 )
 data class OLocation(
-    val name: String? = null,
+    val name: String = "",
     val country: String,
     @SerializedName("country_code") val countryCode: String,
     val province: String,

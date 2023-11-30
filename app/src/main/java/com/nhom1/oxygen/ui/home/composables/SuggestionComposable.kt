@@ -117,7 +117,7 @@ fun SuggestionComposable(viewModel: SuggestionViewModel) {
                         OError(
                             modifier = Modifier.align(Alignment.Center)
                         ) {
-
+                            viewModel.load()
                         }
                     }
                 }

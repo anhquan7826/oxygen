@@ -12,6 +12,7 @@ import android.widget.RemoteViews
 import androidx.compose.ui.graphics.toArgb
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.NotificationTarget
+import com.nhom1.oxygen.MainActivity
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.ui.home.HomeActivity
@@ -162,7 +163,7 @@ object NotificationUtil {
                 PendingIntent.getActivity(
                     context,
                     requestCode,
-                    Intent(context, HomeActivity::class.java).apply {
+                    Intent(context, MainActivity::class.java).apply {
                         if (intentExtras != null) putExtras(intentExtras)
                     },
                     PendingIntent.FLAG_IMMUTABLE
