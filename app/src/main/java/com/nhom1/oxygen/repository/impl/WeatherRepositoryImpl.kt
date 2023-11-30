@@ -1,6 +1,5 @@
 package com.nhom1.oxygen.repository.impl
 
-import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.data.model.weather.OWeather
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.WeatherRepository

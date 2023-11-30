@@ -68,7 +68,6 @@ import com.nhom1.oxygen.data.model.history.OHourlyHistory
 import com.nhom1.oxygen.utils.bitmapDescriptor
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.debugLog
-import com.nhom1.oxygen.utils.extensions.fillGaps
 import com.nhom1.oxygen.utils.getAQIColor
 import com.nhom1.oxygen.utils.getTimeString
 import dagger.hilt.android.AndroidEntryPoint
@@ -96,7 +95,6 @@ class HistoryActivity : ComponentActivity() {
     @Composable
     fun HistoryView() {
         val state by viewModel.state.collectAsState()
-        debugLog(state.history?.firstOrNull())
         Scaffold(
             topBar = {
                 OAppBar(
@@ -171,7 +169,7 @@ class HistoryActivity : ComponentActivity() {
                                 ) {
                                     val bounds = rememberSaveable(pagerState.currentPage) {
                                         LatLngBounds.builder().let { builder ->
-                                            for (h in state.history!![pagerState.currentPage].history.fillGaps().filterNotNull()) {
+                                            for (h in state.history!![pagerState.currentPage].history.filterNotNull()) {
                                                 builder.include(LatLng(h.latitude, h.longitude))
                                             }
                                             builder.build()
@@ -202,7 +200,7 @@ class HistoryActivity : ComponentActivity() {
                                             mutableStateOf<OHourlyHistory?>(null)
                                         }
                                         ExposureChart(
-                                            history = state.history!![pagerState.currentPage].history.fillGaps(),
+                                            history = state.history!![pagerState.currentPage].history,
                                             modifier = Modifier.padding(top = 32.dp, bottom = 32.dp)
                                         ) { history ->
                                             coroutineScope.launch {
@@ -230,7 +228,7 @@ class HistoryActivity : ComponentActivity() {
                                         }
                                         MovingHistory(
                                             modifier = Modifier.padding(bottom = 32.dp),
-                                            history = state.history!![pagerState.currentPage].history.fillGaps().filterNotNull(),
+                                            history = state.history!![pagerState.currentPage].history.filterNotNull(),
                                             camState = camState,
                                             selectedPosition = selectedPosition
                                         )

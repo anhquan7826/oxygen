@@ -1,11 +1,7 @@
 package com.nhom1.oxygen.repository.impl
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.nhom1.oxygen.data.database.OxygenDatabase
 import com.nhom1.oxygen.data.model.divisions.ODistrict

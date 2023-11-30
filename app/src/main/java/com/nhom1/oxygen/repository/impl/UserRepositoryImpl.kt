@@ -11,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nhom1.oxygen.data.model.user.OUser
 import com.nhom1.oxygen.data.service.OxygenService
 import com.nhom1.oxygen.repository.UserRepository
-import com.nhom1.oxygen.utils.FirebaseUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.listen

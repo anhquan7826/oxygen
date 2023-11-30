@@ -5,6 +5,7 @@ import com.nhom1.oxygen.data.model.history.OHistory
 import com.nhom1.oxygen.repository.HistoryRepository
 import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.debugLog
+import com.nhom1.oxygen.utils.gson
 import com.nhom1.oxygen.utils.listen
 import com.nhom1.oxygen.utils.toMap
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,6 +45,7 @@ class HistoryViewModel @Inject constructor(
                 }
             }
         ) { result ->
+            debugLog(gson.toJson(result))
             _state.update {
                 HistoryState(
                     state = LoadState.LOADED,

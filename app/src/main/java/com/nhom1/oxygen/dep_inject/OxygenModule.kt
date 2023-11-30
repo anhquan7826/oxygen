@@ -129,10 +129,8 @@ internal object OxygenModule {
     @Singleton
     fun provideHistoryRepository(
         service: OxygenService,
-        locationRepository: LocationRepository,
-        weatherRepository: WeatherRepository
     ): HistoryRepository {
-        return HistoryRepositoryImpl(service, locationRepository, weatherRepository)
+        return HistoryRepositoryImpl(service)
 //        return HistoryRepositoryMock()
     }
 
