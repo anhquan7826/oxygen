@@ -16,30 +16,15 @@ class HistoryRepositoryImpl(
     private val locationRepository: LocationRepository,
     private val weatherRepository: WeatherRepository
 ) : HistoryRepository {
-    override fun addLocationHistory(): Completable {
-        return Completable.create { emitter ->
-            locationRepository.getCurrentLocation().listen(
-                onError = { emitter.onError(it) }
-            ) { location ->
-                weatherRepository.getCurrentWeatherInfo(location).listen(
-                    onError = { emitter.onError(it) }
-                ) { weather ->
-                    service.history.addHistory(
-                        OHourlyHistory(
-                            latitude = location.latitude,
-                            longitude = location.longitude,
-                            time = now(),
-                            aqi = weather.airQuality.aqi
-                        )
-                    ).listen(
-                        onError = { emitter.onError(it) }
-                    ) {
-                        emitter.onComplete()
-                    }
-                }
-            }
-
-        }
+    override fun addLocationHistory(latitude: Double, longitude: Double, aqi: Int): Completable {
+        return service.history.addHistory(
+            OHourlyHistory(
+                latitude = latitude,
+                longitude = longitude,
+                time = now(),
+                aqi = aqi
+            )
+        )
     }
 
     override fun getTodayHistory(): Single<OHistory> {

@@ -1,6 +1,12 @@
 package com.nhom1.oxygen.repository.impl
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.nhom1.oxygen.data.database.OxygenDatabase
 import com.nhom1.oxygen.data.model.divisions.ODistrict
 import com.nhom1.oxygen.data.model.divisions.OProvince
@@ -12,6 +18,7 @@ import com.nhom1.oxygen.utils.CoordinateUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.gson
+import com.nhom1.oxygen.utils.listen
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -20,37 +27,47 @@ class LocationRepositoryImpl(
     private val service: OxygenService,
     private val database: OxygenDatabase
 ) : LocationRepository {
-    private val sharedPreferences =
-        context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
-
-    data class CachedLocationInfo(
-        val latitude: Double,
-        val longitude: Double,
-        val info: OLocation
+    private val sharedPreferences = context.getSharedPreferences(
+        context.packageName, Context.MODE_PRIVATE
     )
 
-    private val cacheDistance = 100
+    private val cacheDistance = 1000
 
-    private lateinit var cachedLocation: CachedLocationInfo
+    private lateinit var cachedLocation: OLocation
 
-    override fun getCurrentLocation(): Single<OLocation> {
-        return Single.create { emitter ->
-            while (true) {
-                if (sharedPreferences.contains(SPKeys.CURRENT_LOCATION)) break
-            }
-            try {
-                val location = gson.fromJson(
-                    sharedPreferences.getString(SPKeys.CURRENT_LOCATION, "").toString(),
-                    OLocation::class.java
-                )
-                emitter.onSuccess(location)
-            } catch (e: Exception) {
-                emitter.onError(e)
-            }
+    init {
+        if (sharedPreferences.contains(SPKeys.Cache.CACHE_CURRENT_LOCATION)) {
+            cachedLocation = gson.fromJson(
+                sharedPreferences.getString(SPKeys.Cache.CACHE_CURRENT_LOCATION, "")!!,
+                OLocation::class.java
+            )
         }
     }
 
-    override fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation> {
+    @SuppressLint("MissingPermission")
+    override fun getCurrentLocation(): Single<OLocation> {
+        return Single.create { emitter ->
+            LocationServices
+                .getFusedLocationProviderClient(context)
+                .lastLocation
+                .addOnSuccessListener {
+                    try {
+                        getLocationFromCoordinate(it.latitude, it.longitude).listen(
+                            onError = { e -> emitter.onError(e) }
+                        ) { location ->
+                            emitter.onSuccess(location)
+                        }
+                    } catch (e: Exception) {
+                        emitter.onError(e)
+                    }
+                }
+                .addOnFailureListener {
+                    emitter.onError(it)
+                }
+        }
+    }
+
+    private fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation> {
         return when {
             !this::cachedLocation.isInitialized ||
                     CoordinateUtil.distance(
@@ -59,14 +76,17 @@ class LocationRepositoryImpl(
                     ) > cacheDistance -> {
                 debugLog("${this::class.simpleName}: getLocationFromCoordinate: new!")
                 service.geocoding.getLocation(latitude, longitude).doOnSuccess {
-                    cachedLocation = CachedLocationInfo(latitude, longitude, it)
+                    cachedLocation = it
+                    sharedPreferences.edit().putString(
+                        SPKeys.Cache.CACHE_CURRENT_LOCATION, gson.toJson(it)
+                    ).apply()
                 }
             }
 
             else -> {
                 Single.create {
                     debugLog("${this::class.simpleName}: getLocationFromCoordinate: cached!")
-                    it.onSuccess(cachedLocation.info)
+                    it.onSuccess(cachedLocation)
                 }
             }
         }

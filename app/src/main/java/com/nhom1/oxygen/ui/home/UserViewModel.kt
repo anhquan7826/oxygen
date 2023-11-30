@@ -29,10 +29,6 @@ class UserViewModel @Inject constructor(
     private val _state = MutableStateFlow(UserState(LoadState.LOADING))
     val state = _state.asStateFlow()
 
-    init {
-        load()
-    }
-
     fun load() {
         _state.update {
             UserState(LoadState.LOADING)

@@ -30,7 +30,7 @@ class LocationRepositoryMock(
         }
     }
 
-    override fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation> {
+    fun getLocationFromCoordinate(latitude: Double, longitude: Double): Single<OLocation> {
         return Single.create {
             it.onSuccess(
                 OLocation(

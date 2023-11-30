@@ -30,7 +30,7 @@ class WeatherRepositoryMock : WeatherRepository {
         )
     )
 
-    override fun getCurrentWeatherInfo(location: OLocation): Single<OWeather> {
+    override fun getCurrentWeatherInfo(latitude: Double, longitude: Double): Single<OWeather> {
         return Single.create {
             it.onSuccess(
                 sampleWeather(0)
@@ -38,7 +38,7 @@ class WeatherRepositoryMock : WeatherRepository {
         }.delay(1000, TimeUnit.MILLISECONDS)
     }
 
-    override fun getWeatherInfoIn24h(location: OLocation): Single<List<OWeather>> {
+    override fun getWeatherInfoIn24h(latitude: Double, longitude: Double): Single<List<OWeather>> {
         return Single.create {
             it.onSuccess(List(24) { index ->
                 sampleWeather(3600 * index)
@@ -46,7 +46,7 @@ class WeatherRepositoryMock : WeatherRepository {
         }.delay(1000, TimeUnit.MILLISECONDS)
     }
 
-    override fun getWeatherInfoIn7d(location: OLocation): Single<List<OWeather>> {
+    override fun getWeatherInfoIn7d(latitude: Double, longitude: Double): Single<List<OWeather>> {
         return Single.create {
             it.onSuccess(List(7) { index ->
                 sampleWeather(3600 * 24 * index)

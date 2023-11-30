@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import com.nhom1.oxygen.MainService
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.AutoSizeText
 import com.nhom1.oxygen.common.theme.OxygenTheme
@@ -83,6 +84,7 @@ class HomeActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MainService.startService(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         overviewViewModel = ViewModelProvider(this)[OverviewViewModel::class.java]
         searchViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
@@ -91,8 +93,7 @@ class HomeActivity : ComponentActivity() {
         setContent {
             coroutineScope = rememberCoroutineScope()
             homeController = HomePageController(
-                rememberPagerState { items.size },
-                LocalSoftwareKeyboardController.current
+                rememberPagerState { items.size }, LocalSoftwareKeyboardController.current
             )
             OxygenTheme {
                 Surface {
@@ -102,17 +103,12 @@ class HomeActivity : ComponentActivity() {
         }
     }
 
-    private fun reloadData() {
-        overviewViewModel.load()
-        suggestionViewModel.load()
-        userViewModel.load()
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.hasExtra("refresh")) {
             if (intent.getBooleanExtra("refresh", false)) {
-                reloadData()
+                MainService.reloadService(this)
+                pageLoaded.replaceAll { false }
             }
         }
         if (intent.hasExtra("goToSuggestion")) {
@@ -132,8 +128,7 @@ class HomeActivity : ComponentActivity() {
                     modifier = Modifier.oShadow(),
                 ) {
                     for (item in items) {
-                        NavigationBarItem(
-                            alwaysShowLabel = false,
+                        NavigationBarItem(alwaysShowLabel = false,
                             selected = page == item.key,
                             onClick = {
                                 homeController.goto(item.key)
@@ -174,8 +169,7 @@ class HomeActivity : ComponentActivity() {
                                     textAlign = TextAlign.Center,
                                     maxTextSize = 12.sp,
                                 )
-                            }
-                        )
+                            })
                     }
                 }
             },
@@ -189,6 +183,9 @@ class HomeActivity : ComponentActivity() {
                 state = homeController.pagerState,
                 userScrollEnabled = false,
             ) { currentPage ->
+                if (!homeController.pagerState.isScrollInProgress && currentPage == homeController.pagerState.currentPage) {
+                    onPageChanged(currentPage)
+                }
                 when (currentPage) {
                     0 -> OverviewComposable(overviewViewModel, homeController)
                     1 -> SearchComposable(searchViewModel)
@@ -197,5 +194,18 @@ class HomeActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private val pageLoaded = MutableList(4) { false }
+
+    private fun onPageChanged(currentPage: Int) {
+        if (pageLoaded[currentPage]) return
+        when (currentPage) {
+            0 -> overviewViewModel.load()
+            1 -> searchViewModel.load()
+            2 -> suggestionViewModel.load()
+            3 -> userViewModel.load()
+        }
+        pageLoaded[currentPage] = true
     }
 }

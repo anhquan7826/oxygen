@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 interface HistoryRepository {
-    fun addLocationHistory(): Completable
+    fun addLocationHistory(latitude: Double, longitude: Double, aqi: Int): Completable
 
     fun getTodayHistory(): Single<OHistory>
 

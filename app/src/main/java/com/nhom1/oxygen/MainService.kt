@@ -29,8 +29,6 @@ import com.nhom1.oxygen.repository.WeatherRepository
 import com.nhom1.oxygen.utils.NotificationUtil
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.getAQILevel
-import com.nhom1.oxygen.utils.getHour
-import com.nhom1.oxygen.utils.gson
 import com.nhom1.oxygen.utils.infoLog
 import com.nhom1.oxygen.utils.listen
 import com.nhom1.oxygen.utils.now
@@ -45,8 +43,13 @@ class MainService : Service() {
             context.startForegroundService(Intent(context, MainService::class.java))
         }
 
-        fun stopService(context: Context) {
-            context.stopService(Intent(context, MainService::class.java))
+        fun reloadService(context: Context) {
+            context.startForegroundService(
+                Intent(
+                    context,
+                    MainService::class.java
+                ).putExtra("reload", true)
+            )
         }
     }
 
@@ -84,6 +87,7 @@ class MainService : Service() {
         notificationManager = getSystemService(NotificationManager::class.java)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         NotificationUtil.configure(applicationContext)
+        prevHour = sharedPreferences.getLong(SPKeys.Cache.CACHE_UPLOAD_HISTORY_TIMESTAMP, -1)
         startForeground(1, NotificationUtil.getPersistentNotification(applicationContext))
         trackLocation()
         infoLog("${this::class.simpleName}: Created.")
@@ -92,9 +96,10 @@ class MainService : Service() {
     override fun onBind(intent: Intent): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        infoLog("${this::class.simpleName}: Started.")
-        prevHour = sharedPreferences.getLong(SPKeys.Cache.CACHE_UPLOAD_HISTORY_TIMESTAMP, -1)
-        updateWeatherInfo()
+        if (intent?.getBooleanExtra("reload", false) == true) {
+            infoLog("${this::class.simpleName}: Reloaded.")
+            reloadService()
+        }
         return START_STICKY
     }
 
@@ -108,11 +113,6 @@ class MainService : Service() {
             ) != PackageManager.PERMISSION_GRANTED
         ) return
         infoLog("${this::class.simpleName}: Tracking user's location: ${LocalDateTime.now()}.")
-        fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-            try {
-                onLocationUpdate(it.latitude, it.longitude)
-            } catch (_: Exception) {}
-        }
         fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, minTimeInterval).build(),
             object : LocationCallback() {
@@ -126,28 +126,34 @@ class MainService : Service() {
         )
     }
 
+    private var lastLatitude: Double = -1.0
+    private var lastLongitude: Double = -1.0
     private fun onLocationUpdate(latitude: Double?, longitude: Double?) {
         if (latitude == null || longitude == null) return
         infoLog("${this::class.simpleName}: User's location updated: $latitude, $longitude: ${LocalDateTime.now()}")
-        locationRepository.getLocationFromCoordinate(latitude, longitude).listen {
-            infoLog("${this::class.simpleName}: Got location info: $it: ${LocalDateTime.now()}")
-            sharedPreferences
-                .edit()
-                .putString(SPKeys.CURRENT_LOCATION, gson.toJson(it))
-                .apply()
-            addHistory()
-            updateWeatherInfo()
+        lastLatitude = latitude
+        lastLongitude = longitude
+        reloadService()
+    }
+
+    private fun reloadService() {
+        weatherRepository.getCurrentWeatherInfo(lastLatitude, lastLongitude).listen { weather ->
+            NotificationUtil.updatePersistentNotification(
+                applicationContext,
+                weather,
+                settingsRepository.temperatureUnit
+            )
+            showWarningNotification(weather.airQuality.aqi)
+            addHistory(weather.airQuality.aqi)
         }
     }
 
     private var prevHour = -1L
-
-
-    private fun addHistory() {
+    private fun addHistory(aqi: Int) {
         if (userRepository.isSignedIn()) {
             if (now() - prevHour > 3600) {
                 infoLog("${this::class.simpleName}: Adding user's history.")
-                historyRepository.addLocationHistory().listen(
+                historyRepository.addLocationHistory(lastLatitude, lastLongitude, aqi).listen(
                     onError = {
                         Toast.makeText(
                             this,
@@ -161,19 +167,6 @@ class MainService : Service() {
                         putLong(SPKeys.Cache.CACHE_UPLOAD_HISTORY_TIMESTAMP, prevHour)
                     }
                 }
-            }
-        }
-    }
-
-    private fun updateWeatherInfo() {
-        locationRepository.getCurrentLocation().listen { location ->
-            weatherRepository.getCurrentWeatherInfo(location).listen { weather ->
-                NotificationUtil.updatePersistentNotification(
-                    applicationContext,
-                    weather,
-                    settingsRepository.temperatureUnit
-                )
-                showWarningNotification(weather.airQuality.aqi)
             }
         }
     }

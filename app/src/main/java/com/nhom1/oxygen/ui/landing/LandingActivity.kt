@@ -281,10 +281,6 @@ class LandingActivity : ComponentActivity() {
             }
         } else {
             sharedPreferences.edit().putBoolean(SPKeys.FIRST_LAUNCH, false).apply()
-            MainService.apply {
-                stopService(this@LandingActivity)
-                startService(this@LandingActivity)
-            }
             if (!userRepository.isSignedIn()) {
                 startActivity(Intent(this@LandingActivity, LoginActivity::class.java))
             } else {

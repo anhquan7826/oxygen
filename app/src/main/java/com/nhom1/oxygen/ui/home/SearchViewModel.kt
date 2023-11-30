@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.nhom1.oxygen.data.model.location.OLocation
 import com.nhom1.oxygen.repository.LocationRepository
 import com.nhom1.oxygen.repository.WeatherRepository
+import com.nhom1.oxygen.utils.constants.LoadState
 import com.nhom1.oxygen.utils.debugLog
 import com.nhom1.oxygen.utils.listen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,17 +34,6 @@ class SearchViewModel @Inject constructor(
     private lateinit var emitter: ObservableEmitter<String>
 
     init {
-        load()
-    }
-
-    fun load() {
-        locationRepository.getSearchedLocation().listen { locations ->
-            _state.update {
-                it.copy(
-                    searchHistory = locations
-                )
-            }
-        }
         Observable.create { emitter = it }.debounce(1000, TimeUnit.MILLISECONDS).listen { query ->
             if (query.isEmpty()) {
                 _state.update {
@@ -68,6 +58,16 @@ class SearchViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun load() {
+        locationRepository.getSearchedLocation().listen { locations ->
+            _state.update {
+                it.copy(
+                    searchHistory = locations
+                )
             }
         }
     }

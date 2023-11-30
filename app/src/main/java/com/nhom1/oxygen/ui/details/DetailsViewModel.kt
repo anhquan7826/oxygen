@@ -43,15 +43,15 @@ class DetailsViewModel @Inject constructor(
             if (weatherCurrent != null)
                 Single.create { it.onSuccess(weatherCurrent) }
             else
-                weatherRepository.getCurrentWeatherInfo(location),
+                weatherRepository.getCurrentWeatherInfo(location.latitude, location.longitude),
             if (weather24h != null)
                 Single.create { it.onSuccess(weather24h) }
             else
-                weatherRepository.getWeatherInfoIn24h(location),
+                weatherRepository.getWeatherInfoIn24h(location.latitude, location.longitude),
             if (weather7d != null)
                 Single.create { it.onSuccess(weather7d) }
             else
-                weatherRepository.getWeatherInfoIn7d(location)
+                weatherRepository.getWeatherInfoIn7d(location.latitude, location.longitude)
         ) { current, next24h, next7d ->
             DetailState(
                 state = LoadState.LOADED,

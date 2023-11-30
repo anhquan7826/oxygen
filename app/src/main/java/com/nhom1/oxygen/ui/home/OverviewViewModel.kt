@@ -40,10 +40,6 @@ class OverviewViewModel @Inject constructor(
 
     val tempUnit: Boolean get() = settingRepository.temperatureUnit
 
-    init {
-        load()
-    }
-
     fun load() {
         _overviewState.update {
             OverviewState(
@@ -62,8 +58,8 @@ class OverviewViewModel @Inject constructor(
         ) { location ->
             Single.zip(
                 notificationRepository.countNotifications(),
-                weatherRepository.getCurrentWeatherInfo(location),
-                weatherRepository.getWeatherInfoIn24h(location),
+                weatherRepository.getCurrentWeatherInfo(location.latitude, location.longitude),
+                weatherRepository.getWeatherInfoIn24h(location.latitude, location.longitude),
             ) { notifications, current, next24h ->
                 Triple(notifications, current, next24h)
             }.listen(

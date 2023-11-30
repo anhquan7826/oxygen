@@ -31,13 +31,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences(packageName, Context.MODE_PRIVATE)
         LanguageUtil.setLanguage(this)
+        FirebaseUtil.refreshIdTokenIfNeeded(this)
     }
 
     @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
-        FirebaseUtil.refreshIdTokenIfNeeded(this)
-        MainService.startService(this)
         val isFirstTimeLaunch = sharedPreferences.getBoolean(SPKeys.FIRST_LAUNCH, true)
         if (isFirstTimeLaunch) {
             startActivity(Intent(this, LandingActivity::class.java))

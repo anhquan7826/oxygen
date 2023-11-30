@@ -25,7 +25,7 @@ class SuggestionRepositoryImpl(
         val suggestions: List<String>? = null
     )
 
-    private val interval = 14400
+    private val interval = 300
 
     private lateinit var cachedShortSuggestion: CachedSuggestion
     private lateinit var cachedLongSuggestion: CachedSuggestion

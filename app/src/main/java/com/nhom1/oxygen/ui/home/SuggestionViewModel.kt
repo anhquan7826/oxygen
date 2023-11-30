@@ -36,10 +36,6 @@ class SuggestionViewModel @Inject constructor(
     private val _state = MutableStateFlow(SuggestionState())
     val state = _state.asStateFlow()
 
-    init {
-        load()
-    }
-
     fun load() {
         _state.update {
             SuggestionState()
@@ -55,7 +51,7 @@ class SuggestionViewModel @Inject constructor(
             }
         ) { location ->
             Single.zip(
-                weatherRepository.getCurrentWeatherInfo(location),
+                weatherRepository.getCurrentWeatherInfo(location.latitude, location.longitude),
                 articleRepository.getArticle(),
                 userRepository.getUserData()
             ) { weather, articles, userData ->

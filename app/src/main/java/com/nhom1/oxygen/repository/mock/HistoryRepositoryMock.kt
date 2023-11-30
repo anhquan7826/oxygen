@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 class HistoryRepositoryMock : HistoryRepository {
-    override fun addLocationHistory(): Completable {
+    override fun addLocationHistory(latitude: Double, longitude: Double, aqi: Int): Completable {
         return Completable.create {
             it.onComplete()
         }
