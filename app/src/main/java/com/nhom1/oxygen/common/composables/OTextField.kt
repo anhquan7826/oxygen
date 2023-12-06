@@ -34,6 +34,7 @@ fun OTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     maxLines: Int = 1,
+    filter: Regex? = null,
     onValueChange: (String) -> Unit
 ) {
     var value by rememberSaveable {
@@ -43,8 +44,14 @@ fun OTextField(
         modifier = modifier.fillMaxWidth(),
         value = value,
         onValueChange = {
-            value = it
-            onValueChange.invoke(it)
+            if (filter != null) {
+                if (!it.contains(filter)) {
+                    value = it
+                }
+            } else {
+                value = it
+            }
+            onValueChange.invoke(value)
         },
         isError = isError,
         shape = RoundedCornerShape(12.dp),

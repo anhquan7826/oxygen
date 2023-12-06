@@ -281,12 +281,13 @@ class EditProfileActivity : ComponentActivity() {
             OTextField(
                 initialValue = userData.name,
                 isError = isError,
-                errorText = stringResource(R.string.name_cant_be_empty),
+                errorText = stringResource(R.string.name_edit_warning),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ),
+                filter = Regex("""\s{2,}|[!-@^-`{-~(\[\]\\)]+|\d""")
             ) {
-                viewModel.setName(it)
+                viewModel.setName(it.trim())
                 isError = it.isEmpty()
             }
         }

@@ -205,7 +205,7 @@ class EditProfileViewModel @Inject constructor(
     fun canSave(): Boolean {
         return _state.value.run {
             when {
-                currentName.isEmpty() -> false
+                currentName.isEmpty() || currentName.contains(Regex("\\d")) -> false
                 currentDob == null -> false
                 currentSex == null -> false
                 currentProvince.isEmpty() -> false

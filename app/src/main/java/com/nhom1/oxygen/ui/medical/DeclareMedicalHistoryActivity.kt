@@ -178,6 +178,7 @@ class DeclareMedicalHistoryActivity : ComponentActivity() {
                                     keyboardType = KeyboardType.Number,
                                     imeAction = ImeAction.Done
                                 ),
+                                filter = Regex("""\D+""")
                             ) { value ->
                                 viewModel.setHeight(value.toDoubleOrNull() ?: -1.0)
                             }
@@ -191,6 +192,7 @@ class DeclareMedicalHistoryActivity : ComponentActivity() {
                                     keyboardType = KeyboardType.Number,
                                     imeAction = ImeAction.Done
                                 ),
+                                filter = Regex("""\D+""")
                             ) { value ->
                                 viewModel.setWeight(value.toDoubleOrNull() ?: -1.0)
                             }
