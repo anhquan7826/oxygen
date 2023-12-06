@@ -9,8 +9,8 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins
 class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        RxJavaPlugins.setErrorHandler {
-            errorLog(it)
-        }
+//        RxJavaPlugins.setErrorHandler {
+//            errorLog(it)
+//        }
     }
 }

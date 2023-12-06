@@ -193,10 +193,10 @@ class EditProfileViewModel @Inject constructor(
                 currentName != initialUserData.name -> true
                 currentDob != initialUserData.profile?.dateOfBirth -> true
                 currentSex != initialUserData.profile?.sex -> true
-                currentProvince != initialUserData.profile?.province -> true
-                currentDistrict != initialUserData.profile?.district -> true
-                currentWard != initialUserData.profile?.ward -> true
-                currentAddress != initialUserData.profile?.address -> true
+                currentProvince != (initialUserData.profile?.province ?: "") -> true
+                currentDistrict != (initialUserData.profile?.district ?: "") -> true
+                currentWard != (initialUserData.profile?.ward ?: "") -> true
+                currentAddress != (initialUserData.profile?.address ?: "") -> true
                 else -> false
             }
         }

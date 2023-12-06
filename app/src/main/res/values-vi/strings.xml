@@ -127,4 +127,5 @@
     <string name="next_week">Tuần tới</string>
     <string name="chance_of_rain">Tỉ lệ có mưa</string>
     <string name="discard">Hủy bỏ</string>
+    <string name="permission_denied_warning">Vui lòng cấp quyền để ứng dụng có thể hoạt động!</string>
 </resources>

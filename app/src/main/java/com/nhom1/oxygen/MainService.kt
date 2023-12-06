@@ -118,7 +118,9 @@ class MainService : Service() {
             object : LocationCallback() {
                 override fun onLocationResult(result: LocationResult) {
                     result.lastLocation?.let {
-                        onLocationUpdate(it.latitude, it.longitude)
+                        try {
+                            onLocationUpdate(it.latitude, it.longitude)
+                        } catch (_: Exception) {}
                     }
                 }
             },
@@ -128,8 +130,7 @@ class MainService : Service() {
 
     private var lastLatitude: Double = -1.0
     private var lastLongitude: Double = -1.0
-    private fun onLocationUpdate(latitude: Double?, longitude: Double?) {
-        if (latitude == null || longitude == null) return
+    private fun onLocationUpdate(latitude: Double, longitude: Double) {
         infoLog("${this::class.simpleName}: User's location updated: $latitude, $longitude: ${LocalDateTime.now()}")
         lastLatitude = latitude
         lastLongitude = longitude

@@ -43,23 +43,23 @@ class LocationRepositoryImpl(
     @SuppressLint("MissingPermission")
     override fun getCurrentLocation(): Single<OLocation> {
         return Single.create { emitter ->
-            LocationServices
-                .getFusedLocationProviderClient(context)
-                .lastLocation
-                .addOnSuccessListener {
-                    try {
+            try {
+                LocationServices
+                    .getFusedLocationProviderClient(context)
+                    .lastLocation
+                    .addOnSuccessListener {
                         getLocationFromCoordinate(it.latitude, it.longitude).listen(
                             onError = { e -> emitter.onError(e) }
                         ) { location ->
                             emitter.onSuccess(location)
                         }
-                    } catch (e: Exception) {
-                        emitter.onError(e)
                     }
-                }
-                .addOnFailureListener {
-                    emitter.onError(it)
-                }
+                    .addOnFailureListener {
+                        emitter.onError(it)
+                    }
+            } catch (e: Exception) {
+                emitter.onError(e)
+            }
         }
     }
 

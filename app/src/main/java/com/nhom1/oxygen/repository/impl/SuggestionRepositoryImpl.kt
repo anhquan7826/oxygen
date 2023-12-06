@@ -7,6 +7,7 @@ import com.nhom1.oxygen.repository.SuggestionRepository
 import com.nhom1.oxygen.utils.compareAQILevel
 import com.nhom1.oxygen.utils.constants.SPKeys
 import com.nhom1.oxygen.utils.debugLog
+import com.nhom1.oxygen.utils.errorLog
 import com.nhom1.oxygen.utils.extensions.compareIgnoreOrder
 import com.nhom1.oxygen.utils.gson
 import com.nhom1.oxygen.utils.now
@@ -68,6 +69,9 @@ class SuggestionRepositoryImpl(
                             gson.toJson(cachedShortSuggestion)
                         ).apply()
                     }
+                    .doOnError {
+                        errorLog(it)
+                    }
             }
 
             else -> {
@@ -109,6 +113,9 @@ class SuggestionRepositoryImpl(
                             SPKeys.Cache.CACHE_LONG_SUGGESTION,
                             gson.toJson(cachedLongSuggestion)
                         ).apply()
+                    }
+                    .doOnError {
+                        errorLog(it)
                     }
             }
 

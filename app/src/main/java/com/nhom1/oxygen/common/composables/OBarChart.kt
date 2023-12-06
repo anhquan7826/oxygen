@@ -73,7 +73,7 @@ fun OBarChart(
                 .horizontalScroll(rememberScrollState())
         ) {
             val textMeasurer = rememberTextMeasurer()
-            var selectedBar by remember {
+            var selectedBar by remember(data) {
                 mutableStateOf<OBarChartData.OBarData?>(null)
             }
             for (bar in data.barsData) {

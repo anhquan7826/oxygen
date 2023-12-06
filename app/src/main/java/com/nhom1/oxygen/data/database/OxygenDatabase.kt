@@ -11,7 +11,8 @@ import com.nhom1.oxygen.data.model.notification.ONotification
 
 @Database(
     entities = [OLocation::class, ONotification::class],
-    version = 3
+    version = 4,
+    exportSchema = false
 )
 abstract class OxygenDatabase : RoomDatabase() {
     companion object {

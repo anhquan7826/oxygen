@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalFoundationApi::class,
+@file:OptIn(
+    ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class
 )
 
@@ -10,6 +11,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,7 +42,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
-import com.nhom1.oxygen.MainService
 import com.nhom1.oxygen.R
 import com.nhom1.oxygen.common.composables.OButtonPrimary
 import com.nhom1.oxygen.common.theme.OxygenTheme
@@ -63,9 +64,18 @@ class LandingActivity : ComponentActivity() {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var pagerState: PagerState
 
-    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-        if (it) toNextPage()
-    }
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                toNextPage()
+            } else {
+                Toast.makeText(
+                    this,
+                    getString(R.string.permission_denied_warning),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
